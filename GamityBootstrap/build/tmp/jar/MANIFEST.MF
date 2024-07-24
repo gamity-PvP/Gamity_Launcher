@@ -1,4 +1,0 @@
-Manifest-Version: 1.0
-Main-Class: com.thomas260913.gamity.bootstrap.Main
-SplashScreen-Image: splash.png
-

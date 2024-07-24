@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?><Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+<Product Codepage="1252" Id="*" Language="1033" Manufacturer="Gamity Launcher" Name="Gamity Launcher" UpgradeCode="1d22e40e-fa0c-4cce-aae6-7bc88a6996b5" Version="2.3.3">
+<Package Compressed="yes" Description="Gamity Launcher" InstallScope="perMachine" InstallerVersion="200" Languages="1033" Platform="x64" SummaryCodepage="1252"/>
+<Media Cabinet="Application.cab" EmbedCab="yes" Id="1"/>
+<Directory Id="TARGETDIR" Name="SourceDir">
+<Directory Id="ProgramFiles64Folder">
+<Merge DiskId="1" Id="Gamity_Launcher_Module" Language="1033" SourceFile="C:\Users\thomas\Desktop\launcher\gamity_launcher\GamityBootstrap\build\Gamity Launcher_2.3.3.msm"/>
+</Directory>
+</Directory>
+<Feature Absent="disallow" AllowAdvertise="no" ConfigurableDirectory="TARGETDIR" Description="Gamity Launcher" Id="_0457b40c_e429_4da9_8588_e1705eabde6f" Level="1" Title="Gamity Launcher">
+<MergeRef Id="Gamity_Launcher_Module"/>
+</Feature>
+<Icon Id="ICONFILE" SourceFile="C:\Users\thomas\Desktop\launcher\gamity_launcher\logo.ico"/>
+<Property Id="ARPPRODUCTICON" Value="ICONFILE"/>
+<MajorUpgrade AllowDowngrades="no" AllowSameVersionUpgrades="no" DowngradeErrorMessage="A later version of Gamity Launcher is already installed. Setup will now exit." IgnoreRemoveFailure="no"/>
+</Product>
+</Wix>

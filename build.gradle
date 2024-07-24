@@ -1,0 +1,65 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'io.github.fvarrui:javapackager:1.7.2'
+    }
+}
+
+plugins {
+    id 'idea'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'java-library'
+    id 'application'
+}
+
+allprojects {
+    group 'com.thomas260913'
+
+    repositories {
+        mavenCentral()
+    }
+
+    compileJava {
+        options.encoding = "UTF-8"
+        sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
+    }
+}
+
+
+version '3.6.2'
+
+repositories {
+    maven {
+        url = 'https://jitpack.io'
+        name = 'JitPack'
+    }
+    maven {
+        url 'https://litarvan.github.io/maven'
+    }
+}
+
+dependencies {
+    implementation 'club.minnced:java-discord-rpc:2.0.1'
+    implementation 'fr.litarvan:openauth:1+'
+    implementation 'de.jensd:fontawesomefx:8.9'
+
+    implementation 'fr.flowarg:flowupdater:1+'
+    implementation 'fr.flowarg:openlauncherlib:3.2.10'
+
+    implementation 'com.github.goxr3plus:FX-BorderlessScene:4+'
+    implementation 'com.github.oshi:oshi-core:5+'
+    implementation 'com.squareup.okhttp3:okhttp:3.14.6'
+    implementation 'org.json:json:20171018'
+    implementation 'fr.flowarg:azuljavadownloader:1.0.1'
+
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.12.3'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.12.3'
+    implementation 'ch.qos.logback:logback-classic:1.2.11'
+}
+
+application {
+    getMainClass().set('com.gamity.launcher.thomas260913.Main')
+}

@@ -1,0 +1,38 @@
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'io.github.fvarrui.javapackager.plugin'
+
+version '2.4.2'
+
+dependencies {
+    implementation 'fr.flowarg:openlauncherlib:3+'
+    implementation 'fr.flowarg:azuljavadownloader:1.0.1'
+    implementation 'fr.flowarg:flowmultitools:1.4.0'
+}
+
+task packageMyApp(type: io.github.fvarrui.javapackager.gradle.PackageTask, dependsOn: build) {
+    mainClass = 'com.thomas260913.gamity.bootstrap.Main'
+    bundleJre = true
+    generateInstaller = true
+    platform = io.github.fvarrui.javapackager.model.Platform.windows
+    createZipball = true
+    jrePath = file('../java')
+    appName = displayName = 'Gamity Launcher'
+    organizationName = 'Gamity Launcher'
+    winConfig {
+        internalName = productName = 'Gamity Launcher'
+        generateMsi = false
+        generateMsm = false
+        generateSetup = true
+        companyName = 'Gamity'
+        productVersion = project.version
+        language = 'FRENCH'
+        icoFile = file('../logo.ico')
+        setupLanguages.put('French', 'compiler:Languages\\French.isl')
+    }
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'com.thomas260913.gamity.bootstrap.Main', 'SplashScreen-Image': 'splash.png'
+    }
+}

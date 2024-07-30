@@ -1,7 +1,7 @@
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'io.github.fvarrui.javapackager.plugin'
 
-version '2.4.2'
+version '2.6'
 
 dependencies {
     implementation 'fr.flowarg:openlauncherlib:3+'
@@ -10,7 +10,7 @@ dependencies {
 }
 
 task packageMyApp(type: io.github.fvarrui.javapackager.gradle.PackageTask, dependsOn: build) {
-    mainClass = 'com.thomas260913.gamity.bootstrap.Main'
+    mainClass = 'fr.gamity.bootstrap.Main'
     bundleJre = true
     generateInstaller = true
     platform = io.github.fvarrui.javapackager.model.Platform.windows
@@ -33,6 +33,6 @@ task packageMyApp(type: io.github.fvarrui.javapackager.gradle.PackageTask, depen
 
 jar {
     manifest {
-        attributes 'Main-Class': 'com.thomas260913.gamity.bootstrap.Main', 'SplashScreen-Image': 'splash.png'
+        attributes 'Main-Class': 'fr.gamity.bootstrap.Main', 'SplashScreen-Image': 'splash.png'
     }
 }

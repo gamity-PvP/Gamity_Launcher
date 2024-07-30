@@ -23,11 +23,11 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
 
-public class vanilla extends ContentPanel {
-    private final Config config;
-    public vanilla(Config config){
+public class Vanilla extends ContentPanel {
+    private final Config.CustomServer config;
+    public Vanilla(Config.CustomServer config){
         this.config = config;
-        this.config.mcinfo.mc = new Config.McInfo.Mc();
+        this.config.mcinfo.mc = new Config.CustomServer.McInfo.Mc();
     }
     private final Saver saver = Launcher.getInstance().getSaver();
     GridPane boxPane = new GridPane();
@@ -188,7 +188,7 @@ public class vanilla extends ContentPanel {
         };
 
         try {
-            client = new BuildClient(config,Launcher.getInstance().getClientDir().resolve(config.name),callback);
+            client = new BuildClient(config,Launcher.getInstance().getClientDir().resolve(config.name),callback,false);
             isDownloading = false;
             if(Boolean.parseBoolean(saver.get("wait-launch"))) {
                 Platform.runLater(this::showLaunchButton);

@@ -30,7 +30,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 
-public class splash extends Panel {
+public class Splash extends Panel {
     Saver saver = Launcher.getInstance().getSaver();
     GridPane background = new GridPane();
     GridPane boxPane = new GridPane();

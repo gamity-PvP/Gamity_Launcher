@@ -32,7 +32,7 @@ public class App extends Panel {
     Button homeBtn, settingsBtn, clientBtn;
     Saver saver = Launcher.getInstance().getSaver();
     public static String iconSize = "16px";
-    private ServerList serverList;
+    private Config.ServerList serverList;
 
     @Override
     public String getName() {
@@ -49,7 +49,7 @@ public class App extends Panel {
         super.init(panelManager);
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            serverList = objectMapper.readValue(new URL("https://gamity-pvp.fr/apis/launcher/servers/list.json"), ServerList.class);
+            serverList = objectMapper.readValue(new URL("https://gamity-pvp.fr/apis/launcher/servers/list.json"), Config.ServerList.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -146,7 +146,12 @@ public class App extends Panel {
             double translateY2 = translateY1 + 190d;
             panelBtn.setTranslateY(translateY2);
             panelBtn.setOnMouseClicked(e -> {
-                setPage(new createClientPanel(server.getConfig()), panelBtn);
+                try {
+                    setPage(new CreateClientPanel(server.getConfig()), panelBtn);
+                } catch (Exception ex) {
+                    Launcher.getInstance().getLogger().printStackTrace(ex);
+                    Launcher.getInstance().showErrorDialog(ex,this.panelManager.getStage());
+                }
                 Launcher.presence.largeImageText = "Dans le launcher";
                 Launcher.presence.state = "Dans le launcher";
                 Launcher.presence.details = "";
@@ -166,7 +171,7 @@ public class App extends Panel {
         double translateY2 = translateY1 + 190d;
         clientBtn.setTranslateY(translateY2);
         clientBtn.setOnMouseClicked(e -> {
-            setPage(new jsonClient(), clientBtn);
+            setPage(new JsonClient(), clientBtn);
             Launcher.presence.largeImageText = "Dans le launcher";
             Launcher.presence.state = "Dans le launcher";
             Launcher.presence.details = "";
@@ -217,10 +222,10 @@ public class App extends Panel {
             logoutBtn.getStyleClass().add("logout-btn");
             logoutBtn.setGraphic(logoutIcon);
             logoutBtn.setOnMouseClicked(e -> {
-                if (currentPage instanceof createClientPanel && ((createClientPanel) currentPage).isDownloading()) {
+                if (currentPage instanceof CreateClientPanel && ((CreateClientPanel) currentPage).isDownloading()) {
                     return;
                 }
-                if(jsonClient.getLaunching()){
+                if(JsonClient.getLaunching()){
                     return;
                 }
                 saver.remove("offline-username" + saver.get("selectAccount"));
@@ -228,7 +233,7 @@ public class App extends Panel {
                 saver.remove("msRefreshToken" + saver.get("selectAccount"));
                 Launcher.getInstance().rmAuthInfos();
                 if (Launcher.getInstance().getAuthInfosSize() > 0) {
-                    this.panelManager.showPanel(new selectAccount());
+                    this.panelManager.showPanel(new SelectAccount());
                 } else {
                     this.panelManager.showPanel(new Login());
                 }
@@ -239,7 +244,7 @@ public class App extends Panel {
 
             sidemenu.getChildren().add(userPane);
         } else {
-            this.panelManager.showPanel(new selectAccount());
+            this.panelManager.showPanel(new SelectAccount());
         }
     }
 
@@ -250,10 +255,10 @@ public class App extends Panel {
     }
 
     public void setPage(ContentPanel panel, Node navButton) {
-        if (currentPage instanceof createClientPanel && ((createClientPanel) currentPage).isDownloading()) {
+        if (currentPage instanceof CreateClientPanel && ((CreateClientPanel) currentPage).isDownloading()) {
             return;
         }
-        if(jsonClient.getLaunching()){
+        if(JsonClient.getLaunching()){
             return;
         }
 

@@ -10,7 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.TextAlignment;
 
-public class selectAccount extends Panel {
+public class SelectAccount extends Panel {
     Saver saver = Launcher.getInstance().getSaver();
     GridPane background = new GridPane();
     GridPane boxPane = new GridPane();

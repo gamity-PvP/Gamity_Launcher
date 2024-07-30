@@ -1,6 +1,5 @@
 package fr.gamity.launcher.thomas260913.ui.panels.pages.content;
 
-import fr.gamity.launcher.thomas260913.JsonConfigParser;
 import fr.gamity.launcher.thomas260913.Launcher;
 import fr.gamity.launcher.thomas260913.MultiOutputStream;
 import fr.gamity.launcher.thomas260913.TextAreaOutputStream;
@@ -50,6 +49,7 @@ public class Settings extends ContentPanel {
 
     AtomicBoolean _close = new AtomicBoolean(Boolean.parseBoolean(saver.get("autoclose")));
     AtomicBoolean _wait = new AtomicBoolean(Boolean.parseBoolean(saver.get("wait-launch")));
+    AtomicBoolean _optifine = new AtomicBoolean(Boolean.parseBoolean(saver.get("optifine")));
 
     GridPane contentPane = new GridPane();
 
@@ -187,6 +187,29 @@ public class Settings extends ContentPanel {
             saveLabel.setText("");
         });
 
+        Label optifineLabel = new Label("Optifine");
+        optifineLabel.getStyleClass().add("wait-label");
+        setLeft(optifineLabel);
+        setCanTakeAllSize(optifineLabel);
+        setTop(optifineLabel);
+        optifineLabel.setTextAlignment(TextAlignment.LEFT);
+        optifineLabel.setTranslateX(25d);
+        optifineLabel.setTranslateY(270d);
+
+        CheckBox optifine = new CheckBox("wait-launch");
+        setCanTakeAllSize(optifine);
+        setLeft(optifine);
+        setTop(optifine);
+        optifine.getStyleClass().add("wait-chk");
+        optifine.setMaxWidth(300);
+        optifine.setTranslateX(35d);
+        optifine.setTranslateY(300d);
+        optifine.setSelected(_optifine.get());
+        optifine.selectedProperty().addListener((e, old, newValue) -> {
+            _optifine.set(newValue);
+            saveLabel.setText("");
+        });
+
         // Account
         Label accountLabel = new Label("comptes");
         accountLabel.getStyleClass().add("settings-labels");
@@ -195,7 +218,7 @@ public class Settings extends ContentPanel {
         setTop(accountLabel);
         accountLabel.setTextAlignment(TextAlignment.LEFT);
         accountLabel.setTranslateX(25d);
-        accountLabel.setTranslateY(270d);
+        accountLabel.setTranslateY(330d);
 
         // Account Slider
 
@@ -213,7 +236,7 @@ public class Settings extends ContentPanel {
         setCanTakeAllSize(comboBoxAccount);
         setTop(comboBoxAccount);
         comboBoxAccount.setTranslateX(35d);
-        comboBoxAccount.setTranslateY(300d);
+        comboBoxAccount.setTranslateY(360d);
         comboBoxAccount.valueProperty().addListener((e, old, newValue) -> {
             saveLabel.setText("");
         });
@@ -236,15 +259,16 @@ public class Settings extends ContentPanel {
         setCanTakeAllSize(configBtn);
         setTop(configBtn);
         configBtn.setTranslateX(35d);
-        configBtn.setTranslateY(345d);
+        configBtn.setTranslateY(405d);
         configBtn.setOnAction(e -> {
             File selectedFile = fileChooser.showOpenDialog(this.panelManager.getStage());
             if (selectedFile != null) {
                 boolean success = copyFileToConfig(selectedFile);
                 if(success){
-
+                    Launcher.getInstance().showAlert(Alert.AlertType.INFORMATION,"importation de la config","copie de la config vers le dossier des configs réussi avec succès");
+                }else{
+                    Launcher.getInstance().showAlert(Alert.AlertType.ERROR,"importation de la config","le fichier existe déjà");
                 }
-                Launcher.getInstance().showAlert(Alert.AlertType.INFORMATION,"importation de la config","copie de la config vers le dossier des configs réussi avec succès");
             }
         });
         Button openBtn = new Button("ouvrir le dossier des configs");
@@ -257,7 +281,7 @@ public class Settings extends ContentPanel {
         setCanTakeAllSize(openBtn);
         setTop(openBtn);
         openBtn.setTranslateX(35d);
-        openBtn.setTranslateY(390d);
+        openBtn.setTranslateY(450d);
         openBtn.setOnMouseClicked(e -> openFolder(Launcher.getInstance().getConfigDir()));
 
         Button deleteBtn = new Button("supprimer le dossier de jeux");
@@ -270,7 +294,7 @@ public class Settings extends ContentPanel {
         setCanTakeAllSize(deleteBtn);
         setTop(deleteBtn);
         deleteBtn.setTranslateX(35d);
-        deleteBtn.setTranslateY(435d);
+        deleteBtn.setTranslateY(495d);
         deleteBtn.setOnMouseClicked(e -> {
             int choice = JOptionPane.showConfirmDialog(
                     null,
@@ -301,7 +325,7 @@ public class Settings extends ContentPanel {
         setCanTakeAllSize(consoleBtn);
         setTop(consoleBtn);
         consoleBtn.setTranslateX(35d);
-        consoleBtn.setTranslateY(480d);
+        consoleBtn.setTranslateY(540d);
         consoleBtn.setOnMouseClicked(e -> openConsole());
 
 
@@ -351,11 +375,12 @@ public class Settings extends ContentPanel {
             }
             saver.set("autoclose", String.valueOf(_close.get()));
             saver.set("wait-launch", String.valueOf(_wait.get()));
+            saver.set("optifine", String.valueOf(_optifine.get()));
             saver.set("maxRam", String.valueOf((int) _val));
             saveLabel.setText("Paramètre(s) enregistré(s)");
             saveLabel.setTextFill(Color.GREEN);
         });
-        contentPane.getChildren().addAll(title,ramLabel,comboBox,autocloseLabel,autoclose,waitLabel,wait,accountLabel,comboBoxAccount,configBtn,openBtn,deleteBtn,consoleBtn,saveLabel,saveBtn,version);
+        contentPane.getChildren().addAll(title,ramLabel,comboBox,autocloseLabel,autoclose,waitLabel,wait,optifineLabel,optifine,accountLabel,comboBoxAccount,configBtn,openBtn,deleteBtn,consoleBtn,saveLabel,saveBtn,version);
         panelManager.getStage().setMinHeight(680.0);
     }
     private void openFolder(Path path) {
@@ -368,19 +393,20 @@ public class Settings extends ContentPanel {
             }
     }
     private boolean copyFileToConfig(File fileToCopy) {
-        Path sourcePath = fileToCopy.toPath();
-        JsonConfigParser parser = new JsonConfigParser();
-        Config config = parser.parseJsonPath(sourcePath);
-        Path destinationPath = Launcher.getInstance().getConfigDir().resolve(config.name + ".json");
-
+        Path destinationPath = null;
         try {
+            Path sourcePath = fileToCopy.toPath();
+            Config.Parser.JsonConfigParser parser = new Config.Parser.JsonConfigParser();
+            Config.CustomServer config = parser.parseJsonPath(sourcePath);
+            destinationPath = Launcher.getInstance().getConfigDir().resolve(config.name + ".json");
             if(Files.exists(destinationPath)){
                 return false;
             }
             Files.copy(sourcePath, destinationPath);
-            Launcher.getInstance().getLogger().info("File copied to: " + destinationPath.toString());
-        } catch (IOException e) {
-            Launcher.getInstance().getLogger().err("Failed to copy file to: " + destinationPath.toString());
+            Launcher.getInstance().getLogger().info("File copied to: " + destinationPath);
+        } catch (Exception e) {
+            assert destinationPath != null;
+            Launcher.getInstance().getLogger().err("Failed to copy file to: " + destinationPath);
             Launcher.getInstance().getLogger().printStackTrace(e);
             Launcher.getInstance().showErrorDialog(e,this.panelManager.getStage());
         }

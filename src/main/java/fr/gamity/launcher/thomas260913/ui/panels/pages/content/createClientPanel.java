@@ -24,14 +24,14 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
 
-public class createClientPanel extends ContentPanel {
-    private Config config;
+public class CreateClientPanel extends ContentPanel {
+    private Config.CustomServer config;
     private boolean export;
-    public createClientPanel(Config config,boolean export){
+    public CreateClientPanel(Config.CustomServer config, boolean export){
         this.config = config;
         this.export = export;
     }
-    public createClientPanel(Config config){
+    public CreateClientPanel(Config.CustomServer config){
         this.config = config;
         this.export = false;
     }
@@ -177,7 +177,7 @@ public class createClientPanel extends ContentPanel {
             @Override
             public void step(Step step) {
                 Platform.runLater(() -> {
-                    stepTxt = createClientPanel.StepInfo.valueOf(step.name()).getDetails();
+                    stepTxt = CreateClientPanel.StepInfo.valueOf(step.name()).getDetails();
                     setStatus(String.format("%s (%s)", stepTxt, percentTxt));
                 });
             }
@@ -201,7 +201,7 @@ public class createClientPanel extends ContentPanel {
         };
 
         try {
-            client = new BuildClient(config,Launcher.getInstance().getClientDir().resolve(config.name),callback);
+            client = new BuildClient(config,Launcher.getInstance().getClientDir().resolve(config.name),callback,Boolean.parseBoolean(saver.get("optifine")));
             isDownloading = false;
             if(Boolean.parseBoolean(saver.get("wait-launch"))) {
                 Platform.runLater(this::showLaunchButton);

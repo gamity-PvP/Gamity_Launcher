@@ -22,14 +22,18 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
-public class createConfig extends ContentPanel {
+public class CreateConfig extends ContentPanel {
     private Version versionList;
     private final TextField nameField = new TextField();
     private final ComboBox<String> mcTypeComboBox = new ComboBox<>();
     private final TextField forgeVersionField = new TextField();
-    private final TextField forgeModsField = new TextField();
+    private final TextField forgeModsCustomField = new TextField();
+    private final TextField forgeModsCurseField = new TextField();
     private final ComboBox<String> mcVersionCombobox = new ComboBox<>();
     private final ComboBox<String> mcJavaCombobox = new ComboBox<>();
     private final TextField mcExtFilesField = new TextField();
@@ -37,6 +41,11 @@ public class createConfig extends ContentPanel {
     private final CheckBox mcExtFilesCheckBox = new CheckBox();
     private final TextField serverIpField = new TextField();
     private final TextField serverPortField = new TextField();
+    private final CheckBox optifinechkBox = new CheckBox();
+    private final ComboBox<String> optifineComboBox = new ComboBox<>();
+    private final ComboBox<String> optifineVersionComboBox = new ComboBox<>();
+
+    List<Config.Parser.OptifineParser.OptifineJson.OptifineList> optifineList = new ArrayList<>();
 
     GridPane contentPane = new GridPane();
 
@@ -78,20 +87,35 @@ public class createConfig extends ContentPanel {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             versionList = objectMapper.readValue(new URL("https://gamity-pvp.fr/apis/launcher/mcversion/list.json"), Version.class);
-            versionList.getVersionList().forEach(McVersion-> {
-                mcVersionCombobox.getItems().add(McVersion);
-            });
+            versionList.getVersionList().forEach(McVersion-> mcVersionCombobox.getItems().add(McVersion));
+            optifineList = new Config.Parser.OptifineParser().OptifineRequest("all","all",false);
+            if(!Objects.equals(mcVersionCombobox.getValue(), "latest")) {
+                List<Config.Parser.OptifineParser.OptifineJson.OptifineList> filter = optifineList.stream().filter(o-> Objects.equals(o.mcversion, mcVersionCombobox.getValue())).collect(Collectors.toList());
+                filter.forEach(optifine-> optifineVersionComboBox.getItems().add(optifine.optifine.version));
+                if(optifineVersionComboBox.getItems().isEmpty()){
+                    optifineVersionComboBox.getItems().add("aucune");
+                    optifineVersionComboBox.setValue("aucune");
+                }else{
+                    optifineVersionComboBox.getItems().add("auto");
+                    optifineVersionComboBox.setValue("auto");
+                }
+            }
         }catch(Exception e){
             Launcher.getInstance().getLogger().printStackTrace(e);
             Launcher.getInstance().showErrorDialog(e,this.panelManager.getStage());
         }
 
+        optifinechkBox.setSelected(false);
+        optifinechkBox.setDisable(true);
+        optifineComboBox.setDisable(true);
+        optifineVersionComboBox.setDisable(true);
         forgeVersionField.setDisable(true);
-        forgeModsField.setDisable(true);
+        forgeModsCurseField.setDisable(true);
+        forgeModsCustomField.setDisable(true);
         serverIpField.setDisable(!autoconnectCheckBox.isSelected());
         serverPortField.setDisable(!autoconnectCheckBox.isSelected());
         mcExtFilesField.setDisable(!mcExtFilesCheckBox.isSelected());
-        mcTypeComboBox.getItems().addAll("vanilla", "newforge", "oldforge", "very_oldforge");
+        mcTypeComboBox.getItems().addAll("vanilla", "forge");
         mcJavaCombobox.getItems().addAll("21", "17", "8");
         mcVersionCombobox.getItems().add("latest");
         mcVersionCombobox.setValue("latest");
@@ -101,15 +125,38 @@ public class createConfig extends ContentPanel {
         mcTypeComboBox.valueProperty().addListener((e, old, newValue) -> {
             if(Objects.equals(newValue, "vanilla")){
                 forgeVersionField.setDisable(true);
-                forgeModsField.setDisable(true);
+                forgeModsCurseField.setDisable(true);
+                forgeModsCustomField.setDisable(true);
+                optifinechkBox.setSelected(false);
+                optifinechkBox.setDisable(true);
+                optifineComboBox.setDisable(true);
+                optifineVersionComboBox.setDisable(true);
             }else{
                 forgeVersionField.setDisable(false);
-                forgeModsField.setDisable(false);
+                forgeModsCurseField.setDisable(false);
+                forgeModsCustomField.setDisable(false);
+                optifinechkBox.setDisable(false);
+                optifineVersionComboBox.setDisable(!optifinechkBox.isSelected());
             }
         });
-        mcExtFilesCheckBox.setOnAction((e) -> {
-            mcExtFilesField.setDisable(!mcExtFilesCheckBox.isSelected());
+        optifinechkBox.setOnAction((e)->{
+            optifineComboBox.setDisable(!optifinechkBox.isSelected());
         });
+        mcVersionCombobox.valueProperty().addListener((e, old, newValue) -> {
+            optifineVersionComboBox.getItems().clear();
+            if(!Objects.equals(newValue, "latest")) {
+                List<Config.Parser.OptifineParser.OptifineJson.OptifineList> filter = optifineList.stream().filter(o-> Objects.equals(o.mcversion, newValue)).collect(Collectors.toList());
+                filter.forEach(optifine-> optifineVersionComboBox.getItems().add(optifine.optifine.version));
+                if(optifineVersionComboBox.getItems().isEmpty()){
+                    optifineVersionComboBox.getItems().add("aucune");
+                    optifineVersionComboBox.setValue("aucune");
+                }else{
+                    optifineVersionComboBox.getItems().add("auto");
+                    optifineVersionComboBox.setValue("auto");
+                }
+            }
+        });
+        mcExtFilesCheckBox.setOnAction((e) -> mcExtFilesField.setDisable(!mcExtFilesCheckBox.isSelected()));
         autoconnectCheckBox.setOnAction((e) -> {
             serverIpField.setDisable(!autoconnectCheckBox.isSelected());
             serverPortField.setDisable(!autoconnectCheckBox.isSelected());
@@ -118,14 +165,18 @@ public class createConfig extends ContentPanel {
         addFieldAndLabel("Nom de la config:", nameField, 60);
         addFieldAndLabel("Type de Minecraft:", mcTypeComboBox, 110);
         addFieldAndLabel("Version de Forge:", forgeVersionField, 160);
-        addFieldAndLabel("Liste des mods Forge url:", forgeModsField, 210);
-        addFieldAndLabel("Version de Minecraft:", mcVersionCombobox, 260);
-        addFieldAndLabel("Version Java:", mcJavaCombobox, 310);
-        addFieldAndLabel("Fichiers externes:", mcExtFilesCheckBox, 360);
-        addFieldAndLabel("Fichiers externes url:", mcExtFilesField, 410);
-        addFieldAndLabel("Autoconnect:", autoconnectCheckBox, 460);
-        addFieldAndLabel("IP du serveur:", serverIpField, 510);
-        addFieldAndLabel("Port du serveur:", serverPortField, 560);
+        addFieldAndLabel("Liste des mods CurseForge:", forgeModsCurseField, 210);
+        addFieldAndLabel("Liste des mods Forge Custom:", forgeModsCustomField, 260);
+        addFieldAndLabel("Version de Minecraft:", mcVersionCombobox, 310);
+        addFieldAndLabel("Version Java:", mcJavaCombobox, 360);
+        addFieldAndLabel("Fichiers externes:", mcExtFilesCheckBox, 410);
+        addFieldAndLabel("Fichiers externes url:", mcExtFilesField, 460);
+        addFieldAndLabel("Autoconnect:", autoconnectCheckBox, 510);
+        addFieldAndLabel("IP du serveur:", serverIpField, 560);
+        addFieldAndLabel("Port du serveur:", serverPortField, 610);
+        addFieldAndLabel("Optifine:", optifinechkBox, 660);
+        addFieldAndLabel("Mode de téléchargement:", optifineComboBox, 710);
+        addFieldAndLabel("Version:", optifineVersionComboBox, 760);
 
         // Save Button
         Button saveBtn = new Button("Enregistrer");
@@ -154,7 +205,7 @@ public class createConfig extends ContentPanel {
 
         contentPane.getChildren().addAll(title, saveBtn, exportBtn);
 
-        panelManager.getStage().setMinHeight(780.0);
+        panelManager.getStage().setMinHeight(900.0);
     }
 
     private void addFieldAndLabel(String labelText, Control field, double translateY) {
@@ -180,23 +231,38 @@ public class createConfig extends ContentPanel {
         setLeft(field);
         setCanTakeAllSize(field);
         setTop(field);
-        field.setTranslateX(200d);
+        field.setTranslateX(250d);
         field.setTranslateY(translateY - 5d);
 
         contentPane.getChildren().addAll(label, field);
     }
 
     private void saveConfig() {
-        Config config = new Config();
+        Config.CustomServer config = new Config.CustomServer();
         config.name = nameField.getText();
-        config.mcinfo = new Config.McInfo();
+        config.mcinfo = new Config.CustomServer.McInfo();
         config.mcinfo.type = mcTypeComboBox.getValue();
         if(!Objects.equals(config.mcinfo.type, "vanilla")){
-            config.mcinfo.forge = new Config.McInfo.Forge();
+            config.mcinfo.forge = new Config.CustomServer.McInfo.Forge();
             config.mcinfo.forge.version = forgeVersionField.getText();
-            config.mcinfo.forge.mods = forgeModsField.getText();
+            config.mcinfo.forge.mods = new Config.CustomServer.McInfo.Forge.Mods();
+            config.mcinfo.forge.mods.curseForge = new Config.CustomServer.McInfo.Forge.Mods.CurseForge();
+            config.mcinfo.forge.mods.custom = new Config.CustomServer.McInfo.Forge.Mods.Custom();
+            if(forgeModsCustomField.getText() != null) {
+                config.mcinfo.forge.mods.custom.json = forgeModsCustomField.getText();
+            }
+            if(forgeModsCurseField.getText() != null) {
+                config.mcinfo.forge.mods.curseForge.json = forgeModsCurseField.getText();
+            }
+            if(optifinechkBox.isSelected()){
+                config.mcinfo.forge.allowOptifine = true;
+                config.mcinfo.forge.optifine = new Config.CustomServer.McInfo.Forge.Optifine();
+                if(Objects.equals(optifineComboBox.getValue(), "manuel")) {
+                    config.mcinfo.forge.optifine.optifineVersion = optifineVersionComboBox.getValue();
+                }
+            }
         }
-        config.mcinfo.mc = new Config.McInfo.Mc();
+        config.mcinfo.mc = new Config.CustomServer.McInfo.Mc();
         if(Objects.equals(mcVersionCombobox.getValue(), "latest")){
             config.mcinfo.mc.version = versionList.getLatest();
         }else{
@@ -208,7 +274,7 @@ public class createConfig extends ContentPanel {
         }
         config.mcinfo.autoconnect = autoconnectCheckBox.isSelected();
         if(config.mcinfo.autoconnect) {
-            config.mcinfo.server = new Config.McInfo.Server();
+            config.mcinfo.server = new Config.CustomServer.McInfo.Server();
             config.mcinfo.server.ip = serverIpField.getText();
             config.mcinfo.server.port = serverPortField.getText();
         }
@@ -229,16 +295,17 @@ public class createConfig extends ContentPanel {
     }
 
     private void exportConfig() {
-        Config config = new Config();
+        Config.CustomServer config = new Config.CustomServer();
         config.name = nameField.getText();
-        config.mcinfo = new Config.McInfo();
+        config.mcinfo = new Config.CustomServer.McInfo();
         config.mcinfo.type = mcTypeComboBox.getValue();
         if(!Objects.equals(config.mcinfo.type, "vanilla")){
-            config.mcinfo.forge = new Config.McInfo.Forge();
+            config.mcinfo.forge = new Config.CustomServer.McInfo.Forge();
             config.mcinfo.forge.version = forgeVersionField.getText();
-            config.mcinfo.forge.mods = forgeModsField.getText();
+            config.mcinfo.forge.mods.custom.json = forgeModsCustomField.getText();
+            config.mcinfo.forge.mods.curseForge.json = forgeModsCurseField.getText();
         }
-        config.mcinfo.mc = new Config.McInfo.Mc();
+        config.mcinfo.mc = new Config.CustomServer.McInfo.Mc();
         if(Objects.equals(mcVersionCombobox.getValue(), "latest")){
             config.mcinfo.mc.version = versionList.getLatest();
         }else{
@@ -250,7 +317,7 @@ public class createConfig extends ContentPanel {
         }
         config.mcinfo.autoconnect = autoconnectCheckBox.isSelected();
         if(config.mcinfo.autoconnect) {
-            config.mcinfo.server = new Config.McInfo.Server();
+            config.mcinfo.server = new Config.CustomServer.McInfo.Server();
             config.mcinfo.server.ip = serverIpField.getText();
             config.mcinfo.server.port = serverPortField.getText();
         }

@@ -1,6 +1,5 @@
 package fr.gamity.launcher.thomas260913.ui.panels.pages.content;
 
-import fr.gamity.launcher.thomas260913.JsonConfigParser;
 import fr.gamity.launcher.thomas260913.Launcher;
 import fr.gamity.launcher.thomas260913.ui.PanelManager;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
@@ -20,14 +19,14 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
-public class jsonClient extends ContentPanel {
-    private vanilla createVanillaPanel(){
-        Config config = new Config();
+public class JsonClient extends ContentPanel {
+    private Vanilla createVanillaPanel(){
+        Config.CustomServer config = new Config.CustomServer();
         config.name = "vanilla";
-        config.mcinfo = new Config.McInfo();
+        config.mcinfo = new Config.CustomServer.McInfo();
         config.mcinfo.type = "vanilla";
         config.mcinfo.autoconnect = false;
-        return new vanilla(config);
+        return new Vanilla(config);
     }
     GridPane sidemenu = new GridPane();
     GridPane navContent = new GridPane();
@@ -103,19 +102,24 @@ public class jsonClient extends ContentPanel {
         int spacing = 10;
         jsonFile.forEach(path ->{
             int i = index.getAndIncrement();
-            Config config = new JsonConfigParser().parseJsonPath(path);
-            Button panelBtn = new Button(config.name);
-            panelBtn.getStyleClass().add("sidemenu-nav-btn");
-            MaterialDesignIconView icon2 = new MaterialDesignIconView(MaterialDesignIcon.SERVER);
-            icon2.setSize("16px");
-            panelBtn.setGraphic(icon2);
-            setCanTakeAllSize(panelBtn);
-            setTop(panelBtn);
-            double translateY1 = i * (buttonHeight + spacing);
-            double translateY2 = translateY1 + 140d;
-            panelBtn.setTranslateY(translateY2);
-            panelBtn.setOnMouseClicked(e -> setPage(new createClientPanel(config,true), panelBtn));
-            sidemenu.getChildren().add(panelBtn);
+            try{
+                Config.CustomServer config = new Config.Parser.JsonConfigParser().parseJsonPath(path);
+                Button panelBtn = new Button(config.name);
+                panelBtn.getStyleClass().add("sidemenu-nav-btn");
+                MaterialDesignIconView icon2 = new MaterialDesignIconView(MaterialDesignIcon.SERVER);
+                icon2.setSize("16px");
+                panelBtn.setGraphic(icon2);
+                setCanTakeAllSize(panelBtn);
+                setTop(panelBtn);
+                double translateY1 = i * (buttonHeight + spacing);
+                double translateY2 = translateY1 + 140d;
+                panelBtn.setTranslateY(translateY2);
+                panelBtn.setOnMouseClicked(e -> setPage(new CreateClientPanel(config, true), panelBtn));
+                sidemenu.getChildren().add(panelBtn);
+            }catch(Exception e) {
+                Launcher.getInstance().getLogger().printStackTrace(e);
+                Launcher.getInstance().showErrorDialog(e,this.panelManager.getStage());
+            }
         });
 
         int i = index.getAndIncrement();
@@ -129,7 +133,7 @@ public class jsonClient extends ContentPanel {
         double translateY1 = i * (buttonHeight + spacing);
         double translateY2 = translateY1 + 140d;
         ConfigBtn.setTranslateY(translateY2);
-        ConfigBtn.setOnMouseClicked(e -> setPage(new createConfig(), ConfigBtn));
+        ConfigBtn.setOnMouseClicked(e -> setPage(new CreateConfig(), ConfigBtn));
         sidemenu.getChildren().add(ConfigBtn);
 
     }
@@ -142,10 +146,10 @@ public class jsonClient extends ContentPanel {
 
     public void setPage(ContentPanel panel, Node navButton) {
 
-        if (currentPage instanceof createClientPanel && ((createClientPanel) currentPage).isDownloading()) {
+        if (currentPage instanceof CreateClientPanel && ((CreateClientPanel) currentPage).isDownloading()) {
             return;
         }
-        if (currentPage instanceof vanilla && ((vanilla) currentPage).isDownloading()) {
+        if (currentPage instanceof Vanilla && ((Vanilla) currentPage).isDownloading()) {
             return;
         }
 
@@ -183,9 +187,9 @@ public class jsonClient extends ContentPanel {
         return paths;
     }
     public static boolean getLaunching(){
-        if (currentPage instanceof createClientPanel && ((createClientPanel) currentPage).isDownloading()) {
+        if (currentPage instanceof CreateClientPanel && ((CreateClientPanel) currentPage).isDownloading()) {
             return true;
         }
-        return currentPage instanceof vanilla && ((vanilla) currentPage).isDownloading();
+        return currentPage instanceof Vanilla && ((Vanilla) currentPage).isDownloading();
     }
 }

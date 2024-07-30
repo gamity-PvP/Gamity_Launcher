@@ -15,7 +15,7 @@ plugins {
 }
 
 allprojects {
-    group 'com.thomas260913'
+    group 'fr.gamity'
 
     repositories {
         mavenCentral()
@@ -28,7 +28,7 @@ allprojects {
 }
 
 
-version '3.6.2'
+version '3.6.3'
 
 repositories {
     maven {
@@ -61,5 +61,5 @@ dependencies {
 }
 
 application {
-    getMainClass().set('com.gamity.launcher.thomas260913.Main')
+    getMainClass().set('fr.gamity.launcher.thomas260913.Main')
 }

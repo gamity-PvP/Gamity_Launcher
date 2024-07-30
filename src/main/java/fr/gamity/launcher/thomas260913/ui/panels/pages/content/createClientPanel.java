@@ -127,6 +127,7 @@ public class createClientPanel extends ContentPanel {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Exporter la configuration");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers JSON", "*.json"));
+        fileChooser.setInitialFileName(config.name);
         File file = fileChooser.showSaveDialog(this.panelManager.getStage());
 
         if (file != null) {

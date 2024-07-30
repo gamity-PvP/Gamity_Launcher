@@ -25,6 +25,7 @@ import java.nio.file.Path;
 import java.util.Objects;
 
 public class createConfig extends ContentPanel {
+    private Version versionList;
     private final TextField nameField = new TextField();
     private final ComboBox<String> mcTypeComboBox = new ComboBox<>();
     private final TextField forgeVersionField = new TextField();
@@ -76,10 +77,9 @@ public class createConfig extends ContentPanel {
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            Version versionList = objectMapper.readValue(new URL("https://gamity-pvp.fr/apis/launcher/mcversion/list.json"), Version.class);
+            versionList = objectMapper.readValue(new URL("https://gamity-pvp.fr/apis/launcher/mcversion/list.json"), Version.class);
             versionList.getVersionList().forEach(McVersion-> {
                 mcVersionCombobox.getItems().add(McVersion);
-                mcVersionCombobox.setValue(McVersion);
             });
         }catch(Exception e){
             Launcher.getInstance().getLogger().printStackTrace(e);
@@ -93,6 +93,8 @@ public class createConfig extends ContentPanel {
         mcExtFilesField.setDisable(!mcExtFilesCheckBox.isSelected());
         mcTypeComboBox.getItems().addAll("vanilla", "newforge", "oldforge", "very_oldforge");
         mcJavaCombobox.getItems().addAll("21", "17", "8");
+        mcVersionCombobox.getItems().add("latest");
+        mcVersionCombobox.setValue("latest");
         mcTypeComboBox.setValue("vanilla");
         mcJavaCombobox.setValue("21");
 
@@ -195,9 +197,15 @@ public class createConfig extends ContentPanel {
             config.mcinfo.forge.mods = forgeModsField.getText();
         }
         config.mcinfo.mc = new Config.McInfo.Mc();
-        config.mcinfo.mc.version = mcVersionCombobox.getValue();
+        if(Objects.equals(mcVersionCombobox.getValue(), "latest")){
+            config.mcinfo.mc.version = versionList.getLatest();
+        }else{
+            config.mcinfo.mc.version = mcVersionCombobox.getValue();
+        }
         config.mcinfo.mc.java = mcJavaCombobox.getValue();
-        config.mcinfo.mc.extfiles = mcExtFilesField.getText();
+        if(mcExtFilesCheckBox.isSelected()) {
+            config.mcinfo.mc.extfiles = mcExtFilesField.getText();
+        }
         config.mcinfo.autoconnect = autoconnectCheckBox.isSelected();
         if(config.mcinfo.autoconnect) {
             config.mcinfo.server = new Config.McInfo.Server();
@@ -231,9 +239,15 @@ public class createConfig extends ContentPanel {
             config.mcinfo.forge.mods = forgeModsField.getText();
         }
         config.mcinfo.mc = new Config.McInfo.Mc();
-        config.mcinfo.mc.version = mcVersionCombobox.getValue();
+        if(Objects.equals(mcVersionCombobox.getValue(), "latest")){
+            config.mcinfo.mc.version = versionList.getLatest();
+        }else{
+            config.mcinfo.mc.version = mcVersionCombobox.getValue();
+        }
         config.mcinfo.mc.java = mcJavaCombobox.getValue();
-        config.mcinfo.mc.extfiles = mcExtFilesField.getText();
+        if(mcExtFilesCheckBox.isSelected()) {
+            config.mcinfo.mc.extfiles = mcExtFilesField.getText();
+        }
         config.mcinfo.autoconnect = autoconnectCheckBox.isSelected();
         if(config.mcinfo.autoconnect) {
             config.mcinfo.server = new Config.McInfo.Server();
@@ -245,6 +259,7 @@ public class createConfig extends ContentPanel {
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Exporter la configuration");
+        fileChooser.setInitialFileName(config.name);
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers JSON", "*.json"));
         File file = fileChooser.showSaveDialog(this.panelManager.getStage());
 

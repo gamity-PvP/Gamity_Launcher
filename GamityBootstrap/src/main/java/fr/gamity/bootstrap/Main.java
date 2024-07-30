@@ -1,4 +1,4 @@
-package com.thomas260913.gamity.bootstrap;
+package fr.gamity.bootstrap;
 
 import fr.flowarg.azuljavadownloader.AzulJavaBuildInfo;
 import fr.flowarg.azuljavadownloader.AzulJavaDownloader;
@@ -26,7 +26,7 @@ public class Main implements Runnable {
 
     private String launcherURL;
     private String launcherSha1;
-    private String bootstrapVersion = "2.4.2";
+    private String bootstrapVersion = "2.6";
     private final String latestVersionURL = "https://gamity-pvp.fr/apis/launcher/bootstrap/last_version";
     private String launcherInfoURL = "https://gamity-pvp.fr/apis/launcher/gamity_launcherinfo";
     private String bootstrapDownloadURL = "https://gamity-pvp.fr/apis/launcher/gamity.exe";
@@ -72,36 +72,13 @@ public class Main implements Runnable {
         }
 
     }
-    private void verify(){
-        int choice = JOptionPane.showConfirmDialog(
-                null,
-                "La version du launcher necessite une mise a jour\n voulez vous la faire ?\nne pas la faire peut engendrer un disfonctionnement",
-                "Info",
-                JOptionPane.YES_NO_CANCEL_OPTION
-        );
-        try {
-            if (choice == 0) {
-                System.out.println("choice = yes");
-                Files.copy(new URL(this.launcherURL).openStream(), this.launcher, StandardCopyOption.REPLACE_EXISTING);
-                ProcessBuilder processBuilder = new ProcessBuilder();
-                final Path java = Paths.get(System.getProperty("java.home")).resolve("bin").resolve("java");
-                processBuilder.command(java.toAbsolutePath().toString(), "-jar", this.launcher.toAbsolutePath().toString());
-                processBuilder.start();
-            }
-            if (choice == 1) {
-                System.out.println("choice = no");
-                ProcessBuilder processBuilder = new ProcessBuilder();
-                final Path java = Paths.get(System.getProperty("java.home")).resolve("bin").resolve("java");
-                processBuilder.command(java.toAbsolutePath().toString(), "-jar", this.launcher.toAbsolutePath().toString());
-                processBuilder.start();
-            }
-        }catch (IOException e){
-            throw new RuntimeException(e);
-        }
-        if (choice == 2 || choice == -1){
-            System.out.println("choice = cancel or windows close");
-            System.exit(0);
-        }
+    private void verify() throws IOException {
+        System.out.println("choice = yes");
+        Files.copy(new URL(this.launcherURL).openStream(), this.launcher, StandardCopyOption.REPLACE_EXISTING);
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        final Path java = Paths.get(System.getProperty("java.home")).resolve("bin").resolve("java");
+        processBuilder.command(java.toAbsolutePath().toString(), "-jar", this.launcher.toAbsolutePath().toString());
+        processBuilder.start();
     }
     private void launcherInfo()
     {

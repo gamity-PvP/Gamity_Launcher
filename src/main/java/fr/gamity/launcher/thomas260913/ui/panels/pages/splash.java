@@ -47,10 +47,12 @@ public class splash extends Panel {
     boolean javafinish = false;
     boolean loginfinish = false;
     ImageView trou_noir2 = new ImageView(new Image("images/trou_noir.png"));
-    final double pointY = 58.0;
+    final double pointY = 98.0;
 
-    ProgressBar progressBar = new ProgressBar();
-    Label stepLabel = new Label();
+    ProgressBar progressBar1 = new ProgressBar();
+    Label stepLabel1 = new Label();
+    ProgressBar progressBar2 = new ProgressBar();
+    Label stepLabel2 = new Label();
 
     @Override
     public String getName() {
@@ -92,7 +94,7 @@ public class splash extends Panel {
         setTop(title);
         title.setFont(Font.font("Consolas", FontWeight.BOLD, FontPosture.REGULAR, 35f));
         title.setTranslateX(-35.0);
-        title.setTranslateY(30.0);
+        title.setTranslateY(70.0);
 
         setCanTakeAllSize(point1);
         setCenterH(point1);
@@ -131,20 +133,37 @@ public class splash extends Panel {
         trou_noir2.setTranslateX(200.0);
         trou_noir2.setTranslateY(0.0);
 
-        progressBar.setTranslateY(-15);
-        setCenterH(progressBar);
-        setCanTakeAllWidth(progressBar);
+        progressBar1.getStyleClass().add("download-progress");
+        stepLabel1.getStyleClass().add("download-status");
+        progressBar2.getStyleClass().add("download-progress");
+        stepLabel2.getStyleClass().add("download-status");
 
-        stepLabel.setTranslateY(5);
-        setCenterH(stepLabel);
-        setCanTakeAllSize(stepLabel);
+        progressBar1.setTranslateY(5);
+        setCenterH(progressBar1);
+        setTop(progressBar1);
+        setCanTakeAllWidth(progressBar1);
 
-        boxPane.getChildren().addAll(trou_noir,trou_noir2,alu, copper, chromium, gamity, platium,title,point1,point2,point3,progressBar,stepLabel);
+        stepLabel1.setTranslateY(15);
+        setCenterH(stepLabel1);
+        setTop(stepLabel1);
+        setCanTakeAllSize(stepLabel1);
+
+        progressBar2.setTranslateY(45);
+        setCenterH(progressBar2);
+        setTop(progressBar2);
+        setCanTakeAllWidth(progressBar2);
+
+        stepLabel2.setTranslateY(55);
+        setCenterH(stepLabel2);
+        setTop(stepLabel2);
+        setCanTakeAllSize(stepLabel2);
+
+        boxPane.getChildren().addAll(trou_noir,trou_noir2,alu, copper, chromium, gamity, platium,title,point1,point2,point3,progressBar1,stepLabel1,progressBar2,stepLabel2);
 
         downloadJava();
         loadAccount();
-        new Thread(()->{
-            while(!loginfinish && !javafinish){
+        Thread thread = new Thread(()->{
+            while(!loginfinish || !javafinish){
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException ignored) {}
@@ -158,6 +177,11 @@ public class splash extends Panel {
                 }
             });
         });
+        thread.setUncaughtExceptionHandler((thread2, throwable) -> {
+            Launcher.getInstance().showErrorDialog(new Exception("An error occurred on thread-" + thread2.getName(),throwable), this.panelManager.getStage());
+            Launcher.getInstance().getLogger().printStackTrace(new Exception("An error occurred on thread " + thread2.getName(),throwable));
+        });
+        thread.start();
     }
 
     private void setupImageView(ImageView imageView) {
@@ -283,14 +307,24 @@ public class splash extends Panel {
         }
     }
     public void downloadJava(){
-        new Thread(()->{
+        Thread thread = new Thread(()->{
             try {
-                Launcher.getInstance().getLogger().info("Starting download java 21...");
+                Platform.runLater(()-> {
+                    stepLabel1.setText("downloading java 21 ...");
+                    setProgress1(0.0,3.0);
+                });
+                Launcher.getInstance().getLogger().info("starting download javas ...");
+                Launcher.getInstance().getLogger().info("Starting download java 21 ...");
                 final AzulJavaDownloader downloader1 = new AzulJavaDownloader();
                 final Path javas1 = Paths.get(Launcher.getInstance().getLauncherDir().toFile().getAbsolutePath() + "/java"); // The directory where the Java versions will be downloaded.
                 final AzulJavaBuildInfo buildInfoWindows1 = downloader1.getBuildInfo(new RequestedJavaInfo("21", AzulJavaType.JDK, "windows", "x64", true)); // jdk 21 with javafx for Windows 64 bits
                 final Path javaHomeWindows1 = downloader1.downloadAndInstall(buildInfoWindows1, javas1);
                 Launcher.getInstance().setJava21(javaHomeWindows1);
+
+                Platform.runLater(()-> {
+                    stepLabel1.setText("downloading java 17 ...");
+                    setProgress1(1.0,3.0);
+                });
                 Launcher.getInstance().getLogger().info("Finish download java 21");
                 Launcher.getInstance().getLogger().info("Starting download java 17 ...");
 
@@ -299,8 +333,13 @@ public class splash extends Panel {
                 final AzulJavaBuildInfo buildInfoWindows2 = downloader2.getBuildInfo(new RequestedJavaInfo("17", AzulJavaType.JDK, "windows", "x64", true)); // jdk 17 with javafx for Windows 64 bits
                 final Path javaHomeWindows2 = downloader2.downloadAndInstall(buildInfoWindows2, javas2);
                 Launcher.getInstance().setJava17(javaHomeWindows2);
+
                 Launcher.getInstance().getLogger().info("Finish download java 17");
                 Launcher.getInstance().getLogger().info("Starting download java 8 ...");
+                Platform.runLater(()-> {
+                    stepLabel1.setText("downloading java 8 ...");
+                    setProgress1(2.0,3.0);
+                });
 
                 final AzulJavaDownloader downloader3 = new AzulJavaDownloader();
                 final Path javas3 = Paths.get(Launcher.getInstance().getLauncherDir().toFile().getAbsolutePath() + "/java"); // The directory where the Java versions will be downloaded.
@@ -308,48 +347,74 @@ public class splash extends Panel {
                 final Path javaHomeWindows3 = downloader3.downloadAndInstall(buildInfoWindows3, javas3);
                 Launcher.getInstance().setJava8(javaHomeWindows3);
                 Launcher.getInstance().getLogger().info("Finish download java 8");
+                Launcher.getInstance().getLogger().info("Finish download javas");
+                Platform.runLater(()-> {
+                    stepLabel1.setText("Finish download javas");
+                    setProgress1(3.0,3.0);
+                });
                 javafinish = true;
             }catch(Exception ex){
                 Launcher.getInstance().showErrorDialog(ex,this.panelManager.getStage());
             }
-        }).start();
+        },"java downloader");
+        thread.start();
     }
     public void loadAccount(){
-    Thread loadAccount = new Thread(()->{
-        for(int i = 0;i < Launcher.getInstance().getMaxAccount();i++){
-            try{
-                if (saver.get("msAccessToken" + i) != null && saver.get("msRefreshToken" + i) != null) {
-                    try {
+        Thread loadAccount = new Thread(()->{
+            Launcher.getInstance().getLogger().info("Starting load accounts ...");
+            for(int i = 0;i < Launcher.getInstance().getMaxAccount();i++){
+                int finalI = i;
+                Platform.runLater(()-> {
+                    stepLabel2.setText("load Accounts ...");
+                    setProgress2(finalI,Launcher.getInstance().getMaxAccount());
+                });
+                try{
+                    if (saver.get("msAccessToken" + i) != null && saver.get("msRefreshToken" + i) != null) {
                         try {
-                            MicrosoftAuthenticator authenticator = new MicrosoftAuthenticator();
-                            MicrosoftAuthResult response = authenticator.loginWithRefreshToken(saver.get("msRefreshToken" + i));
+                            try {
+                                MicrosoftAuthenticator authenticator = new MicrosoftAuthenticator();
+                                MicrosoftAuthResult response = authenticator.loginWithRefreshToken(saver.get("msRefreshToken" + i));
 
-                            saver.set("msAccessToken" + i, response.getAccessToken());
-                            saver.set("msRefreshToken" + i, response.getRefreshToken());
-                            saver.save();
-                            Launcher.getInstance().addAuthInfos(new AuthInfos(
-                                    response.getProfile().getName(),
-                                    response.getAccessToken(),
-                                    response.getProfile().getId(),
-                                    response.getXuid(),
-                                    response.getClientId()
-                            ), i);
-                        } catch (MicrosoftAuthenticationException e) {
-                            saver.remove("msAccessToken" + i);
-                            saver.remove("msRefreshToken" + i);
-                            saver.save();
+                                saver.set("msAccessToken" + i, response.getAccessToken());
+                                saver.set("msRefreshToken" + i, response.getRefreshToken());
+                                saver.save();
+                                Launcher.getInstance().addAuthInfos(new AuthInfos(
+                                        response.getProfile().getName(),
+                                        response.getAccessToken(),
+                                        response.getProfile().getId(),
+                                        response.getXuid(),
+                                        response.getClientId()
+                                ), i);
+                            } catch (MicrosoftAuthenticationException e) {
+                                saver.remove("msAccessToken" + i);
+                                saver.remove("msRefreshToken" + i);
+                                saver.save();
+                            }
+                        }catch(Exception ex){
+                            Launcher.getInstance().showErrorDialog(ex,this.panelManager.getStage());
                         }
-                    }catch(Exception ex){
-                        Launcher.getInstance().showErrorDialog(ex,this.panelManager.getStage());
+                        Thread.sleep(2000);
+                        Launcher.getInstance().getLogger().info("account " + Launcher.getInstance().getAuthInfos(i).getUsername() + " load");
+                    } else if (saver.get("offline-username" + i) != null) {
+                        Launcher.getInstance().addAuthInfos(new AuthInfos(saver.get("offline-username" + i), UUID.randomUUID().toString(), UUID.randomUUID().toString()),i);
+                        Launcher.getInstance().getLogger().info("account " + Launcher.getInstance().getAuthInfos(i).getUsername() + " load");
                     }
-                    Thread.sleep(2000);
-                } else if (saver.get("offline-username" + i) != null) {
-                    Launcher.getInstance().addAuthInfos(new AuthInfos(saver.get("offline-username" + i), UUID.randomUUID().toString(), UUID.randomUUID().toString()),i);
-                }
-            } catch (InterruptedException ignored) {}
-        }
-        loginfinish = true;
-    });
-    loadAccount.start();
-}
+                    Thread.sleep(100);
+                } catch (InterruptedException ignored) {}
+            }
+            Platform.runLater(()-> {
+                stepLabel2.setText("finish load accounts");
+                setProgress2(Launcher.getInstance().getMaxAccount(),Launcher.getInstance().getMaxAccount());
+            });
+            Launcher.getInstance().getLogger().info("finish load accounts");
+            loginfinish = true;
+        });
+        loadAccount.start();
+    }
+    public void setProgress1(double current, double max) {
+        progressBar1.setProgress(current / max);
+    }
+    public void setProgress2(double current, double max) {
+        progressBar2.setProgress(current / max);
+    }
 }

@@ -1,4 +1,4 @@
-package com.thomas260913.gamity.bootstrap;
+package fr.gamity.bootstrap;
 
 import java.awt.*;
 import java.awt.event.*;

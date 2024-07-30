@@ -9,3 +9,26 @@
     -fx-background-radius: 20px;
 }
 
+.download-progress {
+    -fx-max-width: 400px;
+    -fx-min-width: 400px;
+    -fx-min-height: 10px;
+    -fx-max-height: 10px;
+}
+
+.download-progress > .bar {
+    -fx-background-color: #85AE51;
+    -fx-background-insets: 0;
+    -fx-background-radius: 30px;
+}
+
+.download-progress > .track {
+    -fx-background-color: white;
+    -fx-background-insets: 0;
+    -fx-background-radius: 30px;
+}
+
+.download-status {
+    -fx-text-alignment: center;
+    -fx-text-fill: rgb(10, 12, 12);
+}

@@ -1,9 +1,13 @@
 package fr.gamity.launcher.thomas260913;
 
-import fr.gamity.launcher.thomas260913.ui.PanelManager;
-import fr.gamity.launcher.thomas260913.ui.panels.pages.Splash;
+import club.minnced.discord.rpc.DiscordEventHandlers;
+import club.minnced.discord.rpc.DiscordRPC;
+import club.minnced.discord.rpc.DiscordRichPresence;
 import fr.flowarg.flowlogger.ILogger;
 import fr.flowarg.flowlogger.Logger;
+import fr.gamity.launcher.thomas260913.ui.PanelManager;
+import fr.gamity.launcher.thomas260913.ui.panels.pages.Splash;
+import fr.gamity.launcher.thomas260913.ui.panels.pages.content.VersionList;
 import fr.litarvan.openauth.microsoft.MicrosoftAuthResult;
 import fr.litarvan.openauth.microsoft.MicrosoftAuthenticationException;
 import fr.litarvan.openauth.microsoft.MicrosoftAuthenticator;
@@ -25,9 +29,11 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import club.minnced.discord.rpc.*;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -35,24 +41,26 @@ import java.util.List;
 import java.util.UUID;
 
 public class Launcher extends Application {
-    private Stage stage;
-    private static final String version = "v3.6.4";
-    private static Launcher instance;
+    private static final String version = "v3.7.0";
     public static DiscordRichPresence presence = new DiscordRichPresence();
     public static DiscordRPC lib = DiscordRPC.INSTANCE;
+    private static Launcher instance;
     private final ILogger logger;
     private final Path launcherDir = GameDirGenerator.createGameDir("gamity", true);
     private final Path ConfigDir = GameDirGenerator.createGameDir("gamity", true).resolve("versions").resolve("config");
     private final Path ClientDir = GameDirGenerator.createGameDir("gamity", true).resolve("versions").resolve("clients");
     private final Saver saver;
-    private PanelManager panelManager;
     private final List<AuthInfos> authInfos = new ArrayList<>();
+    private final Integer maxAccount;
+    private final StringBuilder logBuffer = new StringBuilder();
+    private Stage stage;
+    private PanelManager panelManager;
     private Path java21;
     private Path java17;
     private Path java8;
-    private final Integer maxAccount;
-    private final StringBuilder logBuffer = new StringBuilder();
-        public Launcher() {
+    private VersionList versionList;
+
+    public Launcher() {
         instance = this;
         this.logger = new Logger("[gamity]", this.launcherDir.resolve("gamity.log"));
         MultiOutputStream multiOutStream = new MultiOutputStream();
@@ -96,15 +104,23 @@ public class Launcher extends Application {
         }
         saver = new Saver(this.launcherDir.resolve("config.properties"));
         saver.load();
-        if(saver.get("maxAccount") != null){
+        if (saver.get("maxAccount") != null) {
             maxAccount = Math.min(Integer.parseInt(saver.get("maxAccount")), 20);
-        }else{
+        } else {
             maxAccount = 3;
         }
-        if(saver.get("selectAccount") == null){
+        if (saver.get("selectAccount") == null) {
             saver.set("selectAccount", String.valueOf(0));
             saver.save();
         }
+    }
+
+    public static Launcher getInstance() {
+        return instance;
+    }
+
+    public static String getLauncherVersion() {
+        return version;
     }
 
     public void showAlert(Alert.AlertType alertType, String title, String message) {
@@ -116,7 +132,6 @@ public class Launcher extends Application {
         alert.setContentText(message);
         alert.showAndWait();
     }
-
 
     public void showErrorDialog(Exception e, Stage ownerStage) {
         Stage dialogStage = new Stage();
@@ -149,13 +164,14 @@ public class Launcher extends Application {
         hbox.setSpacing(10);
         hbox.setPadding(new Insets(10));
 
-        vbox.getChildren().addAll(textArea,hbox);
+        vbox.getChildren().addAll(textArea, hbox);
 
         Scene scene = new Scene(vbox, 600, 400);
         dialogStage.setScene(scene);
         dialogStage.getIcons().add(new Image("images/icon.png"));
         dialogStage.show();
     }
+
     public void showErrorDialog(Exception e) {
         Stage dialogStage = new Stage();
         dialogStage.initModality(Modality.WINDOW_MODAL);
@@ -187,7 +203,7 @@ public class Launcher extends Application {
         hbox.setSpacing(10);
         hbox.setPadding(new Insets(10));
 
-        vbox.getChildren().addAll(textArea,hbox);
+        vbox.getChildren().addAll(textArea, hbox);
 
         Scene scene = new Scene(vbox, 600, 400);
         dialogStage.setScene(scene);
@@ -195,21 +211,14 @@ public class Launcher extends Application {
         dialogStage.show();
     }
 
-    public static Launcher getInstance() {
-        return instance;
-    }
-
-    public void loadAccount(){
+    public void loadAccount() {
         panelManager.showPanel(new Splash());
     }
 
     @Override
     public void start(Stage stage) {
         this.stage = stage;
-        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
-            showErrorDialog(new Exception("An error occurred on thread-" + thread.getName(),throwable), stage);
-            getLogger().printStackTrace(new Exception("An error occurred on thread " + thread.getName(),throwable));
-        });
+        Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
         this.logger.info("Starting launcher");
         this.logger.info("Launcher verion : " + getLauncherVersion());
         this.panelManager = new PanelManager(this, stage);
@@ -229,7 +238,8 @@ public class Launcher extends Application {
                 try {
                     Thread.sleep(1000);
                     lib.Discord_UpdatePresence(presence);
-                } catch (InterruptedException ignored) {}
+                } catch (InterruptedException ignored) {
+                }
             }
         }, "RPC-Callback-Handler").start();
         loadAccount();
@@ -258,7 +268,7 @@ public class Launcher extends Application {
                 saver.save();
             }
         } else if (saver.get("offline-username" + saver.get("selectAccount")) != null) {
-            this.authInfos.set(Integer.parseInt(saver.get("selectAccount")),new AuthInfos(saver.get("offline-username" + saver.get("selectAccount")), UUID.randomUUID().toString(), UUID.randomUUID().toString()));
+            this.authInfos.set(Integer.parseInt(saver.get("selectAccount")), new AuthInfos(saver.get("offline-username" + saver.get("selectAccount")), UUID.randomUUID().toString(), UUID.randomUUID().toString()));
             return true;
         }
 
@@ -268,35 +278,42 @@ public class Launcher extends Application {
     public AuthInfos getAuthInfos() {
         return authInfos.get(Integer.parseInt(saver.get("selectAccount")));
     }
+
+    public void setAuthInfos(AuthInfos authInfos) {
+        this.authInfos.set(Integer.parseInt(saver.get("selectAccount")), authInfos);
+    }
+
     public int getAuthInfosSize() {
         return authInfos.size();
     }
+
     public AuthInfos getAuthInfos(int id) {
         return authInfos.get(id);
     }
-    public void setAuthInfos(AuthInfos authInfos) {
-        this.authInfos.set(Integer.parseInt(saver.get("selectAccount")),authInfos);
-    }
+
     public void rmAuthInfos() {
-        for(int i = Integer.parseInt(saver.get("selectAccount")); i < Integer.parseInt(saver.get("maxAccount")); i++) {
-            if(saver.get("msRefreshToken" + i) != null && saver.get("msAccessToken" + i) != null){
-                    saver.set("msAccessToken" + (i-1),saver.get("msAccessToken" + i));
-                    saver.set("msRefreshToken" + (i-1),saver.get("msRefreshToken" + i));
-                    saver.remove("msRefreshToken" + i);
-                    saver.remove("msAccessToken" + i);
+        for (int i = Integer.parseInt(saver.get("selectAccount")); i < Integer.parseInt(saver.get("maxAccount")); i++) {
+            if (saver.get("msRefreshToken" + i) != null && saver.get("msAccessToken" + i) != null) {
+                saver.set("msAccessToken" + (i - 1), saver.get("msAccessToken" + i));
+                saver.set("msRefreshToken" + (i - 1), saver.get("msRefreshToken" + i));
+                saver.remove("msRefreshToken" + i);
+                saver.remove("msAccessToken" + i);
             } else if (saver.get("offline-username" + i) != null) {
-                saver.set("offline-username" + (i-1),saver.get("offline-username" + i));
+                saver.set("offline-username" + (i - 1), saver.get("offline-username" + i));
                 saver.remove("offline-username" + i);
             }
         }
         this.authInfos.remove(Integer.parseInt(saver.get("selectAccount")));
     }
+
     public void addAuthInfos(AuthInfos authInfos) {
         this.authInfos.add(authInfos);
     }
-    public void addAuthInfos(AuthInfos authInfos,int id) {
-        this.authInfos.add(id,authInfos);
+
+    public void addAuthInfos(AuthInfos authInfos, int id) {
+        this.authInfos.add(id, authInfos);
     }
+
     public int getMaxAccount() {
         return maxAccount;
     }
@@ -312,34 +329,48 @@ public class Launcher extends Application {
     public Path getLauncherDir() {
         return launcherDir;
     }
-    public static String getLauncherVersion() {
-        return version;
-    }
+
     public Path getClientDir() {
         return ClientDir;
     }
+
     public Path getConfigDir() {
         return ConfigDir;
     }
+
     public Path getJava21() {
         return java21;
     }
-    public Path getJava17() {
-        return java17;
-    }
-    public Path getJava8() {
-        return java8;
-    }
+
     public void setJava21(Path path) {
         java21 = path;
     }
+
+    public Path getJava17() {
+        return java17;
+    }
+
     public void setJava17(Path path) {
         java17 = path;
     }
+
+    public Path getJava8() {
+        return java8;
+    }
+
     public void setJava8(Path path) {
         java8 = path;
     }
-    public StringBuilder getLogBuffer() { return logBuffer; }
+    public void setVersionList(VersionList versionList){
+        this.versionList = versionList;
+    }
+    public VersionList getVersionList(){
+        return this.versionList;
+    }
+
+    public StringBuilder getLogBuffer() {
+        return logBuffer;
+    }
 
 
     @Override

@@ -1,12 +1,14 @@
 package fr.gamity.launcher.thomas260913.ui.panels.pages;
 
 import fr.gamity.launcher.thomas260913.Launcher;
+import fr.gamity.launcher.thomas260913.UncaughtExceptionHandler;
 import fr.gamity.launcher.thomas260913.ui.PanelManager;
 import fr.gamity.launcher.thomas260913.ui.panel.Panel;
 import fr.flowarg.azuljavadownloader.AzulJavaBuildInfo;
 import fr.flowarg.azuljavadownloader.AzulJavaDownloader;
 import fr.flowarg.azuljavadownloader.AzulJavaType;
 import fr.flowarg.azuljavadownloader.RequestedJavaInfo;
+import fr.gamity.launcher.thomas260913.ui.panels.pages.content.Parser;
 import fr.litarvan.openauth.microsoft.MicrosoftAuthResult;
 import fr.litarvan.openauth.microsoft.MicrosoftAuthenticationException;
 import fr.litarvan.openauth.microsoft.MicrosoftAuthenticator;
@@ -357,6 +359,7 @@ public class Splash extends Panel {
                 Launcher.getInstance().showErrorDialog(ex,this.panelManager.getStage());
             }
         },"java downloader");
+        thread.setUncaughtExceptionHandler(new UncaughtExceptionHandler());
         thread.start();
     }
     public void loadAccount(){
@@ -366,7 +369,7 @@ public class Splash extends Panel {
                 int finalI = i;
                 Platform.runLater(()-> {
                     stepLabel2.setText("load Accounts ...");
-                    setProgress2(finalI,Launcher.getInstance().getMaxAccount());
+                    setProgress2(finalI,Launcher.getInstance().getMaxAccount() + 1);
                 });
                 try{
                     if (saver.get("msAccessToken" + i) != null && saver.get("msRefreshToken" + i) != null) {
@@ -388,10 +391,22 @@ public class Splash extends Panel {
                             } catch (MicrosoftAuthenticationException e) {
                                 saver.remove("msAccessToken" + i);
                                 saver.remove("msRefreshToken" + i);
+                                for(int j = i;j<Launcher.getInstance().getMaxAccount();j++){
+                                    if (saver.get("msRefreshToken" + j) != null && saver.get("msAccessToken" + j) != null) {
+                                        saver.set("msAccessToken" + (j - 1), saver.get("msAccessToken" + j));
+                                        saver.set("msRefreshToken" + (j - 1), saver.get("msRefreshToken" + j));
+                                        saver.remove("msRefreshToken" + j);
+                                        saver.remove("msAccessToken" + j);
+                                    } else if (saver.get("offline-username" + j) != null) {
+                                        saver.set("offline-username" + (j - 1), saver.get("offline-username" + j));
+                                        saver.remove("offline-username" + j);
+                                    }
+                                }
                                 saver.save();
                             }
                         }catch(Exception ex){
                             Launcher.getInstance().showErrorDialog(ex,this.panelManager.getStage());
+                            Launcher.getInstance().getLogger().printStackTrace(ex);
                         }
                         Thread.sleep(2000);
                         Launcher.getInstance().getLogger().info("account " + Launcher.getInstance().getAuthInfos(i).getUsername() + " load");
@@ -404,11 +419,25 @@ public class Splash extends Panel {
             }
             Platform.runLater(()-> {
                 stepLabel2.setText("finish load accounts");
-                setProgress2(Launcher.getInstance().getMaxAccount(),Launcher.getInstance().getMaxAccount());
+                setProgress2(Launcher.getInstance().getMaxAccount(),Launcher.getInstance().getMaxAccount() + 1);
             });
             Launcher.getInstance().getLogger().info("finish load accounts");
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ignored) {}
+            Launcher.getInstance().getLogger().info("fetching version info");
+            Platform.runLater(()-> {
+                stepLabel2.setText("fetching version info");
+                setProgress2(Launcher.getInstance().getMaxAccount(),Launcher.getInstance().getMaxAccount() + 1);
+            });
+            Launcher.getInstance().setVersionList(new Parser.VersionParser().getVersion());
+            Platform.runLater(()-> {
+                stepLabel2.setText("finish parsing version");
+                setProgress2(Launcher.getInstance().getMaxAccount() + 1,Launcher.getInstance().getMaxAccount() + 1);
+            });
             loginfinish = true;
         });
+        loadAccount.setUncaughtExceptionHandler(new UncaughtExceptionHandler());
         loadAccount.start();
     }
     public void setProgress1(double current, double max) {

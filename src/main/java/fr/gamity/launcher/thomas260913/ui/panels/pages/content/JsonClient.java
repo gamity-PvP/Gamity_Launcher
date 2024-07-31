@@ -13,7 +13,11 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -103,7 +107,7 @@ public class JsonClient extends ContentPanel {
         jsonFile.forEach(path ->{
             int i = index.getAndIncrement();
             try{
-                Config.CustomServer config = new Config.Parser.JsonConfigParser().parseJsonPath(path);
+                Config.CustomServer config = new Parser.JsonConfigParser().parseJsonPath(path);
                 Button panelBtn = new Button(config.name);
                 panelBtn.getStyleClass().add("sidemenu-nav-btn");
                 MaterialDesignIconView icon2 = new MaterialDesignIconView(MaterialDesignIcon.SERVER);
@@ -116,9 +120,21 @@ public class JsonClient extends ContentPanel {
                 panelBtn.setTranslateY(translateY2);
                 panelBtn.setOnMouseClicked(e -> setPage(new CreateClientPanel(config, true), panelBtn));
                 sidemenu.getChildren().add(panelBtn);
-            }catch(Exception e) {
-                Launcher.getInstance().getLogger().printStackTrace(e);
-                Launcher.getInstance().showErrorDialog(e,this.panelManager.getStage());
+            }catch(Exception ex) {
+                Button panelBtn = new Button("corrupted config");
+                panelBtn.getStyleClass().add("sidemenu-nav-btn");
+                MaterialDesignIconView icon2 = new MaterialDesignIconView(MaterialDesignIcon.SERVER);
+                icon2.setSize("16px");
+                panelBtn.setGraphic(icon2);
+                setCanTakeAllSize(panelBtn);
+                setTop(panelBtn);
+                double translateY1 = i * (buttonHeight + spacing);
+                double translateY2 = translateY1 + 140d;
+                panelBtn.setTranslateY(translateY2);
+                panelBtn.setOnMouseClicked(e -> setPage(new ConfigErrorPanel(path,readFileToString(path.toAbsolutePath().toString()),ex), panelBtn));
+                sidemenu.getChildren().add(panelBtn);
+                Launcher.getInstance().getLogger().printStackTrace(ex);
+                Launcher.getInstance().showErrorDialog(ex,this.panelManager.getStage());
             }
         });
 
@@ -191,5 +207,16 @@ public class JsonClient extends ContentPanel {
             return true;
         }
         return currentPage instanceof Vanilla && ((Vanilla) currentPage).isDownloading();
+    }
+
+    public static String readFileToString(String path) {
+        try {
+            byte[] encoded = Files.readAllBytes(Paths.get(path));
+            return new String(encoded, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            Launcher.getInstance().getLogger().printStackTrace(e);
+            Launcher.getInstance().showErrorDialog(e);
+            return null;
+        }
     }
 }

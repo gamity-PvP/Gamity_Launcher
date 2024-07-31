@@ -30,20 +30,20 @@ public class BuildClient {
             List<CurseFileInfo> CurseMods = new ArrayList<>();
             if (!Objects.equals(config.mcinfo.type, "vanilla")) {
                 if (config.mcinfo.forge.mods.custom.json.startsWith("http")) {
-                    mods = new Config.Parser.ModsJsonParser.ModsParser().ModsParserUrl(new URL(config.mcinfo.forge.mods.custom.json));
+                    mods = new Parser.ModsJsonParser.ModsParser().ModsParserUrl(new URL(config.mcinfo.forge.mods.custom.json));
                 } else if (config.mcinfo.forge.mods.custom.json.startsWith("{")) {
-                    mods = new Config.Parser.ModsJsonParser.ModsParser().ModsParserJson(config.mcinfo.forge.mods.custom.json);
+                    mods = new Parser.ModsJsonParser.ModsParser().ModsParserJson(config.mcinfo.forge.mods.custom.json);
                 }
                 if (config.mcinfo.forge.mods.curseForge.json.startsWith("http")) {
-                    CurseMods = new Config.Parser.ModsJsonParser.CurseParser().CurseParserUrl(new URL(config.mcinfo.forge.mods.curseForge.json));
+                    CurseMods = new Parser.ModsJsonParser.CurseParser().CurseParserUrl(new URL(config.mcinfo.forge.mods.curseForge.json));
                 } else if (config.mcinfo.forge.mods.curseForge.json.startsWith("{")) {
-                    CurseMods = new Config.Parser.ModsJsonParser.CurseParser().CurseParserJson(config.mcinfo.forge.mods.curseForge.json);
+                    CurseMods = new Parser.ModsJsonParser.CurseParser().CurseParserJson(config.mcinfo.forge.mods.curseForge.json);
                 }
                 if (optifineEnable && config.mcinfo.forge.allowOptifine) {
                     if (config.mcinfo.forge.optifine.optifineVersion != null) {
-                        mods.add(new Config.Parser.OptifineParser().OptifineRequestMod(config.mcinfo.forge.optifine.optifineVersion));
+                        mods.add(new Parser.OptifineParser().OptifineRequestMod(config.mcinfo.forge.optifine.optifineVersion));
                     } else {
-                        mods.add(new Config.Parser.OptifineParser().OptifineRequestMod(config.mcinfo.mc.version));
+                        mods.add(new Parser.OptifineParser().OptifineRequestMod(config.mcinfo.mc.version));
                     }
                 }
             }
@@ -130,6 +130,29 @@ public class BuildClient {
 
                     }
                     updater3.update(gameDir);
+                    break;
+                case "snapshot":
+                    final VanillaVersion vanillaVersion2 = new VanillaVersion.VanillaVersionBuilder()
+                            .withName(config.mcinfo.mc.version)
+                            .withSnapshot(true)
+                            .build();
+                    final FlowUpdater updater4;
+                    if (config.mcinfo.mc.extfiles != null && config.mcinfo.mc.extfiles.startsWith("http")) {
+                        updater4 = new FlowUpdater.FlowUpdaterBuilder()
+                                .withExternalFiles(ExternalFile.getExternalFilesFromJson(config.mcinfo.mc.extfiles))
+                                .withVanillaVersion(vanillaVersion2)
+                                .withLogger(Launcher.getInstance().getLogger())
+                                .withProgressCallback(callback)
+                                .build();
+
+                    } else {
+                        updater4 = new FlowUpdater.FlowUpdaterBuilder()
+                                .withVanillaVersion(vanillaVersion2)
+                                .withLogger(Launcher.getInstance().getLogger())
+                                .withProgressCallback(callback)
+                                .build();
+                    }
+                    updater4.update(gameDir);
             }
         }catch (Exception e){
             Launcher.getInstance().showErrorDialog(e);

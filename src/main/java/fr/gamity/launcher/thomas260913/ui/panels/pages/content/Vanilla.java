@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Vanilla extends ContentPanel {
     private final Config.CustomServer config;
@@ -35,6 +37,7 @@ public class Vanilla extends ContentPanel {
     Label stepLabel = new Label();
     Label fileLabel = new Label();
     ComboBox<String> version = new ComboBox<>();
+    ComboBox<String> versionType = new ComboBox<>();
     boolean isDownloading = false;
 
     @Override
@@ -53,8 +56,8 @@ public class Vanilla extends ContentPanel {
 
         RowConstraints rowConstraints = new RowConstraints();
         rowConstraints.setValignment(VPos.CENTER);
-        rowConstraints.setMinHeight(125);
-        rowConstraints.setMaxHeight(125);
+        rowConstraints.setMinHeight(175);
+        rowConstraints.setMaxHeight(175);
         this.layout.getRowConstraints().addAll(rowConstraints, new RowConstraints());
         boxPane.getStyleClass().add("box-pane");
         setCanTakeAllSize(boxPane);
@@ -82,49 +85,82 @@ public class Vanilla extends ContentPanel {
     }
 
     private void showPlayButton() {
-        try {
-            boxPane.getChildren().clear();
+        boxPane.getChildren().clear();
+        VersionList versionList = new VersionList();
 
-            ObjectMapper objectMapper = new ObjectMapper();
-            Version versionList = objectMapper.readValue(new URL("https://gamity-pvp.fr/apis/launcher/mcversion/list.json"), Version.class);
+        versionType.getStyleClass().add("version-selector");
+        versionType.getItems().addAll("snapshot","release","all");
+        versionType.setValue("all");
+        setCenterH(versionType);
+        setCanTakeAllSize(versionType);
+        setTop(versionType);
+        versionType.setTranslateY(10d);
 
-            version.getStyleClass().add("version-selector");
-            versionList.getVersionList().forEach(McVersion-> version.getItems().add(McVersion));
+        switch(versionType.getValue()){
+            case "all":
+                versionList.versions = Launcher.getInstance().getVersionList().versions.stream().filter(version1 -> Objects.equals(version1.type, "snapshot") || Objects.equals(version1.type, "release")).collect(Collectors.toList());
+                break;
+            case "snapshot":
+                versionList.versions = Launcher.getInstance().getVersionList().versions.stream().filter(version1 -> Objects.equals(version1.type, "snapshot")).collect(Collectors.toList());
+                break;
+            case "release":
+                versionList.versions = Launcher.getInstance().getVersionList().versions.stream().filter(version1 -> Objects.equals(version1.type, "release")).collect(Collectors.toList());
+                break;
+        }
+        version.getStyleClass().add("version-selector");
+        versionList.versions.forEach(McVersion-> version.getItems().add(McVersion.id));
+        version.getItems().add("latest");
+        version.setValue("latest");
+        setCenterH(version);
+        setCanTakeAllSize(version);
+        setTop(version);
+        version.setTranslateY(60d);
+
+        versionType.valueProperty().addListener((e,old,newValue)->{
+            version.getItems().clear();
+            switch(newValue){
+                case "all":
+                    versionList.versions = Launcher.getInstance().getVersionList().versions.stream().filter(version1 -> Objects.equals(version1.type, "snapshot") || Objects.equals(version1.type, "release")).collect(Collectors.toList());
+                    break;
+                case "snapshot":
+                    versionList.versions = Launcher.getInstance().getVersionList().versions.stream().filter(version1 -> Objects.equals(version1.type, "snapshot")).collect(Collectors.toList());
+                    break;
+                case "release":
+                    versionList.versions = Launcher.getInstance().getVersionList().versions.stream().filter(version1 -> Objects.equals(version1.type, "release")).collect(Collectors.toList());
+                    break;
+            }
+            versionList.versions.forEach(McVersion-> version.getItems().add(McVersion.id));
             version.getItems().add("latest");
             version.setValue("latest");
-            setCenterH(version);
-            setCanTakeAllSize(version);
-            setTop(version);
-            version.setTranslateY(10d);
+        });
 
-            Button playBtn = new Button("Jouer");
-            MaterialDesignIconView playIcon = new MaterialDesignIconView(MaterialDesignIcon.PLAY);
-            playIcon.getStyleClass().add("play-icon");
-            setCanTakeAllSize(playBtn);
-            setCenterH(playBtn);
-            setCenterV(playBtn);
-            playBtn.getStyleClass().add("play-btn");
-            playBtn.setGraphic(playIcon);
-            playBtn.setTranslateY(25.0);
-            playBtn.setOnMouseClicked(e -> {
-                if(version.getValue() == "latest"){
-                    config.mcinfo.mc.version = versionList.getLatest();
-                }else{
-                    config.mcinfo.mc.version = version.getValue();
+        Button playBtn = new Button("Jouer");
+        MaterialDesignIconView playIcon = new MaterialDesignIconView(MaterialDesignIcon.PLAY);
+        playIcon.getStyleClass().add("play-icon");
+        setCanTakeAllSize(playBtn);
+        setCenterH(playBtn);
+        setTop(playBtn);
+        playBtn.getStyleClass().add("play-btn");
+        playBtn.setGraphic(playIcon);
+        playBtn.setTranslateY(110.0);
+        playBtn.setOnMouseClicked(e -> {
+            if(Objects.equals(version.getValue(), "latest")){
+                switch(versionType.getValue()){
+                    case "all":
+                    case "release":
+                        config.mcinfo.mc.version = versionList.latest.release;
+                        break;
+                    case "snapshot":
+                        config.mcinfo.mc.version = versionList.latest.snapshot;
+                        break;
                 }
-                if(Integer.parseInt(config.mcinfo.mc.version.split("\\.")[1]) < 18){
-                    config.mcinfo.mc.java = "8";
-                }else if(((Integer.parseInt(config.mcinfo.mc.version.split("\\.")[1]) >= 18) && (Integer.parseInt(config.mcinfo.mc.version.split("\\.")[1]) <= 20)) || ((Integer.parseInt(config.mcinfo.mc.version.split("\\.")[1]) == 20) && (Integer.parseInt(config.mcinfo.mc.version.split("\\.")[2]) <= 4))){
-                    config.mcinfo.mc.java = "17";
-                }else{
-                    config.mcinfo.mc.java = "21";
-                }
-                this.play();
-            });
-            boxPane.getChildren().addAll(playBtn,version);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            }else{
+                config.mcinfo.mc.version = version.getValue();
+            }
+            config.mcinfo.mc.java = versionList.versions.stream().filter(java-> Objects.equals(java.id, version.getValue())).collect(Collectors.toList()).get(0).getJavaVersion();
+            this.play();
+        });
+        boxPane.getChildren().addAll(playBtn,version,versionType);
     }
     private void showLaunchButton() {
         boxPane.getChildren().clear();

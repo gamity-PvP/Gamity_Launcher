@@ -196,7 +196,7 @@ public class Settings extends ContentPanel {
         optifineLabel.setTranslateX(25d);
         optifineLabel.setTranslateY(270d);
 
-        CheckBox optifine = new CheckBox("wait-launch");
+        CheckBox optifine = new CheckBox("optifine");
         setCanTakeAllSize(optifine);
         setLeft(optifine);
         setTop(optifine);
@@ -396,7 +396,7 @@ public class Settings extends ContentPanel {
         Path destinationPath = null;
         try {
             Path sourcePath = fileToCopy.toPath();
-            Config.Parser.JsonConfigParser parser = new Config.Parser.JsonConfigParser();
+            Parser.JsonConfigParser parser = new Parser.JsonConfigParser();
             Config.CustomServer config = parser.parseJsonPath(sourcePath);
             destinationPath = Launcher.getInstance().getConfigDir().resolve(config.name + ".json");
             if(Files.exists(destinationPath)){

@@ -1,0 +1,75 @@
+.settings-layout {
+    -fx-background-color: rgb(215, 220, 220);
+}
+
+.settings-title {
+    -fx-text-fill: rgb(20, 25, 25);
+}
+
+.content-pane,  {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane .scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.label {
+    -fx-text-fill: rgb(20, 25, 25);
+    -fx-font-size: 15px;
+}
+.save-btn {
+    -fx-background-radius: 10px;
+    -fx-font-size: 16px;
+    -fx-text-fill: #F5F5F5;
+    -fx-background-color: #85AE51;
+}
+
+.save-icon {
+    -fx-fill: white;
+}
+
+.save-btn:hover {
+    -fx-background-color: #98BB6D;
+}
+.version-label {
+    -fx-text-fill: rgb(20, 25, 25);
+    -fx-font-size: 13px;
+}
+.text-area {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-color: lightgray;
+    -fx-border-radius: 10;
+    -fx-padding: 10;
+    -fx-font-family: "Consolas";
+    -fx-font-size: 14px;
+    -fx-text-fill: black;
+}
+
+.text-area-readonly {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-color: lightgray;
+    -fx-border-radius: 10;
+    -fx-padding: 10;
+    -fx-font-family: "Consolas";
+    -fx-font-size: 14px;
+    -fx-text-fill: red;
+}
+.deleteBtn {
+    -fx-background-radius: 10px;
+    -fx-font-size: 16px;
+    -fx-background-color: red;
+    -fx-text-fill: white;
+}
+.deleteBtn:hover {
+    -fx-background-radius: 10px;
+    -fx-font-size: 16px;
+    -fx-background-color: rgba(255,0,0,0.5);
+    -fx-text-fill: white;
+}
+
+.delete-icon {
+    -fx-fill: white;
+}

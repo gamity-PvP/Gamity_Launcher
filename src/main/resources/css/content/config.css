@@ -95,3 +95,13 @@
 .combobox .thumb {
     -fx-background-color: #98BB6D;
 }
+.scrollPane .track {
+    -fx-background-color: rgb(220, 220, 220);
+}
+
+.scrollPane .thumb {
+    -fx-background-color: #98BB6D;
+}
+.scrollPane .list-view {
+    -fx-background-color: rgb(200, 200, 200);
+}

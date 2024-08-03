@@ -1,6 +1,8 @@
 package fr.gamity.launcher.thomas260913.ui.panels.pages.content;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import fr.gamity.launcher.thomas260913.JsonCreator.JsonCreator;
 import fr.gamity.launcher.thomas260913.Launcher;
 import fr.gamity.launcher.thomas260913.ui.PanelManager;
 import fr.gamity.launcher.thomas260913.ui.panels.pages.App;
@@ -8,11 +10,11 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
@@ -37,6 +39,9 @@ public class CreateConfig extends ContentPanel {
     private final TextField forgeVersionField = new TextField();
     private final TextField forgeModsCustomField = new TextField();
     private final TextField forgeModsCurseField = new TextField();
+    private final TextField forgeModsModrinthField = new TextField();
+    private final TextField forgeModPackModrinthField = new TextField();
+    private final TextField forgeModPackCurseField = new TextField();
     private final ComboBox<String> mcVersionCombobox = new ComboBox<>();
     private final ComboBox<String> mcJavaCombobox = new ComboBox<>();
     private final TextField mcExtFilesField = new TextField();
@@ -50,6 +55,7 @@ public class CreateConfig extends ContentPanel {
     List<Parser.OptifineParser.OptifineJson.OptifineList> optifineList = new ArrayList<>();
 
     GridPane contentPane = new GridPane();
+
 
     @Override
     public String getName() {
@@ -90,6 +96,12 @@ public class CreateConfig extends ContentPanel {
                 forgeModsCurseField.setText("");
                 forgeModsCustomField.setDisable(true);
                 forgeModsCustomField.setText("");
+                forgeModsModrinthField.setDisable(true);
+                forgeModPackModrinthField.setDisable(true);
+                forgeModPackCurseField.setDisable(true);
+                forgeModsModrinthField.setText("");
+                forgeModPackModrinthField.setText("");
+                forgeModPackCurseField.setText("");
                 serverIpField.setDisable(true);
                 serverIpField.setText("");
                 serverPortField.setDisable(true);
@@ -116,6 +128,12 @@ public class CreateConfig extends ContentPanel {
                         forgeModsCurseField.setText("");
                         forgeModsCustomField.setDisable(true);
                         forgeModsCustomField.setText("");
+                        forgeModsModrinthField.setDisable(true);
+                        forgeModPackModrinthField.setDisable(true);
+                        forgeModPackCurseField.setDisable(true);
+                        forgeModsModrinthField.setText("");
+                        forgeModPackModrinthField.setText("");
+                        forgeModPackCurseField.setText("");
                         optifinechkBox.setSelected(false);
                         optifinechkBox.setDisable(true);
                         optifineVersionComboBox.setDisable(true);
@@ -125,9 +143,55 @@ public class CreateConfig extends ContentPanel {
                         forgeVersionField.setDisable(false);
                         forgeVersionField.setText(config.mcinfo.forge.version);
                         forgeModsCurseField.setDisable(false);
-                        forgeModsCurseField.setText(config.mcinfo.forge.mods.curseForge.json);
-                        forgeModsCustomField.setText(config.mcinfo.forge.mods.custom.json);
+                        if(config.mcinfo.forge.mods.curseForge != null) {
+                            if (config.mcinfo.forge.mods.curseForge.json != null) {
+                                forgeModsCurseField.setText(config.mcinfo.forge.mods.curseForge.json);
+                            } else {
+                                forgeModsCurseField.setText("");
+                            }
+                        } else {
+                            forgeModsCurseField.setText("");
+                        }
+                        if(config.mcinfo.forge.mods.custom != null) {
+                            if (config.mcinfo.forge.mods.custom.json != null) {
+                                forgeModsCustomField.setText(config.mcinfo.forge.mods.custom.json);
+                            } else {
+                                forgeModsCustomField.setText("");
+                            }
+                        } else {
+                            forgeModsCustomField.setText("");
+                        }
                         forgeModsCustomField.setDisable(false);
+                        forgeModsModrinthField.setDisable(false);
+                        forgeModPackModrinthField.setDisable(false);
+                        forgeModPackCurseField.setDisable(false);
+                        if(config.mcinfo.forge.mods.modrinth != null) {
+                            if (config.mcinfo.forge.mods.modrinth.json != null) {
+                                forgeModsModrinthField.setText(config.mcinfo.forge.mods.modrinth.json);
+                            } else {
+                                forgeModsModrinthField.setText("");
+                            }
+                        } else {
+                            forgeModsModrinthField.setText("");
+                        }
+                        if(config.mcinfo.forge.mods.modrinthModpack != null) {
+                            if (config.mcinfo.forge.mods.modrinthModpack.json != null) {
+                                forgeModPackModrinthField.setText(config.mcinfo.forge.mods.modrinthModpack.json);
+                            } else {
+                                forgeModPackModrinthField.setText("");
+                            }
+                        } else {
+                            forgeModPackModrinthField.setText("");
+                        }
+                        if(config.mcinfo.forge.mods.curseForgeModpack != null) {
+                            if (config.mcinfo.forge.mods.curseForgeModpack.json != null) {
+                                forgeModPackCurseField.setText(config.mcinfo.forge.mods.curseForgeModpack.json);
+                            } else {
+                                forgeModPackCurseField.setText("");
+                            }
+                        } else {
+                            forgeModPackCurseField.setText("");
+                        }
                         optifinechkBox.setDisable(false);
                         optifinechkBox.setSelected(config.mcinfo.forge.allowOptifine);
                         optifineVersionComboBox.setDisable(!config.mcinfo.forge.allowOptifine);
@@ -167,6 +231,12 @@ public class CreateConfig extends ContentPanel {
                     forgeModsCurseField.setText("");
                     forgeModsCustomField.setDisable(true);
                     forgeModsCustomField.setText("");
+                    forgeModsModrinthField.setDisable(true);
+                    forgeModPackModrinthField.setDisable(true);
+                    forgeModPackCurseField.setDisable(true);
+                    forgeModsModrinthField.setText("");
+                    forgeModPackModrinthField.setText("");
+                    forgeModPackCurseField.setText("");
                     serverIpField.setDisable(true);
                     serverIpField.setText("");
                     serverPortField.setDisable(true);
@@ -197,8 +267,8 @@ public class CreateConfig extends ContentPanel {
         title.setFont(Font.font("Consolas", FontWeight.BOLD, FontPosture.REGULAR, 25f));
         title.getStyleClass().add("settings-title");
         setLeft(title);
-        setCanTakeAllSize(title);
         setTop(title);
+        title.setPadding(new Insets(10));
         title.setTextAlignment(TextAlignment.LEFT);
         title.setTranslateY(0d);
         title.setTranslateX(25d);
@@ -232,6 +302,9 @@ public class CreateConfig extends ContentPanel {
         forgeVersionField.setDisable(true);
         forgeModsCurseField.setDisable(true);
         forgeModsCustomField.setDisable(true);
+        forgeModsModrinthField.setDisable(true);
+        forgeModPackModrinthField.setDisable(true);
+        forgeModPackCurseField.setDisable(true);
         serverIpField.setDisable(!autoconnectCheckBox.isSelected());
         serverPortField.setDisable(!autoconnectCheckBox.isSelected());
         mcExtFilesField.setDisable(!mcExtFilesCheckBox.isSelected());
@@ -268,6 +341,9 @@ public class CreateConfig extends ContentPanel {
                 forgeVersionField.setDisable(true);
                 forgeModsCurseField.setDisable(true);
                 forgeModsCustomField.setDisable(true);
+                forgeModsModrinthField.setDisable(true);
+                forgeModPackModrinthField.setDisable(true);
+                forgeModPackCurseField.setDisable(true);
                 optifinechkBox.setSelected(false);
                 optifinechkBox.setDisable(true);
                 optifineVersionComboBox.setDisable(true);
@@ -276,6 +352,9 @@ public class CreateConfig extends ContentPanel {
                 forgeVersionField.setDisable(false);
                 forgeModsCurseField.setDisable(false);
                 forgeModsCustomField.setDisable(false);
+                forgeModsModrinthField.setDisable(false);
+                forgeModPackModrinthField.setDisable(false);
+                forgeModPackCurseField.setDisable(false);
                 optifinechkBox.setDisable(false);
                 mcVersionCombobox.setDisable(true);
                 optifineVersionComboBox.setDisable(!optifinechkBox.isSelected());
@@ -301,23 +380,35 @@ public class CreateConfig extends ContentPanel {
             serverIpField.setDisable(!autoconnectCheckBox.isSelected());
             serverPortField.setDisable(!autoconnectCheckBox.isSelected());
         });
-        // Fields and Labels
-        addFieldAndLabel("config:", configComboBox, 60);
-        addFieldAndLabel("Nom de la config:", nameField, 110);
-        addFieldAndLabel("Type de Minecraft:", mcTypeComboBox, 160);
-        addFieldAndLabel("Version de Forge:", forgeVersionField, 210);
-        addFieldAndLabel("Liste des mods CurseForge:", forgeModsCurseField, 260);
-        addFieldAndLabel("Liste des mods Forge Custom:", forgeModsCustomField, 310);
-        addFieldAndLabel("Version de Minecraft:", mcVersionCombobox, 360);
-        addFieldAndLabel("Version Java:", mcJavaCombobox, 410);
-        addFieldAndLabel("Fichiers externes:", mcExtFilesCheckBox, 460);
-        addFieldAndLabel("Fichiers externes url:", mcExtFilesField, 510);
-        addFieldAndLabel("Autoconnect:", autoconnectCheckBox, 560);
-        addFieldAndLabel("IP du serveur:", serverIpField, 610);
-        addFieldAndLabel("Port du serveur:", serverPortField, 660);
-        addFieldAndLabel("Optifine:", optifinechkBox, 710);
-        addFieldAndLabel("Version:", optifineVersionComboBox, 760);
+        VBox inputVBox = new VBox();
+        inputVBox.setSpacing(10);
+        inputVBox.getChildren().addAll(
+            addInput("config:", configComboBox),
+            addInput("Nom de la config:", nameField),
+            addInput("Type de Minecraft:", mcTypeComboBox),
+            addInput("Version de Forge:", forgeVersionField),
+            addInput("Liste des mods CurseForge:", forgeModsCurseField, "curseforgeMods"),
+            addInput("Liste des mods Custom:", forgeModsCustomField, "customMods"),
+            addInput("Liste des mods Modrinth:", forgeModsModrinthField, "ModrinthMods"),
+            addInput("Liste des modpack Modrinth:", forgeModPackModrinthField, "ModrinthModpack"),
+            addInput("Liste des modpack CurseForge:", forgeModPackCurseField, "curseforgeModpack"),
+            addInput("Version de Minecraft:", mcVersionCombobox),
+            addInput("Version Java:", mcJavaCombobox),
+            addInput("Fichiers externes:", mcExtFilesCheckBox),
+            addInput("Fichiers externes url:", mcExtFilesField),
+            addInput("Autoconnect:", autoconnectCheckBox),
+            addInput("IP du serveur:", serverIpField),
+            addInput("Port du serveur:", serverPortField),
+            addInput("Optifine:", optifinechkBox),
+            addInput("Version:", optifineVersionComboBox)
+        );
 
+        ScrollPane scrollPane = new ScrollPane(inputVBox);
+        scrollPane.setFitToWidth(true);
+        setCanTakeAllSize(scrollPane);
+        scrollPane.getStyleClass().add("scrollPane");
+
+        scrollPane.setPrefSize(400, 600);
         // Save Button
         Button saveBtn = new Button("Enregistrer");
         saveBtn.getStyleClass().add("save-btn");
@@ -325,10 +416,8 @@ public class CreateConfig extends ContentPanel {
         saveIconView.setSize(App.iconSize);
         saveIconView.getStyleClass().add("save-icon");
         saveBtn.setGraphic(saveIconView);
-        setCanTakeAllSize(saveBtn);
         setBottom(saveBtn);
         setCenterH(saveBtn);
-        saveBtn.setTranslateY(-50d);
         saveBtn.setOnMouseClicked(e -> saveConfig());
 
         // Export Button
@@ -338,43 +427,89 @@ public class CreateConfig extends ContentPanel {
         exportIconView.setSize(App.iconSize);
         exportIconView.getStyleClass().add("export-icon");
         exportBtn.setGraphic(exportIconView);
-        setCanTakeAllSize(exportBtn);
         setBottom(exportBtn);
         setCenterH(exportBtn);
         exportBtn.setOnMouseClicked(e -> exportConfig());
 
-        contentPane.getChildren().addAll(title, saveBtn, exportBtn);
-
-        panelManager.getStage().setMinHeight(900.0);
+        contentPane.add(title,0,0);
+        contentPane.add(scrollPane,0,1);
+        contentPane.add(saveBtn,0,2);
+        contentPane.add(exportBtn,0,3);
+        this.panelManager.getStage().setMinHeight(600);
     }
-
-    private void addFieldAndLabel(String labelText, Control field, double translateY) {
-        Label label = new Label(labelText);
+    private HBox addInput(String name, Control field){
+        Label label = new Label(name);
         label.getStyleClass().add("config-label");
+        label.setMinWidth(300);
         setLeft(label);
         setCanTakeAllSize(label);
         setTop(label);
         label.setTextAlignment(TextAlignment.LEFT);
-        label.setTranslateX(25d);
-        label.setTranslateY(translateY);
 
         if (field instanceof CheckBox) {
             field.getStyleClass().add("config-chk");
         } else if(field instanceof TextField) {
+            field.setMaxWidth(300);
             field.getStyleClass().add("config-field");
         }else{
             field.getStyleClass().add("combobox");
         }
-        if(field instanceof TextField){
-            field.setMaxWidth(300);
-        }
+        setLeft(field);
+        field.setMinWidth(200);
+        field.setMaxWidth(200);
+        setCanTakeAllSize(field);
+        setTop(field);
+        field.setTranslateY(-5d);
+        HBox hbox = new HBox(label,field);
+        hbox.setSpacing(10);
+        hbox.setMinHeight(40);
+        return hbox;
+    }
+    private HBox addInput(String name, TextField field, String jsonCreatorType){
+        JsonCreator jsonCreator = new JsonCreator(this.panelManager.getStage(),field,field.getText());
+        Label label = new Label(name);
+        label.getStyleClass().add("config-label");
+        label.setMinWidth(300);
+        setLeft(label);
+        setCanTakeAllSize(label);
+        setTop(label);
+        label.setTextAlignment(TextAlignment.LEFT);
+        Button btn = new Button("json creator");;
+        btn.getStyleClass().add("save-btn");
+        setCanTakeAllSize(btn);
+        btn.setTranslateY(-5);
+        btn.setOnMouseClicked((e)->{
+            switch(jsonCreatorType.toLowerCase()){
+                case "curseforgemods":
+                    jsonCreator.showCurseModsJsonCreator();
+                    break;
+                case "curseforgemodpack":
+                    jsonCreator.showCurseModPackJsonCreator();
+                    break;
+                case "custommods":
+                    jsonCreator.showCustomModsJsonCreator();
+                    break;
+                case "modrinthmods":
+                    jsonCreator.showModrinthModsJsonCreator();
+                    break;
+                case "modrinthmodpack":
+                    jsonCreator.showModrinthModPackJsonCreator();
+                    break;
+            }
+        });
+        btn.setDisable(field.isDisable() && !btn.isDisable());
+        mcTypeComboBox.valueProperty().addListener((e,old,newValue)-> btn.setDisable(field.isDisable() && !btn.isDisable()));
+        field.setMaxWidth(200);
+        field.getStyleClass().add("config-field");
+        field.setMinWidth(200);
         setLeft(field);
         setCanTakeAllSize(field);
         setTop(field);
-        field.setTranslateX(250d);
-        field.setTranslateY(translateY - 5d);
-
-        contentPane.getChildren().addAll(label, field);
+        field.setTranslateY(-5d);
+        HBox hbox = new HBox(label,field,btn);
+        hbox.setSpacing(10);
+        hbox.setMinHeight(40);
+        return hbox;
     }
 
     private void saveConfig() {
@@ -391,18 +526,30 @@ public class CreateConfig extends ContentPanel {
         }
         config.name = nameField.getText();
         config.mcinfo = new Config.CustomServer.McInfo();
-        config.mcinfo.type = getForgeType(forgeVersionField.getText());
+        config.mcinfo.type = mcTypeComboBox.getValue();
         if(!Objects.equals(config.mcinfo.type, "vanilla")){
             config.mcinfo.forge = new Config.CustomServer.McInfo.Forge();
             config.mcinfo.forge.version = forgeVersionField.getText();
             config.mcinfo.forge.mods = new Config.CustomServer.McInfo.Forge.Mods();
             config.mcinfo.forge.mods.curseForge = new Config.CustomServer.McInfo.Forge.Mods.CurseForge();
             config.mcinfo.forge.mods.custom = new Config.CustomServer.McInfo.Forge.Mods.Custom();
-            if(forgeModsCustomField.getText() != null) {
+            config.mcinfo.forge.mods.modrinth = new Config.CustomServer.McInfo.Forge.Mods.Modrinth();
+            config.mcinfo.forge.mods.modrinthModpack = new Config.CustomServer.McInfo.Forge.Mods.ModrinthModpack();
+            config.mcinfo.forge.mods.curseForgeModpack = new Config.CustomServer.McInfo.Forge.Mods.CurseForgeModpack();
+            if(!Objects.equals(forgeModsCustomField.getText(), "")) {
                 config.mcinfo.forge.mods.custom.json = forgeModsCustomField.getText();
             }
-            if(forgeModsCurseField.getText() != null) {
+            if(!Objects.equals(forgeModsCurseField.getText(), "")) {
                 config.mcinfo.forge.mods.curseForge.json = forgeModsCurseField.getText();
+            }
+            if(!Objects.equals(forgeModsModrinthField.getText(), "")) {
+                config.mcinfo.forge.mods.modrinth.json = forgeModsModrinthField.getText();
+            }
+            if(!Objects.equals(forgeModPackModrinthField.getText(), "")) {
+                config.mcinfo.forge.mods.modrinthModpack.json = forgeModPackModrinthField.getText();
+            }
+            if(!Objects.equals(forgeModPackCurseField.getText(), "")) {
+                config.mcinfo.forge.mods.curseForgeModpack.json = forgeModPackCurseField.getText();
             }
             if(optifinechkBox.isSelected()){
                 config.mcinfo.forge.allowOptifine = true;
@@ -442,7 +589,8 @@ public class CreateConfig extends ContentPanel {
 
         try {
             if(!Files.exists(destinationPath) || !Objects.equals(configComboBox.getValue(), "créer une nouvelle config")) {
-                mapper.writeValue(destinationPath.toFile(), config);
+                ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
+                writer.writeValue(destinationPath.toFile(), config);
                 Launcher.getInstance().showAlert(Alert.AlertType.INFORMATION, "Sauvegarde", "Configuration sauvegardée avec succès !");
             }else{
                 Launcher.getInstance().showAlert(Alert.AlertType.WARNING, "Sauvegarde", "La configuration " + config.name + " exist déjà\nveuiller changer le nom ou supprimer l'ancienne puis réessayer");
@@ -466,7 +614,7 @@ public class CreateConfig extends ContentPanel {
         }
         config.name = nameField.getText();
         config.mcinfo = new Config.CustomServer.McInfo();
-        config.mcinfo.type = getForgeType(forgeVersionField.getText());
+        config.mcinfo.type = mcTypeComboBox.getValue();
         if(!Objects.equals(config.mcinfo.type, "vanilla")){
             config.mcinfo.forge = new Config.CustomServer.McInfo.Forge();
             config.mcinfo.forge.version = forgeVersionField.getText();
@@ -522,32 +670,11 @@ public class CreateConfig extends ContentPanel {
 
         if (file != null) {
             try {
-                mapper.writeValue(file, config);
+                ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
+                writer.writeValue(file, config);
                 Launcher.getInstance().showAlert(Alert.AlertType.INFORMATION, "Exportation", "Configuration exportée avec succès !");
             } catch (IOException e) {
                 Launcher.getInstance().showErrorDialog(e, this.panelManager.getStage());
-            }
-        }
-    }
-    private static String getForgeType(String version){
-        String[] data = version.split("-");
-        String mcVersion = data[0];
-        String forgeVersion = data[1];
-        String[] mcVersionSplit = mcVersion.split("\\.");
-        if(Integer.parseInt(mcVersionSplit[1]) > 12){
-            return "newforge";
-        }else if(Integer.parseInt(mcVersionSplit[1]) < 12){
-            if(Integer.parseInt(mcVersionSplit[1]) != 7){
-                return "oldforge";
-            }else{
-                return "very_oldforge";
-            }
-        }else{
-            String[] forgeVersionSplit = forgeVersion.split("\\.");
-            if(Integer.parseInt(forgeVersionSplit[3]) >= 2851){
-                return "newforge";
-            }else{
-                return "oldforge";
             }
         }
     }

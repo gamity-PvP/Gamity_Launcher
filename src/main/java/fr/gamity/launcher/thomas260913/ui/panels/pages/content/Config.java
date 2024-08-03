@@ -57,11 +57,22 @@ public class Config {
                 public static class Mods {
                     public Custom custom;
                     public CurseForge curseForge;
+                    public Modrinth modrinth;
+                    public CurseForgeModpack curseForgeModpack;
+                    public ModrinthModpack modrinthModpack;
                     public static class Custom {
                         public String json;
                     }
-
                     public static class CurseForge {
+                        public String json;
+                    }
+                    public static class Modrinth {
+                        public String json;
+                    }
+                    public static class CurseForgeModpack {
+                        public String json;
+                    }
+                    public static class ModrinthModpack {
                         public String json;
                     }
                 }

@@ -38,7 +38,7 @@ public class JsonClient extends ContentPanel {
     Node activeLink = null;
     static ContentPanel currentPage = null;
 
-    Button vanillaBtn;
+    Button vanillaBtn,ConfigBtn;
 
     @Override
     public String getName() {
@@ -139,7 +139,7 @@ public class JsonClient extends ContentPanel {
         });
 
         int i = index.getAndIncrement();
-        Button ConfigBtn = new Button("Créer une config");
+        ConfigBtn = new Button("Créer une config");
         ConfigBtn.getStyleClass().add("sidemenu-nav-btn");
         FontAwesomeIconView icon3 = new FontAwesomeIconView(FontAwesomeIcon.FILE_CODE_ALT);
         icon3.setSize("16px");
@@ -157,7 +157,7 @@ public class JsonClient extends ContentPanel {
     @Override
     public void onShow() {
         super.onShow();
-        setPage(createVanillaPanel(), vanillaBtn);
+        setPage(new CreateConfig(), ConfigBtn);
     }
 
     public void setPage(ContentPanel panel, Node navButton) {
@@ -209,7 +209,7 @@ public class JsonClient extends ContentPanel {
         return currentPage instanceof Vanilla && ((Vanilla) currentPage).isDownloading();
     }
 
-    public static String readFileToString(String path) {
+    private static String readFileToString(String path) {
         try {
             byte[] encoded = Files.readAllBytes(Paths.get(path));
             return new String(encoded, StandardCharsets.UTF_8);

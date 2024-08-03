@@ -28,6 +28,12 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.util.Duration;
 
+import java.io.BufferedInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
@@ -311,54 +317,34 @@ public class Splash extends Panel {
     public void downloadJava(){
         Thread thread = new Thread(()->{
             try {
-                Platform.runLater(()-> {
-                    stepLabel1.setText("downloading java 21 ...");
-                    setProgress1(0.0,3.0);
+                Launcher.getInstance().getLogger().info("fetching version info");
+                Platform.runLater(() -> {
+                    stepLabel1.setText("fetching version info");
+                    setProgress1(0.0, 2.0);
                 });
-                Launcher.getInstance().getLogger().info("starting download javas ...");
-                Launcher.getInstance().getLogger().info("Starting download java 21 ...");
-                final AzulJavaDownloader downloader1 = new AzulJavaDownloader();
-                final Path javas1 = Paths.get(Launcher.getInstance().getLauncherDir().toFile().getAbsolutePath() + "/java"); // The directory where the Java versions will be downloaded.
-                final AzulJavaBuildInfo buildInfoWindows1 = downloader1.getBuildInfo(new RequestedJavaInfo("21", AzulJavaType.JDK, "windows", "x64", true)); // jdk 21 with javafx for Windows 64 bits
-                final Path javaHomeWindows1 = downloader1.downloadAndInstall(buildInfoWindows1, javas1);
-                Launcher.getInstance().setJava21(javaHomeWindows1);
-
-                Platform.runLater(()-> {
-                    stepLabel1.setText("downloading java 17 ...");
-                    setProgress1(1.0,3.0);
+                Launcher.getInstance().setVersionList(new Parser.VersionParser().getVersion());
+                Platform.runLater(() -> {
+                    stepLabel1.setText("finish parsing version");
+                    setProgress1(1.0, 2.0);
                 });
-                Launcher.getInstance().getLogger().info("Finish download java 21");
-                Launcher.getInstance().getLogger().info("Starting download java 17 ...");
-
-                final AzulJavaDownloader downloader2 = new AzulJavaDownloader();
-                final Path javas2 = Paths.get(Launcher.getInstance().getLauncherDir().toFile().getAbsolutePath() + "/java"); // The directory where the Java versions will be downloaded.
-                final AzulJavaBuildInfo buildInfoWindows2 = downloader2.getBuildInfo(new RequestedJavaInfo("17", AzulJavaType.JDK, "windows", "x64", true)); // jdk 17 with javafx for Windows 64 bits
-                final Path javaHomeWindows2 = downloader2.downloadAndInstall(buildInfoWindows2, javas2);
-                Launcher.getInstance().setJava17(javaHomeWindows2);
-
-                Launcher.getInstance().getLogger().info("Finish download java 17");
-                Launcher.getInstance().getLogger().info("Starting download java 8 ...");
-                Platform.runLater(()-> {
-                    stepLabel1.setText("downloading java 8 ...");
-                    setProgress1(2.0,3.0);
+                Launcher.getInstance().getLogger().info("finish parsing version");
+                Platform.runLater(() -> {
+                    stepLabel1.setText("download config exemple ...");
+                    setProgress1(1.0, 2.0);
                 });
-
-                final AzulJavaDownloader downloader3 = new AzulJavaDownloader();
-                final Path javas3 = Paths.get(Launcher.getInstance().getLauncherDir().toFile().getAbsolutePath() + "/java"); // The directory where the Java versions will be downloaded.
-                final AzulJavaBuildInfo buildInfoWindows3 = downloader3.getBuildInfo(new RequestedJavaInfo("8", AzulJavaType.JDK, "windows", "x64", true)); // jdk 8 with javafx for Windows 64 bits
-                final Path javaHomeWindows3 = downloader3.downloadAndInstall(buildInfoWindows3, javas3);
-                Launcher.getInstance().setJava8(javaHomeWindows3);
-                Launcher.getInstance().getLogger().info("Finish download java 8");
-                Launcher.getInstance().getLogger().info("Finish download javas");
-                Platform.runLater(()-> {
-                    stepLabel1.setText("Finish download javas");
-                    setProgress1(3.0,3.0);
+                Launcher.getInstance().getLogger().info("download config exemple ...");
+                downloadFile("https://gamity-pvp.fr/download/config_launcher/exemple.json", Launcher.getInstance().getLauncherDir().resolve("configExemple.json").toAbsolutePath().toString());
+                Launcher.getInstance().getLogger().info("finish download config exemple");
+                Platform.runLater(() -> {
+                    stepLabel1.setText("finish download config exemple");
+                    setProgress1(2.0, 2.0);
                 });
                 javafinish = true;
             }catch(Exception ex){
                 Launcher.getInstance().showErrorDialog(ex,this.panelManager.getStage());
+                Launcher.getInstance().getLogger().printStackTrace(ex);
             }
-        },"java downloader");
+        });
         thread.setUncaughtExceptionHandler(new UncaughtExceptionHandler());
         thread.start();
     }
@@ -369,7 +355,7 @@ public class Splash extends Panel {
                 int finalI = i;
                 Platform.runLater(()-> {
                     stepLabel2.setText("load Accounts ...");
-                    setProgress2(finalI,Launcher.getInstance().getMaxAccount() + 1);
+                    setProgress2(finalI,Launcher.getInstance().getMaxAccount());
                 });
                 try{
                     if (saver.get("msAccessToken" + i) != null && saver.get("msRefreshToken" + i) != null) {
@@ -417,24 +403,16 @@ public class Splash extends Panel {
                     Thread.sleep(100);
                 } catch (InterruptedException ignored) {}
             }
-            Platform.runLater(()-> {
-                stepLabel2.setText("finish load accounts");
-                setProgress2(Launcher.getInstance().getMaxAccount(),Launcher.getInstance().getMaxAccount() + 1);
-            });
-            Launcher.getInstance().getLogger().info("finish load accounts");
             try {
-                Thread.sleep(100);
-            } catch (InterruptedException ignored) {}
-            Launcher.getInstance().getLogger().info("fetching version info");
-            Platform.runLater(()-> {
-                stepLabel2.setText("fetching version info");
-                setProgress2(Launcher.getInstance().getMaxAccount(),Launcher.getInstance().getMaxAccount() + 1);
-            });
-            Launcher.getInstance().setVersionList(new Parser.VersionParser().getVersion());
-            Platform.runLater(()-> {
-                stepLabel2.setText("finish parsing version");
-                setProgress2(Launcher.getInstance().getMaxAccount() + 1,Launcher.getInstance().getMaxAccount() + 1);
-            });
+                Platform.runLater(() -> {
+                    stepLabel2.setText("finish load accounts");
+                    setProgress2(Launcher.getInstance().getMaxAccount(), Launcher.getInstance().getMaxAccount());
+                });
+                Launcher.getInstance().getLogger().info("finish load accounts");
+            }catch(Exception ex){
+                Launcher.getInstance().showErrorDialog(ex,this.panelManager.getStage());
+                Launcher.getInstance().getLogger().printStackTrace(ex);
+            }
             loginfinish = true;
         });
         loadAccount.setUncaughtExceptionHandler(new UncaughtExceptionHandler());
@@ -446,4 +424,19 @@ public class Splash extends Panel {
     public void setProgress2(double current, double max) {
         progressBar2.setProgress(current / max);
     }
+
+    public static void downloadFile(String fileURL, String savePath) throws IOException {
+        URL url = new URL(fileURL);
+        URLConnection urlConnection = url.openConnection();
+        try (InputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
+             FileOutputStream fileOutputStream = new FileOutputStream(savePath)) {
+
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer, 0, 1024)) != -1) {
+                fileOutputStream.write(buffer, 0, bytesRead);
+            }
+        }
+    }
+
 }

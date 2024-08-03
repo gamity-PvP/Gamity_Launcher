@@ -1,6 +1,8 @@
 package fr.gamity.launcher.thomas260913.ui.panels.pages.content;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.gamity.launcher.thomas260913.JavasDownloader;
 import fr.gamity.launcher.thomas260913.Launcher;
+import fr.gamity.launcher.thomas260913.UncaughtExceptionHandler;
 import fr.gamity.launcher.thomas260913.ui.PanelManager;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
@@ -23,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CreateClientPanel extends ContentPanel {
     private Config.CustomServer config;
@@ -201,8 +204,26 @@ public class CreateClientPanel extends ContentPanel {
         };
 
         try {
+            AtomicBoolean buildDownload = new AtomicBoolean(false);
+            AtomicBoolean javaDownload = new AtomicBoolean(false);
+            Thread javas = new Thread(()->{
+                new JavasDownloader(config.mcinfo.mc.java);
+                javaDownload.set(true);
+            });
+            javas.setUncaughtExceptionHandler(new UncaughtExceptionHandler());
+            javas.start();
+            Thread downloadCheck = new Thread(()->{
+                while(!buildDownload.get() || !javaDownload.get()){
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException ignored) {}
+                }
+                isDownloading = false;
+            });
+            downloadCheck.setUncaughtExceptionHandler(new UncaughtExceptionHandler());
+            downloadCheck.start();
             client = new BuildClient(config,Launcher.getInstance().getClientDir().resolve(config.name),callback,Boolean.parseBoolean(saver.get("optifine")));
-            isDownloading = false;
+            buildDownload.set(true);
             if(Boolean.parseBoolean(saver.get("wait-launch"))) {
                 Platform.runLater(this::showLaunchButton);
             }else{

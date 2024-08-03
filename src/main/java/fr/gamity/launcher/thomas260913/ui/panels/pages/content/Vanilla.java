@@ -1,6 +1,8 @@
 package fr.gamity.launcher.thomas260913.ui.panels.pages.content;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.gamity.launcher.thomas260913.JavasDownloader;
 import fr.gamity.launcher.thomas260913.Launcher;
+import fr.gamity.launcher.thomas260913.UncaughtExceptionHandler;
 import fr.gamity.launcher.thomas260913.ui.PanelManager;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
@@ -23,6 +25,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 public class Vanilla extends ContentPanel {
@@ -224,8 +227,30 @@ public class Vanilla extends ContentPanel {
         };
 
         try {
-            client = new BuildClient(config,Launcher.getInstance().getClientDir().resolve(config.name),callback,false);
-            isDownloading = false;
+            AtomicBoolean buildDownload = new AtomicBoolean(false);
+            AtomicBoolean javaDownload = new AtomicBoolean(false);
+            Thread build = new Thread(()->{
+                client = new BuildClient(config,Launcher.getInstance().getClientDir().resolve(config.name),callback,Boolean.parseBoolean(saver.get("optifine")));
+                buildDownload.set(true);
+            });
+            build.setUncaughtExceptionHandler(new UncaughtExceptionHandler());
+            build.start();
+            Thread javas = new Thread(()->{
+                new JavasDownloader(config.mcinfo.mc.java);
+                javaDownload.set(true);
+            });
+            javas.setUncaughtExceptionHandler(new UncaughtExceptionHandler());
+            javas.start();
+            Thread downloadCheck = new Thread(()->{
+                while(!buildDownload.get() || !javaDownload.get()){
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException ignored) {}
+                }
+                isDownloading = false;
+            });
+            downloadCheck.setUncaughtExceptionHandler(new UncaughtExceptionHandler());
+            downloadCheck.start();
             if(Boolean.parseBoolean(saver.get("wait-launch"))) {
                 Platform.runLater(this::showLaunchButton);
             }else{

@@ -28,7 +28,7 @@ allprojects {
 }
 
 
-version '3.7.0'
+version '3.7.2'
 
 repositories {
     maven {
@@ -41,7 +41,13 @@ repositories {
 }
 
 dependencies {
+    implementation 'org.jetbrains:annotations:24.1.0'
+    implementation 'com.google.code.gson:gson:2.11.0'
+
+    implementation 'javax.xml.bind:jaxb-api:2.4.0-b180830.0359'
+
     implementation 'club.minnced:java-discord-rpc:2.0.1'
+
     implementation 'fr.litarvan:openauth:1+'
     implementation 'de.jensd:fontawesomefx:8.9'
 
@@ -57,6 +63,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
     implementation 'com.fasterxml.jackson.core:jackson-core:2.12.3'
     implementation 'com.fasterxml.jackson.core:jackson-annotations:2.12.3'
+
     implementation 'ch.qos.logback:logback-classic:1.2.11'
 }
 

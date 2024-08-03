@@ -305,7 +305,7 @@ public class Settings extends ContentPanel {
             if (choice == 0) {
                 new Thread(()-> {
                     try {
-                        deleteDirectory(new File(Launcher.getInstance().getLauncherDir().resolve("versions").toUri()));
+                        deleteDirectory(new File(Launcher.getInstance().getClientDir().toUri()));
                     }catch (Exception ex){
                         Launcher.getInstance().getLogger().printStackTrace(ex);
                         Launcher.getInstance().showErrorDialog(ex,this.panelManager.getStage());

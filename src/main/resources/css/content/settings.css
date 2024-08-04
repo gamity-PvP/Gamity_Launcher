@@ -112,10 +112,6 @@
     -fx-font-size: 13px;
 }
 
-.label {
-    -fx-text-fill: rgb(20, 25, 25);
-    -fx-font-size: 15px;
-}
 .version-label {
     -fx-text-fill: rgb(20, 25, 25);
     -fx-font-size: 13px;

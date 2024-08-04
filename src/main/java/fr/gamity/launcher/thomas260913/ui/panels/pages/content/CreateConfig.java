@@ -265,7 +265,7 @@ public class CreateConfig extends ContentPanel {
         // Titre
         Label title = new Label("Gestion des config");
         title.setFont(Font.font("Consolas", FontWeight.BOLD, FontPosture.REGULAR, 25f));
-        title.getStyleClass().add("settings-title");
+        title.getStyleClass().add("config-title");
         setLeft(title);
         setTop(title);
         title.setPadding(new Insets(10));

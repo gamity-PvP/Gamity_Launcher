@@ -60,6 +60,7 @@ public class Settings extends ContentPanel {
 
     @Override
     public String getStylesheetPath() {
+        //return null;
         return "css/content/settings.css";
     }
 

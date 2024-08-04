@@ -14,10 +14,6 @@
     -fx-background-color: transparent;
 }
 
-.label {
-    -fx-text-fill: rgb(20, 25, 25);
-    -fx-font-size: 15px;
-}
 .save-btn {
     -fx-background-radius: 10px;
     -fx-font-size: 16px;

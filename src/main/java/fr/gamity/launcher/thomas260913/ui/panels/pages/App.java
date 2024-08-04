@@ -207,7 +207,7 @@ public class App extends Panel {
             setCanTakeAllSize(usernameLabel);
             setCenterV(usernameLabel);
             setLeft(usernameLabel);
-            usernameLabel.getStylesheets().add("-fx-font-family: \"Consolas\"; -fx-font-weight: bold; -fx-font-size: 25px; -fx-text-fill: white;");
+            usernameLabel.getStyleClass().add("username-label");
             usernameLabel.setTranslateX(75d);
             setCanTakeAllWidth(usernameLabel);
             userPane.getChildren().add(usernameLabel);

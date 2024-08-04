@@ -20,6 +20,7 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -312,7 +313,6 @@ public class CreateConfig extends ContentPanel {
         mcTypeComboBox.setValue("vanilla");
         mcJavaCombobox.setValue("21");
         forgeVersionField.textProperty().addListener((observable, oldValue, newValue) -> {
-            // Code à exécuter lorsque le texte change
             if (newValue.contains(" ")) {
                 forgeVersionField.setText(newValue.replace(" ", ""));
             } else {
@@ -498,7 +498,9 @@ public class CreateConfig extends ContentPanel {
             }
         });
         btn.setDisable(field.isDisable() && !btn.isDisable());
-        mcTypeComboBox.valueProperty().addListener((e,old,newValue)-> btn.setDisable(field.isDisable() && !btn.isDisable()));
+        mcTypeComboBox.valueProperty().addListener((e,old,newValue)-> {
+            btn.setDisable(!Objects.equals(newValue, "forge"));
+        });
         field.setMaxWidth(200);
         field.getStyleClass().add("config-field");
         field.setMinWidth(200);
@@ -678,7 +680,7 @@ public class CreateConfig extends ContentPanel {
             }
         }
     }
-    private static String getVanillaVersionFromForge(String forgeVersion){
+    private static String getVanillaVersionFromForge(@NotNull String forgeVersion){
         String[] data = forgeVersion.split("-");
         return data[0];
     }

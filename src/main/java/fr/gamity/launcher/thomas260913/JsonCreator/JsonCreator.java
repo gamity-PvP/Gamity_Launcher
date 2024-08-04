@@ -383,7 +383,7 @@ public class JsonCreator {
         info.setWrapText(true);
         textAreaSising(info,scene,newStage);
         info.setEditable(false);
-        info.setText("Info :\n\"pour ajouter des mods CurseForge il vous faudra fileId et projectId trouvable sur curseforge");
+        info.setText("Info :\npour ajouter des mods CurseForge il vous faudra fileId et projectId trouvable sur curseforge");
 
         name.setPromptText("Entrez le nom du mod ici");
         fileId.setPromptText("Entrez le fileId ici");

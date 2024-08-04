@@ -7,6 +7,7 @@ import fr.flowarg.flowlogger.ILogger;
 import fr.flowarg.flowlogger.Logger;
 import fr.gamity.launcher.thomas260913.ui.PanelManager;
 import fr.gamity.launcher.thomas260913.ui.panels.pages.Splash;
+import fr.gamity.launcher.thomas260913.ui.panels.pages.content.Parser.OptifineParser.OptifineJson;
 import fr.gamity.launcher.thomas260913.ui.panels.pages.content.VersionList;
 import fr.litarvan.openauth.microsoft.MicrosoftAuthResult;
 import fr.litarvan.openauth.microsoft.MicrosoftAuthenticationException;
@@ -41,7 +42,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class Launcher extends Application {
-    private static final String version = "bêta v3.8.1";
+    private static final String version = "bêta v3.8.3";
     public static DiscordRichPresence presence = new DiscordRichPresence();
     public static DiscordRPC lib = DiscordRPC.INSTANCE;
     private static Launcher instance;
@@ -59,6 +60,7 @@ public class Launcher extends Application {
     private Path java17;
     private Path java8;
     private VersionList versionList;
+    private List<OptifineJson.OptifineList> optifineList;
 
     public Launcher() {
         instance = this;
@@ -368,6 +370,12 @@ public class Launcher extends Application {
     }
     public VersionList getVersionList(){
         return this.versionList;
+    }
+    public void setOptifineList(List<OptifineJson.OptifineList> optifineList){
+        this.optifineList = optifineList;
+    }
+    public List<OptifineJson.OptifineList> getOptifineList(){
+        return this.optifineList;
     }
 
     public StringBuilder getLogBuffer() {

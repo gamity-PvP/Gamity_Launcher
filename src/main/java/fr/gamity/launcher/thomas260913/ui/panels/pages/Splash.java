@@ -328,16 +328,27 @@ public class Splash extends Panel {
                     setProgress1(1.0, 2.0);
                 });
                 Launcher.getInstance().getLogger().info("finish parsing version");
+                Launcher.getInstance().getLogger().info("fetching optifine info");
+                Platform.runLater(() -> {
+                    stepLabel1.setText("fetching optifine info");
+                    setProgress1(1.0, 2.0);
+                });
+                Launcher.getInstance().setOptifineList(new Parser.OptifineParser().OptifineRequest("all","all",false));
+                Platform.runLater(() -> {
+                    stepLabel1.setText("finish optifine version");
+                    setProgress1(2.0, 2.0);
+                });
+                Launcher.getInstance().getLogger().info("finish optifine version");
                 Platform.runLater(() -> {
                     stepLabel1.setText("download config exemple ...");
-                    setProgress1(1.0, 2.0);
+                    setProgress1(2.0, 3.0);
                 });
                 Launcher.getInstance().getLogger().info("download config exemple ...");
                 downloadFile("https://gamity-pvp.fr/download/config_launcher/exemple.json", Launcher.getInstance().getLauncherDir().resolve("configExemple.json").toAbsolutePath().toString());
                 Launcher.getInstance().getLogger().info("finish download config exemple");
                 Platform.runLater(() -> {
                     stepLabel1.setText("finish download config exemple");
-                    setProgress1(2.0, 2.0);
+                    setProgress1(3.0, 3.0);
                 });
                 javafinish = true;
             }catch(Exception ex){

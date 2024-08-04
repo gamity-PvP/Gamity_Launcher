@@ -28,7 +28,6 @@ public class JsonClient extends ContentPanel {
         Config.CustomServer config = new Config.CustomServer();
         config.name = "vanilla";
         config.mcinfo = new Config.CustomServer.McInfo();
-        config.mcinfo.type = "vanilla";
         config.mcinfo.autoconnect = false;
         return new Vanilla(config);
     }

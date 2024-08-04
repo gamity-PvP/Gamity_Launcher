@@ -1,5 +1,4 @@
 package fr.gamity.launcher.thomas260913.ui.panels.pages.content;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.gamity.launcher.thomas260913.JavasDownloader;
 import fr.gamity.launcher.thomas260913.Launcher;
 import fr.gamity.launcher.thomas260913.UncaughtExceptionHandler;
@@ -20,8 +19,6 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 
-import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.util.Objects;
@@ -98,6 +95,7 @@ public class Vanilla extends ContentPanel {
         setCanTakeAllSize(versionType);
         setTop(versionType);
         versionType.setTranslateY(10d);
+        versionList.latest = Launcher.getInstance().getVersionList().latest;
 
         switch(versionType.getValue()){
             case "all":
@@ -160,7 +158,15 @@ public class Vanilla extends ContentPanel {
             }else{
                 config.mcinfo.mc.version = version.getValue();
             }
-            config.mcinfo.mc.java = versionList.versions.stream().filter(java-> Objects.equals(java.id, version.getValue())).collect(Collectors.toList()).get(0).getJavaVersion();
+            switch(versionList.versions.stream().filter(version-> Objects.equals(version.id, config.mcinfo.mc.version)).collect(Collectors.toList()).get(0).type){
+                case "release":
+                    config.mcinfo.type = "vanilla";
+                    break;
+                case "snapshot":
+                    config.mcinfo.type = "snapshot";
+                    break;
+            }
+            config.mcinfo.mc.java = versionList.versions.stream().filter(java-> Objects.equals(java.id, config.mcinfo.mc.version)).collect(Collectors.toList()).get(0).getJavaVersion();
             this.play();
         });
         boxPane.getChildren().addAll(playBtn,version,versionType);
@@ -248,14 +254,14 @@ public class Vanilla extends ContentPanel {
                     } catch (InterruptedException ignored) {}
                 }
                 isDownloading = false;
+                if(Boolean.parseBoolean(saver.get("wait-launch"))) {
+                    Platform.runLater(this::showLaunchButton);
+                }else{
+                    this.startGame();
+                }
             });
             downloadCheck.setUncaughtExceptionHandler(new UncaughtExceptionHandler());
             downloadCheck.start();
-            if(Boolean.parseBoolean(saver.get("wait-launch"))) {
-                Platform.runLater(this::showLaunchButton);
-            }else{
-                this.startGame();
-            }
         } catch (Exception exception) {
             Launcher.getInstance().getLogger().printStackTrace(exception);
             Launcher.getInstance().showErrorDialog(exception,this.panelManager.getStage());

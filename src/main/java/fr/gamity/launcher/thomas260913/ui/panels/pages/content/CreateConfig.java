@@ -72,6 +72,7 @@ public class CreateConfig extends ContentPanel {
     public void init(PanelManager panelManager) {
         super.init(panelManager);
 
+        versionList.latest = Launcher.getInstance().getVersionList().latest;
         jsonFile.forEach(path ->{
             try{
                 Config.CustomServer config = new Parser.JsonConfigParser().parseJsonPath(path);
@@ -141,6 +142,7 @@ public class CreateConfig extends ContentPanel {
                         mcVersionCombobox.setDisable(false);
                     }else{
                         mcVersionCombobox.setDisable(true);
+                        mcVersionCombobox.setValue(getVanillaVersionFromForge(config.mcinfo.forge.version));
                         forgeVersionField.setDisable(false);
                         forgeVersionField.setText(config.mcinfo.forge.version);
                         forgeModsCurseField.setDisable(false);
@@ -197,7 +199,13 @@ public class CreateConfig extends ContentPanel {
                         optifinechkBox.setSelected(config.mcinfo.forge.allowOptifine);
                         optifineVersionComboBox.setDisable(!config.mcinfo.forge.allowOptifine);
                         if(config.mcinfo.forge.allowOptifine) {
-                            optifineVersionComboBox.setValue(config.mcinfo.forge.optifine.optifineVersion);
+                            if(config.mcinfo.forge.optifine.optifineVersion != null) {
+                                optifineVersionComboBox.setValue(config.mcinfo.forge.optifine.optifineVersion);
+                            }else{
+                                optifineVersionComboBox.setValue("auto");
+                            }
+                        }else{
+                            optifineVersionComboBox.setValue("");
                         }
                     }
                     mcVersionCombobox.setValue(config.mcinfo.mc.version);
@@ -219,6 +227,12 @@ public class CreateConfig extends ContentPanel {
                         serverPortField.setDisable(false);
                         serverIpField.setText(config.mcinfo.server.ip);
                         serverPortField.setText(config.mcinfo.server.port);
+                    }else{
+                        autoconnectCheckBox.setSelected(false);
+                        serverIpField.setDisable(true);
+                        serverPortField.setDisable(true);
+                        serverIpField.setText("");
+                        serverPortField.setText("");
                     }
 
                 } catch (Exception ex) {
@@ -280,7 +294,7 @@ public class CreateConfig extends ContentPanel {
         try {
             versionList.versions = Launcher.getInstance().getVersionList().versions.stream().filter(version1 -> Objects.equals(version1.type, "release")).collect(Collectors.toList());
             versionList.versions.forEach(version1->mcVersionCombobox.getItems().add(version1.id));
-            optifineList = new Parser.OptifineParser().OptifineRequest("all","all",false);
+            optifineList = Launcher.getInstance().getOptifineList();
             if(!Objects.equals(mcVersionCombobox.getValue(), "latest")) {
                 List<Parser.OptifineParser.OptifineJson.OptifineList> filter = optifineList.stream().filter(o-> Objects.equals(o.mcversion, mcVersionCombobox.getValue())).collect(Collectors.toList());
                 filter.forEach(optifine-> optifineVersionComboBox.getItems().add(optifine.optifine.version));

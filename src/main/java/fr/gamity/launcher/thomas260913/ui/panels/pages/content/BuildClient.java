@@ -24,28 +24,29 @@ public class BuildClient {
         try {
             final VanillaVersion vanillaVersion = new VanillaVersion.VanillaVersionBuilder()
                     .withName(config.mcinfo.mc.version)
+                    .withSnapshot(config.mcinfo.type == "snapshot")
                     .build();
 
-            FlowUpdater updater = new FlowUpdater.FlowUpdaterBuilder()
-                    .withVanillaVersion(vanillaVersion)
-                    .withLogger(Launcher.getInstance().getLogger())
-                    .withProgressCallback(callback)
-                    .build();
+            FlowUpdater updater;
             List<Mod> mods = new ArrayList<>();
             List<CurseFileInfo> CurseMods = new ArrayList<>();
             List<ModrinthVersionInfo> ModrinthMods = new ArrayList<>();
             CurseModPackInfo CurseModPack = null;
             ModrinthModPackInfo ModrinthModPack = null;
-            if (!Objects.equals(config.mcinfo.type, "vanilla")) {
-                if (config.mcinfo.forge.mods.custom.json.startsWith("http")) {
-                    mods = new Parser.ModsJsonParser.ModsParser().ModsParserUrl(new URL(config.mcinfo.forge.mods.custom.json));
-                } else if (config.mcinfo.forge.mods.custom.json.startsWith("{")) {
-                    mods = new Parser.ModsJsonParser.ModsParser().ModsParserJson(config.mcinfo.forge.mods.custom.json);
+            if (Objects.equals(config.mcinfo.type, "forge")) {
+                if(config.mcinfo.forge.mods.custom.json != null) {
+                    if (config.mcinfo.forge.mods.custom.json.startsWith("http")) {
+                        mods = new Parser.ModsJsonParser.ModsParser().ModsParserUrl(new URL(config.mcinfo.forge.mods.custom.json));
+                    } else if (config.mcinfo.forge.mods.custom.json.startsWith("{")) {
+                        mods = new Parser.ModsJsonParser.ModsParser().ModsParserJson(config.mcinfo.forge.mods.custom.json);
+                    }
                 }
-                if (config.mcinfo.forge.mods.curseForge.json.startsWith("http")) {
-                    CurseMods = new Parser.ModsJsonParser.CurseParser().CurseParserUrl(new URL(config.mcinfo.forge.mods.curseForge.json));
-                } else if (config.mcinfo.forge.mods.curseForge.json.startsWith("{")) {
-                    CurseMods = new Parser.ModsJsonParser.CurseParser().CurseParserJson(config.mcinfo.forge.mods.curseForge.json);
+                if(config.mcinfo.forge.mods.curseForge.json != null) {
+                    if (config.mcinfo.forge.mods.curseForge.json.startsWith("http")) {
+                        CurseMods = new Parser.ModsJsonParser.CurseParser().CurseParserUrl(new URL(config.mcinfo.forge.mods.curseForge.json));
+                    } else if (config.mcinfo.forge.mods.curseForge.json.startsWith("{")) {
+                        CurseMods = new Parser.ModsJsonParser.CurseParser().CurseParserJson(config.mcinfo.forge.mods.curseForge.json);
+                    }
                 }
                 if(config.mcinfo.forge.mods.modrinthModpack.json != null) {
                     if (config.mcinfo.forge.mods.modrinthModpack.json.startsWith("http")) {
@@ -54,10 +55,12 @@ public class BuildClient {
                         ModrinthModPack = new Parser.ModsJsonParser.ModrinthModpackParser().ModrinthModpackParserJson(config.mcinfo.forge.mods.modrinthModpack.json);
                     }
                 }
-                if (config.mcinfo.forge.mods.modrinth.json.startsWith("http")) {
-                    ModrinthMods = new Parser.ModsJsonParser.ModrinthParser().ModrinthParserUrl(new URL(config.mcinfo.forge.mods.modrinth.json));
-                } else if (config.mcinfo.forge.mods.modrinth.json.startsWith("{")) {
-                    ModrinthMods = new Parser.ModsJsonParser.ModrinthParser().ModrinthParserJson(config.mcinfo.forge.mods.modrinth.json);
+                if(config.mcinfo.forge.mods.modrinth.json != null) {
+                    if (config.mcinfo.forge.mods.modrinth.json.startsWith("http")) {
+                        ModrinthMods = new Parser.ModsJsonParser.ModrinthParser().ModrinthParserUrl(new URL(config.mcinfo.forge.mods.modrinth.json));
+                    } else if (config.mcinfo.forge.mods.modrinth.json.startsWith("{")) {
+                        ModrinthMods = new Parser.ModsJsonParser.ModrinthParser().ModrinthParserJson(config.mcinfo.forge.mods.modrinth.json);
+                    }
                 }
                 if(config.mcinfo.forge.mods.curseForgeModpack.json != null) {
                     if (config.mcinfo.forge.mods.curseForgeModpack.json.startsWith("http")) {
@@ -119,7 +122,6 @@ public class BuildClient {
                                 .build();
 
                     }
-                    updater.update(gameDir);
                     break;
                 case "snapshot":
                     final VanillaVersion vanillaVersion2 = new VanillaVersion.VanillaVersionBuilder()

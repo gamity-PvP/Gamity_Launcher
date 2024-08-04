@@ -28,8 +28,8 @@ import java.text.DecimalFormat;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CreateClientPanel extends ContentPanel {
-    private Config.CustomServer config;
-    private boolean export;
+    private final Config.CustomServer config;
+    private final boolean export;
     public CreateClientPanel(Config.CustomServer config, boolean export){
         this.config = config;
         this.export = export;
@@ -206,6 +206,12 @@ public class CreateClientPanel extends ContentPanel {
         try {
             AtomicBoolean buildDownload = new AtomicBoolean(false);
             AtomicBoolean javaDownload = new AtomicBoolean(false);
+            Thread build = new Thread(()->{
+                client = new BuildClient(config,Launcher.getInstance().getClientDir().resolve(config.name),callback,Boolean.parseBoolean(saver.get("optifine")));
+                buildDownload.set(true);
+            });
+            build.setUncaughtExceptionHandler(new UncaughtExceptionHandler());
+            build.start();
             Thread javas = new Thread(()->{
                 new JavasDownloader(config.mcinfo.mc.java);
                 javaDownload.set(true);
@@ -215,20 +221,18 @@ public class CreateClientPanel extends ContentPanel {
             Thread downloadCheck = new Thread(()->{
                 while(!buildDownload.get() || !javaDownload.get()){
                     try {
-                        Thread.sleep(200);
+                        Thread.sleep(100);
                     } catch (InterruptedException ignored) {}
                 }
                 isDownloading = false;
+                if(Boolean.parseBoolean(saver.get("wait-launch"))) {
+                    Platform.runLater(this::showLaunchButton);
+                }else{
+                    this.startGame();
+                }
             });
             downloadCheck.setUncaughtExceptionHandler(new UncaughtExceptionHandler());
             downloadCheck.start();
-            client = new BuildClient(config,Launcher.getInstance().getClientDir().resolve(config.name),callback,Boolean.parseBoolean(saver.get("optifine")));
-            buildDownload.set(true);
-            if(Boolean.parseBoolean(saver.get("wait-launch"))) {
-                Platform.runLater(this::showLaunchButton);
-            }else{
-                this.startGame();
-            }
         } catch (Exception exception) {
             Launcher.getInstance().getLogger().printStackTrace(exception);
             Launcher.getInstance().showErrorDialog(exception,this.panelManager.getStage());

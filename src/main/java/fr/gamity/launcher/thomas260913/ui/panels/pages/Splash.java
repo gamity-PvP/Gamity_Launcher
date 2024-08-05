@@ -411,7 +411,7 @@ public class Splash extends Panel {
                         Launcher.getInstance().addAuthInfos(new AuthInfos(saver.get("offline-username" + i), UUID.randomUUID().toString(), UUID.randomUUID().toString()),i);
                         Launcher.getInstance().getLogger().info("account " + Launcher.getInstance().getAuthInfos(i).getUsername() + " load");
                     }
-                    Thread.sleep(100);
+                    Thread.sleep(50);
                 } catch (InterruptedException ignored) {}
             }
             try {

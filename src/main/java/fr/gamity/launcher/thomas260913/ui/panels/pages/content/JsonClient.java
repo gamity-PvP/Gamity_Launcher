@@ -156,7 +156,7 @@ public class JsonClient extends ContentPanel {
     @Override
     public void onShow() {
         super.onShow();
-        setPage(new CreateConfig(), ConfigBtn);
+        setPage(createVanillaPanel(), vanillaBtn);
     }
 
     public void setPage(ContentPanel panel, Node navButton) {

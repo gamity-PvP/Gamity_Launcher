@@ -40,11 +40,11 @@ public class Config {
         public McInfo mcinfo;
         public static class McInfo {
             public String type;
-            public Forge forge;
+            public ModLoader modLoader;
             public Mc mc;
             public boolean autoconnect;
             public Server server;
-            public static class Forge {
+            public static class ModLoader {
                 public String version;
                 public Mods mods;
                 public Optifine optifine;

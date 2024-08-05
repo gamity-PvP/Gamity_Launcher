@@ -1,8 +1,12 @@
 package fr.gamity.launcher.thomas260913.ui.panels.pages.content;
 
 import fr.flowarg.flowupdater.download.json.*;
+import fr.flowarg.flowupdater.versions.fabric.FabricVersion;
+import fr.flowarg.flowupdater.versions.fabric.FabricVersionBuilder;
 import fr.flowarg.flowupdater.versions.forge.ForgeVersion;
 import fr.flowarg.flowupdater.versions.forge.ForgeVersionBuilder;
+import fr.flowarg.flowupdater.versions.neoforge.NeoForgeVersion;
+import fr.flowarg.flowupdater.versions.neoforge.NeoForgeVersionBuilder;
 import fr.gamity.launcher.thomas260913.Launcher;
 import fr.flowarg.flowupdater.FlowUpdater;
 import fr.flowarg.flowupdater.download.IProgressCallback;
@@ -32,55 +36,57 @@ public class BuildClient {
             List<ModrinthVersionInfo> ModrinthMods = new ArrayList<>();
             CurseModPackInfo CurseModPack = null;
             ModrinthModPackInfo ModrinthModPack = null;
-            if (Objects.equals(config.mcinfo.type, "forge")) {
-                if (config.mcinfo.forge.mods.custom != null) {
-                    if (!Objects.equals(config.mcinfo.forge.mods.custom.json, "")) {
-                        if (config.mcinfo.forge.mods.custom.json.startsWith("http")) {
-                            mods = new Parser.ModsJsonParser.ModsParser().ModsParserUrl(new URL(config.mcinfo.forge.mods.custom.json));
-                        } else if (config.mcinfo.forge.mods.custom.json.startsWith("{")) {
-                            mods = new Parser.ModsJsonParser.ModsParser().ModsParserJson(config.mcinfo.forge.mods.custom.json);
+            if (Objects.equals(config.mcinfo.type, "forge") || Objects.equals(config.mcinfo.type, "fabric") || Objects.equals(config.mcinfo.type, "neoforge")) {
+                if(config.mcinfo.modLoader.mods != null) {
+                    if (config.mcinfo.modLoader.mods.custom != null) {
+                        if (!Objects.equals(config.mcinfo.modLoader.mods.custom.json, "")) {
+                            if (config.mcinfo.modLoader.mods.custom.json.startsWith("http")) {
+                                mods = new Parser.ModsJsonParser.ModsParser().ModsParserUrl(new URL(config.mcinfo.modLoader.mods.custom.json));
+                            } else if (config.mcinfo.modLoader.mods.custom.json.startsWith("{")) {
+                                mods = new Parser.ModsJsonParser.ModsParser().ModsParserJson(config.mcinfo.modLoader.mods.custom.json);
+                            }
+                        }
+                    }
+                    if (config.mcinfo.modLoader.mods.curseForge != null) {
+                        if (!Objects.equals(config.mcinfo.modLoader.mods.curseForge.json, "")) {
+                            if (config.mcinfo.modLoader.mods.curseForge.json.startsWith("http")) {
+                                CurseMods = new Parser.ModsJsonParser.CurseParser().CurseParserUrl(new URL(config.mcinfo.modLoader.mods.curseForge.json));
+                            } else if (config.mcinfo.modLoader.mods.curseForge.json.startsWith("{")) {
+                                CurseMods = new Parser.ModsJsonParser.CurseParser().CurseParserJson(config.mcinfo.modLoader.mods.curseForge.json);
+                            }
+                        }
+                    }
+                    if (config.mcinfo.modLoader.mods.modrinthModpack != null) {
+                        if (!Objects.equals(config.mcinfo.modLoader.mods.modrinthModpack.json, "")) {
+                            if (config.mcinfo.modLoader.mods.modrinthModpack.json.startsWith("http")) {
+                                ModrinthModPack = new Parser.ModsJsonParser.ModrinthModpackParser().ModrinthModpackParserUrl(new URL(config.mcinfo.modLoader.mods.modrinthModpack.json));
+                            } else if (config.mcinfo.modLoader.mods.modrinthModpack.json.startsWith("{")) {
+                                ModrinthModPack = new Parser.ModsJsonParser.ModrinthModpackParser().ModrinthModpackParserJson(config.mcinfo.modLoader.mods.modrinthModpack.json);
+                            }
+                        }
+                    }
+                    if (config.mcinfo.modLoader.mods.modrinth != null) {
+                        if (!Objects.equals(config.mcinfo.modLoader.mods.modrinth.json, "")) {
+                            if (config.mcinfo.modLoader.mods.modrinth.json.startsWith("http")) {
+                                ModrinthMods = new Parser.ModsJsonParser.ModrinthParser().ModrinthParserUrl(new URL(config.mcinfo.modLoader.mods.modrinth.json));
+                            } else if (config.mcinfo.modLoader.mods.modrinth.json.startsWith("{")) {
+                                ModrinthMods = new Parser.ModsJsonParser.ModrinthParser().ModrinthParserJson(config.mcinfo.modLoader.mods.modrinth.json);
+                            }
+                        }
+                    }
+                    if (config.mcinfo.modLoader.mods.curseForgeModpack != null) {
+                        if (!Objects.equals(config.mcinfo.modLoader.mods.curseForgeModpack.json, "")) {
+                            if (config.mcinfo.modLoader.mods.curseForgeModpack.json.startsWith("http")) {
+                                CurseModPack = new Parser.ModsJsonParser.CurseModPackParser().CurseModPackParserUrl(new URL(config.mcinfo.modLoader.mods.curseForgeModpack.json));
+                            } else if (config.mcinfo.modLoader.mods.curseForgeModpack.json.startsWith("{")) {
+                                CurseModPack = new Parser.ModsJsonParser.CurseModPackParser().CurseModPackParserJson(config.mcinfo.modLoader.mods.curseForgeModpack.json);
+                            }
                         }
                     }
                 }
-                if (config.mcinfo.forge.mods.curseForge != null) {
-                    if (!Objects.equals(config.mcinfo.forge.mods.curseForge.json, "")) {
-                        if (config.mcinfo.forge.mods.curseForge.json.startsWith("http")) {
-                            CurseMods = new Parser.ModsJsonParser.CurseParser().CurseParserUrl(new URL(config.mcinfo.forge.mods.curseForge.json));
-                        } else if (config.mcinfo.forge.mods.curseForge.json.startsWith("{")) {
-                            CurseMods = new Parser.ModsJsonParser.CurseParser().CurseParserJson(config.mcinfo.forge.mods.curseForge.json);
-                        }
-                    }
-                }
-                if (config.mcinfo.forge.mods.modrinthModpack != null) {
-                    if (!Objects.equals(config.mcinfo.forge.mods.modrinthModpack.json, "")) {
-                        if (config.mcinfo.forge.mods.modrinthModpack.json.startsWith("http")) {
-                            ModrinthModPack = new Parser.ModsJsonParser.ModrinthModpackParser().ModrinthModpackParserUrl(new URL(config.mcinfo.forge.mods.modrinthModpack.json));
-                        } else if (config.mcinfo.forge.mods.modrinthModpack.json.startsWith("{")) {
-                            ModrinthModPack = new Parser.ModsJsonParser.ModrinthModpackParser().ModrinthModpackParserJson(config.mcinfo.forge.mods.modrinthModpack.json);
-                        }
-                    }
-                }
-                if (config.mcinfo.forge.mods.modrinth != null) {
-                    if (!Objects.equals(config.mcinfo.forge.mods.modrinth.json, "")) {
-                        if (config.mcinfo.forge.mods.modrinth.json.startsWith("http")) {
-                            ModrinthMods = new Parser.ModsJsonParser.ModrinthParser().ModrinthParserUrl(new URL(config.mcinfo.forge.mods.modrinth.json));
-                        } else if (config.mcinfo.forge.mods.modrinth.json.startsWith("{")) {
-                            ModrinthMods = new Parser.ModsJsonParser.ModrinthParser().ModrinthParserJson(config.mcinfo.forge.mods.modrinth.json);
-                        }
-                    }
-                }
-                if (config.mcinfo.forge.mods.curseForgeModpack != null) {
-                    if (!Objects.equals(config.mcinfo.forge.mods.curseForgeModpack.json, "")) {
-                        if (config.mcinfo.forge.mods.curseForgeModpack.json.startsWith("http")) {
-                            CurseModPack = new Parser.ModsJsonParser.CurseModPackParser().CurseModPackParserUrl(new URL(config.mcinfo.forge.mods.curseForgeModpack.json));
-                        } else if (config.mcinfo.forge.mods.curseForgeModpack.json.startsWith("{")) {
-                            CurseModPack = new Parser.ModsJsonParser.CurseModPackParser().CurseModPackParserJson(config.mcinfo.forge.mods.curseForgeModpack.json);
-                        }
-                    }
-                }
-                if (optifineEnable && config.mcinfo.forge.allowOptifine) {
-                    if (!Objects.equals(config.mcinfo.forge.optifine.optifineVersion, "")) {
-                        mods.add(new Parser.OptifineParser().OptifineRequestMod(config.mcinfo.forge.optifine.optifineVersion));
+                if (optifineEnable && config.mcinfo.modLoader.allowOptifine) {
+                    if (!Objects.equals(config.mcinfo.modLoader.optifine.optifineVersion, "")) {
+                        mods.add(new Parser.OptifineParser().OptifineRequestMod(config.mcinfo.modLoader.optifine.optifineVersion));
                     } else {
                         mods.add(new Parser.OptifineParser().OptifineRequestMod(config.mcinfo.mc.version));
                     }
@@ -89,7 +95,7 @@ public class BuildClient {
             switch (config.mcinfo.type) {
                 case "forge":
                     ForgeVersion forge = new ForgeVersionBuilder()
-                            .withForgeVersion(config.mcinfo.forge.version)
+                            .withForgeVersion(config.mcinfo.modLoader.version)
                             .withMods(mods)
                             .withCurseMods(CurseMods)
                             .withModrinthMods(ModrinthMods)
@@ -109,6 +115,60 @@ public class BuildClient {
                         updater = new FlowUpdater.FlowUpdaterBuilder()
                                 .withVanillaVersion(vanillaVersion)
                                 .withModLoaderVersion(forge)
+                                .withLogger(Launcher.getInstance().getLogger())
+                                .withProgressCallback(callback)
+                                .build();
+                    }
+                    break;
+                case "neoforge":
+                    NeoForgeVersion neoforge = new NeoForgeVersionBuilder()
+                            .withNeoForgeVersion(config.mcinfo.modLoader.version)
+                            .withMods(mods)
+                            .withCurseMods(CurseMods)
+                            .withModrinthMods(ModrinthMods)
+                            .withCurseModPack(CurseModPack)
+                            .withModrinthModPack(ModrinthModPack)
+                            .withFileDeleter(new ModFileDeleter(true))
+                            .build();
+                    if (config.mcinfo.mc.extfiles != null && config.mcinfo.mc.extfiles.startsWith("http")) {
+                        updater = new FlowUpdater.FlowUpdaterBuilder()
+                                .withExternalFiles(ExternalFile.getExternalFilesFromJson(config.mcinfo.mc.extfiles))
+                                .withVanillaVersion(vanillaVersion)
+                                .withModLoaderVersion(neoforge)
+                                .withLogger(Launcher.getInstance().getLogger())
+                                .withProgressCallback(callback)
+                                .build();
+                    } else {
+                        updater = new FlowUpdater.FlowUpdaterBuilder()
+                                .withVanillaVersion(vanillaVersion)
+                                .withModLoaderVersion(neoforge)
+                                .withLogger(Launcher.getInstance().getLogger())
+                                .withProgressCallback(callback)
+                                .build();
+                    }
+                    break;
+                case "fabric":
+                    FabricVersion fabric = new FabricVersionBuilder()
+                            .withFabricVersion(config.mcinfo.modLoader.version)
+                            .withMods(mods)
+                            .withCurseMods(CurseMods)
+                            .withModrinthMods(ModrinthMods)
+                            .withCurseModPack(CurseModPack)
+                            .withModrinthModPack(ModrinthModPack)
+                            .withFileDeleter(new ModFileDeleter(true))
+                            .build();
+                    if (config.mcinfo.mc.extfiles != null && config.mcinfo.mc.extfiles.startsWith("http")) {
+                        updater = new FlowUpdater.FlowUpdaterBuilder()
+                                .withExternalFiles(ExternalFile.getExternalFilesFromJson(config.mcinfo.mc.extfiles))
+                                .withVanillaVersion(vanillaVersion)
+                                .withModLoaderVersion(fabric)
+                                .withLogger(Launcher.getInstance().getLogger())
+                                .withProgressCallback(callback)
+                                .build();
+                    } else {
+                        updater = new FlowUpdater.FlowUpdaterBuilder()
+                                .withVanillaVersion(vanillaVersion)
+                                .withModLoaderVersion(fabric)
                                 .withLogger(Launcher.getInstance().getLogger())
                                 .withProgressCallback(callback)
                                 .build();
@@ -168,6 +228,7 @@ public class BuildClient {
                     Launcher.getInstance().getAuthInfos(),
                     GameFolder.FLOW_UPDATER
             );
+            noFramework.setServerName(config.name);
             JavaUtil.setJavaCommand(null);
             switch (config.mcinfo.mc.java) {
                 case "21":
@@ -205,8 +266,52 @@ public class BuildClient {
                     });
                     noFramework.launch(config.mcinfo.mc.version, null, NoFramework.ModLoader.VANILLA);
                     break;
+                case "neoforge":
+                    noFramework.getAdditionalVmArgs().add(ram);
+                    if (config.mcinfo.autoconnect) {
+                        noFramework.getAdditionalArgs().add("--server");
+                        noFramework.getAdditionalArgs().add(config.mcinfo.server.ip);
+                        if (config.mcinfo.server.port != null) {
+                            noFramework.getAdditionalArgs().add("--port");
+                            noFramework.getAdditionalArgs().add(config.mcinfo.server.port);
+                        }
+                    }
+
+                    noFramework.setLastCallback(externalLauncher -> {
+                        for (int i = 0; i < externalLauncher.getProfile().getArgs().size(); i++) {
+                            final String arg = externalLauncher.getProfile().getArgs().get(i);
+                            if (arg.contains("userProperties")) {
+                                externalLauncher.getProfile().getArgs().set(i + 1, "{}");
+                                break;
+                            }
+                        }
+                    });
+                    noFramework.launch(config.mcinfo.mc.version, config.mcinfo.modLoader.version, NoFramework.ModLoader.NEO_FORGE);
+                    break;
+                case "fabric":
+                    noFramework.getAdditionalVmArgs().add(ram);
+                    if (config.mcinfo.autoconnect) {
+                        noFramework.getAdditionalArgs().add("--server");
+                        noFramework.getAdditionalArgs().add(config.mcinfo.server.ip);
+                        if (config.mcinfo.server.port != null) {
+                            noFramework.getAdditionalArgs().add("--port");
+                            noFramework.getAdditionalArgs().add(config.mcinfo.server.port);
+                        }
+                    }
+
+                    noFramework.setLastCallback(externalLauncher -> {
+                        for (int i = 0; i < externalLauncher.getProfile().getArgs().size(); i++) {
+                            final String arg = externalLauncher.getProfile().getArgs().get(i);
+                            if (arg.contains("userProperties")) {
+                                externalLauncher.getProfile().getArgs().set(i + 1, "{}");
+                                break;
+                            }
+                        }
+                    });
+                    noFramework.launch(config.mcinfo.mc.version, config.mcinfo.modLoader.version, NoFramework.ModLoader.FABRIC);
+                    break;
                 case "forge":
-                    String forgeType = getForgeType(config.mcinfo.forge.version);
+                    String forgeType = getForgeType(config.mcinfo.modLoader.version);
                     switch (forgeType) {
                         case "newforge":
                             noFramework.getAdditionalVmArgs().add(ram);
@@ -229,7 +334,7 @@ public class BuildClient {
                                     }
                                 }
                             });
-                            noFramework.launch(config.mcinfo.mc.version, config.mcinfo.forge.version, NoFramework.ModLoader.FORGE);
+                            noFramework.launch(config.mcinfo.mc.version, config.mcinfo.modLoader.version, NoFramework.ModLoader.FORGE);
                             break;
                         case "oldforge":
                             noFramework.getAdditionalVmArgs().add(ram);
@@ -252,7 +357,7 @@ public class BuildClient {
                                     }
                                 }
                             });
-                            noFramework.launch(config.mcinfo.mc.version, config.mcinfo.forge.version.split("-")[1], NoFramework.ModLoader.OLD_FORGE);
+                            noFramework.launch(config.mcinfo.mc.version, config.mcinfo.modLoader.version.split("-")[1], NoFramework.ModLoader.OLD_FORGE);
                             break;
                         case "very_oldforge":
                             noFramework.getAdditionalVmArgs().add(ram);
@@ -275,7 +380,7 @@ public class BuildClient {
                                     }
                                 }
                             });
-                            noFramework.launch(config.mcinfo.mc.version, config.mcinfo.forge.version.split("-")[1], NoFramework.ModLoader.VERY_OLD_FORGE);
+                            noFramework.launch(config.mcinfo.mc.version, config.mcinfo.modLoader.version.split("-")[1], NoFramework.ModLoader.VERY_OLD_FORGE);
                             break;
                     }
                     break;

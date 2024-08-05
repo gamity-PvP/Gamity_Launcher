@@ -85,7 +85,7 @@ public class BuildClient {
                     }
                 }
                 if (optifineEnable && config.mcinfo.modLoader.allowOptifine) {
-                    if (!Objects.equals(config.mcinfo.modLoader.optifine.optifineVersion, "")) {
+                    if (!Objects.equals(config.mcinfo.modLoader.optifine.optifineVersion, "") && config.mcinfo.modLoader.optifine.optifineVersion != null) {
                         mods.add(new Parser.OptifineParser().OptifineRequestMod(config.mcinfo.modLoader.optifine.optifineVersion));
                     } else {
                         mods.add(new Parser.OptifineParser().OptifineRequestMod(config.mcinfo.mc.version));

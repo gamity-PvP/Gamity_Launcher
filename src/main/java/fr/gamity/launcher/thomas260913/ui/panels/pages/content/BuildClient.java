@@ -39,7 +39,7 @@ public class BuildClient {
             if (Objects.equals(config.mcinfo.type, "forge") || Objects.equals(config.mcinfo.type, "fabric") || Objects.equals(config.mcinfo.type, "neoforge")) {
                 if(config.mcinfo.modLoader.mods != null) {
                     if (config.mcinfo.modLoader.mods.custom != null) {
-                        if (!Objects.equals(config.mcinfo.modLoader.mods.custom.json, "")) {
+                        if (!Objects.equals(config.mcinfo.modLoader.mods.custom.json, "") && config.mcinfo.modLoader.mods.custom.json != null) {
                             if (config.mcinfo.modLoader.mods.custom.json.startsWith("http")) {
                                 mods = new Parser.ModsJsonParser.ModsParser().ModsParserUrl(new URL(config.mcinfo.modLoader.mods.custom.json));
                             } else if (config.mcinfo.modLoader.mods.custom.json.startsWith("{")) {
@@ -48,7 +48,7 @@ public class BuildClient {
                         }
                     }
                     if (config.mcinfo.modLoader.mods.curseForge != null) {
-                        if (!Objects.equals(config.mcinfo.modLoader.mods.curseForge.json, "")) {
+                        if (!Objects.equals(config.mcinfo.modLoader.mods.curseForge.json, "") && config.mcinfo.modLoader.mods.curseForge.json != null) {
                             if (config.mcinfo.modLoader.mods.curseForge.json.startsWith("http")) {
                                 CurseMods = new Parser.ModsJsonParser.CurseParser().CurseParserUrl(new URL(config.mcinfo.modLoader.mods.curseForge.json));
                             } else if (config.mcinfo.modLoader.mods.curseForge.json.startsWith("{")) {
@@ -57,7 +57,7 @@ public class BuildClient {
                         }
                     }
                     if (config.mcinfo.modLoader.mods.modrinthModpack != null) {
-                        if (!Objects.equals(config.mcinfo.modLoader.mods.modrinthModpack.json, "")) {
+                        if (!Objects.equals(config.mcinfo.modLoader.mods.modrinthModpack.json, "") && config.mcinfo.modLoader.mods.modrinthModpack.json != null) {
                             if (config.mcinfo.modLoader.mods.modrinthModpack.json.startsWith("http")) {
                                 ModrinthModPack = new Parser.ModsJsonParser.ModrinthModpackParser().ModrinthModpackParserUrl(new URL(config.mcinfo.modLoader.mods.modrinthModpack.json));
                             } else if (config.mcinfo.modLoader.mods.modrinthModpack.json.startsWith("{")) {
@@ -66,7 +66,7 @@ public class BuildClient {
                         }
                     }
                     if (config.mcinfo.modLoader.mods.modrinth != null) {
-                        if (!Objects.equals(config.mcinfo.modLoader.mods.modrinth.json, "")) {
+                        if (!Objects.equals(config.mcinfo.modLoader.mods.modrinth.json, "") && config.mcinfo.modLoader.mods.modrinth.json != null) {
                             if (config.mcinfo.modLoader.mods.modrinth.json.startsWith("http")) {
                                 ModrinthMods = new Parser.ModsJsonParser.ModrinthParser().ModrinthParserUrl(new URL(config.mcinfo.modLoader.mods.modrinth.json));
                             } else if (config.mcinfo.modLoader.mods.modrinth.json.startsWith("{")) {
@@ -75,7 +75,7 @@ public class BuildClient {
                         }
                     }
                     if (config.mcinfo.modLoader.mods.curseForgeModpack != null) {
-                        if (!Objects.equals(config.mcinfo.modLoader.mods.curseForgeModpack.json, "")) {
+                        if (!Objects.equals(config.mcinfo.modLoader.mods.curseForgeModpack.json, "") && config.mcinfo.modLoader.mods.curseForgeModpack.json != null) {
                             if (config.mcinfo.modLoader.mods.curseForgeModpack.json.startsWith("http")) {
                                 CurseModPack = new Parser.ModsJsonParser.CurseModPackParser().CurseModPackParserUrl(new URL(config.mcinfo.modLoader.mods.curseForgeModpack.json));
                             } else if (config.mcinfo.modLoader.mods.curseForgeModpack.json.startsWith("{")) {

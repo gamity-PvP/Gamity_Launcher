@@ -339,17 +339,6 @@ public class Splash extends Panel {
                     setProgress1(2.0, 2.0);
                 });
                 Launcher.getInstance().getLogger().info("finish optifine version");
-                Platform.runLater(() -> {
-                    stepLabel1.setText("download config exemple ...");
-                    setProgress1(2.0, 3.0);
-                });
-                Launcher.getInstance().getLogger().info("download config exemple ...");
-                downloadFile("https://gamity-pvp.fr/download/config_launcher/exemple.json", Launcher.getInstance().getLauncherDir().resolve("configExemple.json").toAbsolutePath().toString());
-                Launcher.getInstance().getLogger().info("finish download config exemple");
-                Platform.runLater(() -> {
-                    stepLabel1.setText("finish download config exemple");
-                    setProgress1(3.0, 3.0);
-                });
                 javafinish = true;
             }catch(Exception ex){
                 Launcher.getInstance().showErrorDialog(ex,this.panelManager.getStage());

@@ -1,5 +1,8 @@
 package fr.gamity.launcher.thomas260913.ui.panels.pages.content;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import fr.gamity.launcher.thomas260913.Launcher;
 import fr.gamity.launcher.thomas260913.ui.PanelManager;
 import fr.gamity.launcher.thomas260913.ui.panels.pages.App;
@@ -17,10 +20,8 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
 
@@ -29,14 +30,12 @@ public class ConfigErrorPanel extends ContentPanel {
     private final String name;
     private final Exception error;
     private final String fileContent;
-    private final Path additionalString;
 
     public ConfigErrorPanel(Path path,String fileContent,Exception e) {
         this.path = path;
         this.name = path.getFileName().toString();
         this.error = e;
         this.fileContent = fileContent;
-        this.additionalString = Launcher.getInstance().getLauncherDir().resolve("configExemple.json");
     }
 
     GridPane contentPane = new GridPane();
@@ -99,7 +98,7 @@ public class ConfigErrorPanel extends ContentPanel {
         // TextArea for additional string
         TextArea additionalArea = new TextArea();
         additionalArea.getStyleClass().add("text-area");
-        additionalArea.setText(readFileToString(additionalString.toAbsolutePath().toString()));
+        additionalArea.setText(getExempleConfig());
         additionalArea.setEditable(false);
         additionalArea.setWrapText(true);
         setCanTakeAllSize(additionalArea);
@@ -183,14 +182,46 @@ public class ConfigErrorPanel extends ContentPanel {
         return result.toString();
     }
 
-    private static String readFileToString(String path) {
+    private static String getExempleConfig() {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
         try {
-            byte[] encoded = Files.readAllBytes(Paths.get(path));
-            return new String(encoded, StandardCharsets.UTF_8);
-        } catch (IOException e) {
+            return writer.writeValueAsString(createFakeConfig());
+        } catch (JsonProcessingException e) {
             Launcher.getInstance().getLogger().printStackTrace(e);
             Launcher.getInstance().showErrorDialog(e);
             return null;
         }
+    }
+    private static Config.CustomServer createFakeConfig(){
+        Config.CustomServer config = new Config.CustomServer();
+        config.name = "exemple";
+        config.mcinfo = new Config.CustomServer.McInfo();
+        config.mcinfo.type = "forge";
+        config.mcinfo.mc = new Config.CustomServer.McInfo.Mc();
+        config.mcinfo.mc.extfiles = "https://exemple.com/extFiles/list.json";
+        config.mcinfo.mc.java = "17";
+        config.mcinfo.mc.version = "1.18.2";
+        config.mcinfo.autoconnect = true;
+        config.mcinfo.server = new Config.CustomServer.McInfo.Server();
+        config.mcinfo.server.ip = "mc.exemple.com";
+        config.mcinfo.server.port = "25565";
+        config.mcinfo.modLoader = new Config.CustomServer.McInfo.ModLoader();
+        config.mcinfo.modLoader.version = "1.18.2-40.2.21";
+        config.mcinfo.modLoader.mods = new Config.CustomServer.McInfo.ModLoader.Mods();
+        config.mcinfo.modLoader.mods.custom = new Config.CustomServer.McInfo.ModLoader.Mods.Custom();
+        config.mcinfo.modLoader.mods.curseForge = new Config.CustomServer.McInfo.ModLoader.Mods.CurseForge();
+        config.mcinfo.modLoader.mods.curseForgeModpack = new Config.CustomServer.McInfo.ModLoader.Mods.CurseForgeModpack();
+        config.mcinfo.modLoader.mods.modrinth = new Config.CustomServer.McInfo.ModLoader.Mods.Modrinth();
+        config.mcinfo.modLoader.mods.modrinthModpack = new Config.CustomServer.McInfo.ModLoader.Mods.ModrinthModpack();
+        config.mcinfo.modLoader.mods.custom.json = "{\"mods\":[]}";
+        config.mcinfo.modLoader.mods.curseForge.json = "{\"curseFiles\":[]}";
+        config.mcinfo.modLoader.mods.curseForgeModpack.json = "";
+        config.mcinfo.modLoader.mods.modrinth.json = "{\"modrinthMods\":[]}";
+        config.mcinfo.modLoader.mods.modrinthModpack.json = "";
+        config.mcinfo.modLoader.allowOptifine = true;
+        config.mcinfo.modLoader.optifine = new Config.CustomServer.McInfo.ModLoader.Optifine();
+        config.mcinfo.modLoader.optifine.optifineVersion = "OptiFine_HD_U_H9";
+        return config;
     }
 }

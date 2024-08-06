@@ -18,10 +18,7 @@ import fr.theshark34.openlauncherlib.minecraft.GameFolder;
 
 import java.net.URL;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 
 public class BuildClient {
     public BuildClient(Config.CustomServer config, Path gameDir, IProgressCallback callback, boolean optifineEnable) {
@@ -247,67 +244,35 @@ public class BuildClient {
                 case "vanilla":
                     noFramework.getAdditionalVmArgs().add(ram);
                     if (config.mcinfo.autoconnect) {
-                        noFramework.getAdditionalArgs().add("--server");
-                        noFramework.getAdditionalArgs().add(config.mcinfo.server.ip);
-                        if (config.mcinfo.server.port != null) {
-                            noFramework.getAdditionalArgs().add("--port");
-                            noFramework.getAdditionalArgs().add(config.mcinfo.server.port);
+                        if(Double.parseDouble(config.mcinfo.mc.version.split("\\.",1)[1]) >= 20.1) {
+                            noFramework.getAdditionalArgs().addAll(Arrays.asList("--quickPlayMultiplayer", config.mcinfo.server.ip + ":" + (!Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565")));
+                        }else{
+                            noFramework.getAdditionalArgs().addAll(Arrays.asList("--server", config.mcinfo.server.ip, "--port", !Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565"));
                         }
                     }
 
-                    noFramework.setLastCallback(externalLauncher -> {
-                        for (int i = 0; i < externalLauncher.getProfile().getArgs().size(); i++) {
-                            final String arg = externalLauncher.getProfile().getArgs().get(i);
-                            if (arg.contains("userProperties")) {
-                                externalLauncher.getProfile().getArgs().set(i + 1, "{}");
-                                break;
-                            }
-                        }
-                    });
                     noFramework.launch(config.mcinfo.mc.version, null, NoFramework.ModLoader.VANILLA);
                     break;
                 case "neoforge":
                     noFramework.getAdditionalVmArgs().add(ram);
                     if (config.mcinfo.autoconnect) {
-                        noFramework.getAdditionalArgs().add("--server");
-                        noFramework.getAdditionalArgs().add(config.mcinfo.server.ip);
-                        if (config.mcinfo.server.port != null) {
-                            noFramework.getAdditionalArgs().add("--port");
-                            noFramework.getAdditionalArgs().add(config.mcinfo.server.port);
+                        if(Double.parseDouble(config.mcinfo.mc.version.split("\\.",1)[1]) >= 20.1) {
+                            noFramework.getAdditionalArgs().addAll(Arrays.asList("--quickPlayMultiplayer", config.mcinfo.server.ip + ":" + (!Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565")));
+                        }else{
+                            noFramework.getAdditionalArgs().addAll(Arrays.asList("--server", config.mcinfo.server.ip, "--port", !Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565"));
                         }
                     }
-
-                    noFramework.setLastCallback(externalLauncher -> {
-                        for (int i = 0; i < externalLauncher.getProfile().getArgs().size(); i++) {
-                            final String arg = externalLauncher.getProfile().getArgs().get(i);
-                            if (arg.contains("userProperties")) {
-                                externalLauncher.getProfile().getArgs().set(i + 1, "{}");
-                                break;
-                            }
-                        }
-                    });
                     noFramework.launch(config.mcinfo.mc.version, config.mcinfo.modLoader.version, NoFramework.ModLoader.NEO_FORGE);
                     break;
                 case "fabric":
                     noFramework.getAdditionalVmArgs().add(ram);
                     if (config.mcinfo.autoconnect) {
-                        noFramework.getAdditionalArgs().add("--server");
-                        noFramework.getAdditionalArgs().add(config.mcinfo.server.ip);
-                        if (config.mcinfo.server.port != null) {
-                            noFramework.getAdditionalArgs().add("--port");
-                            noFramework.getAdditionalArgs().add(config.mcinfo.server.port);
+                        if(Double.parseDouble(config.mcinfo.mc.version.split("\\.",1)[1]) >= 20.1) {
+                            noFramework.getAdditionalArgs().addAll(Arrays.asList("--quickPlayMultiplayer", config.mcinfo.server.ip + ":" + (!Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565")));
+                        }else{
+                            noFramework.getAdditionalArgs().addAll(Arrays.asList("--server", config.mcinfo.server.ip, "--port", !Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565"));
                         }
                     }
-
-                    noFramework.setLastCallback(externalLauncher -> {
-                        for (int i = 0; i < externalLauncher.getProfile().getArgs().size(); i++) {
-                            final String arg = externalLauncher.getProfile().getArgs().get(i);
-                            if (arg.contains("userProperties")) {
-                                externalLauncher.getProfile().getArgs().set(i + 1, "{}");
-                                break;
-                            }
-                        }
-                    });
                     noFramework.launch(config.mcinfo.mc.version, config.mcinfo.modLoader.version, NoFramework.ModLoader.FABRIC);
                     break;
                 case "forge":
@@ -316,70 +281,34 @@ public class BuildClient {
                         case "newforge":
                             noFramework.getAdditionalVmArgs().add(ram);
                             if (config.mcinfo.autoconnect) {
-                                noFramework.getAdditionalArgs().add("--server");
-                                noFramework.getAdditionalArgs().add(config.mcinfo.server.ip);
-                                if (config.mcinfo.server.port != null) {
-                                    noFramework.getAdditionalArgs().add("--port");
-                                    noFramework.getAdditionalArgs().add(config.mcinfo.server.port);
+                                if(Double.parseDouble(config.mcinfo.mc.version.split("\\.",1)[1]) >= 20.1) {
+                                    noFramework.getAdditionalArgs().addAll(Arrays.asList("--quickPlayMultiplayer", config.mcinfo.server.ip + ":" + (!Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565")));
+                                }else{
+                                    noFramework.getAdditionalArgs().addAll(Arrays.asList("--server", config.mcinfo.server.ip, "--port", !Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565"));
                                 }
                             }
-                            NoFramework.ModLoader.FORGE.setJsonFileNameProvider((version, modLoaderVersion) -> modLoaderVersion.replaceAll("-", "-forge-") + ".json");
-
-                            noFramework.setLastCallback(externalLauncher -> {
-                                for (int i = 0; i < externalLauncher.getProfile().getArgs().size(); i++) {
-                                    final String arg = externalLauncher.getProfile().getArgs().get(i);
-                                    if (arg.contains("userProperties")) {
-                                        externalLauncher.getProfile().getArgs().set(i + 1, "{}");
-                                        break;
-                                    }
-                                }
-                            });
                             noFramework.launch(config.mcinfo.mc.version, config.mcinfo.modLoader.version, NoFramework.ModLoader.FORGE);
                             break;
                         case "oldforge":
                             noFramework.getAdditionalVmArgs().add(ram);
                             if (config.mcinfo.autoconnect) {
-                                noFramework.getAdditionalArgs().add("--server");
-                                noFramework.getAdditionalArgs().add(config.mcinfo.server.ip);
-                                if (config.mcinfo.server.port != null) {
-                                    noFramework.getAdditionalArgs().add("--port");
-                                    noFramework.getAdditionalArgs().add(config.mcinfo.server.port);
+                                if(Double.parseDouble(config.mcinfo.mc.version.split("\\.",1)[1]) >= 20.1) {
+                                    noFramework.getAdditionalArgs().addAll(Arrays.asList("--quickPlayMultiplayer", config.mcinfo.server.ip + ":" + (!Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565")));
+                                }else{
+                                    noFramework.getAdditionalArgs().addAll(Arrays.asList("--server", config.mcinfo.server.ip, "--port", !Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565"));
                                 }
                             }
-                            NoFramework.ModLoader.OLD_FORGE.setJsonFileNameProvider((version, modLoaderVersion) -> version + "-Forge" + modLoaderVersion + "-" + version + ".json");
-
-                            noFramework.setLastCallback(externalLauncher -> {
-                                for (int i = 0; i < externalLauncher.getProfile().getArgs().size(); i++) {
-                                    final String arg = externalLauncher.getProfile().getArgs().get(i);
-                                    if (arg.contains("userProperties")) {
-                                        externalLauncher.getProfile().getArgs().set(i + 1, "{}");
-                                        break;
-                                    }
-                                }
-                            });
                             noFramework.launch(config.mcinfo.mc.version, config.mcinfo.modLoader.version.split("-")[1], NoFramework.ModLoader.OLD_FORGE);
                             break;
                         case "very_oldforge":
                             noFramework.getAdditionalVmArgs().add(ram);
                             if (config.mcinfo.autoconnect) {
-                                noFramework.getAdditionalArgs().add("--server");
-                                noFramework.getAdditionalArgs().add(config.mcinfo.server.ip);
-                                if (config.mcinfo.server.port != null) {
-                                    noFramework.getAdditionalArgs().add("--port");
-                                    noFramework.getAdditionalArgs().add(config.mcinfo.server.port);
+                                if(Double.parseDouble(config.mcinfo.mc.version.split("\\.",1)[1]) >= 20.1) {
+                                    noFramework.getAdditionalArgs().addAll(Arrays.asList("--quickPlayMultiplayer", config.mcinfo.server.ip + ":" + (!Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565")));
+                                }else{
+                                    noFramework.getAdditionalArgs().addAll(Arrays.asList("--server", config.mcinfo.server.ip, "--port", !Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565"));
                                 }
                             }
-                            NoFramework.ModLoader.VERY_OLD_FORGE.setJsonFileNameProvider((version, modLoaderVersion) -> version + "-Forge" + modLoaderVersion + "-" + version + ".json");
-
-                            noFramework.setLastCallback(externalLauncher -> {
-                                for (int i = 0; i < externalLauncher.getProfile().getArgs().size(); i++) {
-                                    final String arg = externalLauncher.getProfile().getArgs().get(i);
-                                    if (arg.contains("userProperties")) {
-                                        externalLauncher.getProfile().getArgs().set(i + 1, "{}");
-                                        break;
-                                    }
-                                }
-                            });
                             noFramework.launch(config.mcinfo.mc.version, config.mcinfo.modLoader.version.split("-")[1], NoFramework.ModLoader.VERY_OLD_FORGE);
                             break;
                     }

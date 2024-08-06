@@ -244,7 +244,7 @@ public class BuildClient {
                 case "vanilla":
                     noFramework.getAdditionalVmArgs().add(ram);
                     if (config.mcinfo.autoconnect) {
-                        if(Double.parseDouble(config.mcinfo.mc.version.split("\\.",1)[1]) >= 20.1) {
+                        if(Integer.parseInt(config.mcinfo.mc.version.split("\\.")[1]) > 20 || (Integer.parseInt(config.mcinfo.mc.version.split("\\.")[1]) == 20 && !Objects.equals(config.mcinfo.mc.version, "1.20.1"))) {
                             noFramework.getAdditionalArgs().addAll(Arrays.asList("--quickPlayMultiplayer", config.mcinfo.server.ip + ":" + (!Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565")));
                         }else{
                             noFramework.getAdditionalArgs().addAll(Arrays.asList("--server", config.mcinfo.server.ip, "--port", !Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565"));
@@ -256,7 +256,7 @@ public class BuildClient {
                 case "neoforge":
                     noFramework.getAdditionalVmArgs().add(ram);
                     if (config.mcinfo.autoconnect) {
-                        if(Double.parseDouble(config.mcinfo.mc.version.split("\\.",1)[1]) >= 20.1) {
+                        if(Integer.parseInt(config.mcinfo.mc.version.split("\\.")[1]) > 20 || (Integer.parseInt(config.mcinfo.mc.version.split("\\.")[1]) == 20 && !Objects.equals(config.mcinfo.mc.version, "1.20.1"))) {
                             noFramework.getAdditionalArgs().addAll(Arrays.asList("--quickPlayMultiplayer", config.mcinfo.server.ip + ":" + (!Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565")));
                         }else{
                             noFramework.getAdditionalArgs().addAll(Arrays.asList("--server", config.mcinfo.server.ip, "--port", !Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565"));
@@ -267,7 +267,7 @@ public class BuildClient {
                 case "fabric":
                     noFramework.getAdditionalVmArgs().add(ram);
                     if (config.mcinfo.autoconnect) {
-                        if(Double.parseDouble(config.mcinfo.mc.version.split("\\.",1)[1]) >= 20.1) {
+                        if(Integer.parseInt(config.mcinfo.mc.version.split("\\.")[1]) > 20 || (Integer.parseInt(config.mcinfo.mc.version.split("\\.")[1]) == 20 && !Objects.equals(config.mcinfo.mc.version, "1.20.1"))) {
                             noFramework.getAdditionalArgs().addAll(Arrays.asList("--quickPlayMultiplayer", config.mcinfo.server.ip + ":" + (!Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565")));
                         }else{
                             noFramework.getAdditionalArgs().addAll(Arrays.asList("--server", config.mcinfo.server.ip, "--port", !Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565"));
@@ -281,7 +281,7 @@ public class BuildClient {
                         case "newforge":
                             noFramework.getAdditionalVmArgs().add(ram);
                             if (config.mcinfo.autoconnect) {
-                                if(Double.parseDouble(config.mcinfo.mc.version.split("\\.",1)[1]) >= 20.1) {
+                                if(Integer.parseInt(config.mcinfo.mc.version.split("\\.")[1]) > 20 || (Integer.parseInt(config.mcinfo.mc.version.split("\\.")[1]) == 20 && !Objects.equals(config.mcinfo.mc.version, "1.20.1"))) {
                                     noFramework.getAdditionalArgs().addAll(Arrays.asList("--quickPlayMultiplayer", config.mcinfo.server.ip + ":" + (!Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565")));
                                 }else{
                                     noFramework.getAdditionalArgs().addAll(Arrays.asList("--server", config.mcinfo.server.ip, "--port", !Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565"));
@@ -292,7 +292,7 @@ public class BuildClient {
                         case "oldforge":
                             noFramework.getAdditionalVmArgs().add(ram);
                             if (config.mcinfo.autoconnect) {
-                                if(Double.parseDouble(config.mcinfo.mc.version.split("\\.",1)[1]) >= 20.1) {
+                                if(Integer.parseInt(config.mcinfo.mc.version.split("\\.")[1]) > 20 || (Integer.parseInt(config.mcinfo.mc.version.split("\\.")[1]) == 20 && !Objects.equals(config.mcinfo.mc.version, "1.20.1"))) {
                                     noFramework.getAdditionalArgs().addAll(Arrays.asList("--quickPlayMultiplayer", config.mcinfo.server.ip + ":" + (!Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565")));
                                 }else{
                                     noFramework.getAdditionalArgs().addAll(Arrays.asList("--server", config.mcinfo.server.ip, "--port", !Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565"));
@@ -303,7 +303,7 @@ public class BuildClient {
                         case "very_oldforge":
                             noFramework.getAdditionalVmArgs().add(ram);
                             if (config.mcinfo.autoconnect) {
-                                if(Double.parseDouble(config.mcinfo.mc.version.split("\\.",1)[1]) >= 20.1) {
+                                if(Integer.parseInt(config.mcinfo.mc.version.split("\\.")[1]) > 20 || (Integer.parseInt(config.mcinfo.mc.version.split("\\.")[1]) == 20 && !Objects.equals(config.mcinfo.mc.version, "1.20.1"))) {
                                     noFramework.getAdditionalArgs().addAll(Arrays.asList("--quickPlayMultiplayer", config.mcinfo.server.ip + ":" + (!Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565")));
                                 }else{
                                     noFramework.getAdditionalArgs().addAll(Arrays.asList("--server", config.mcinfo.server.ip, "--port", !Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565"));

@@ -1,16 +1,36 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'io.github.fvarrui:javapackager:1.7.2'
+    }
+}
+
 plugins {
     id 'idea'
     id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'java-library'
     id 'application'
-    id 'io.github.fvarrui.javapackager' version '1.7.2'
 }
 
-group = 'fr.gamity'
-version = '3.8.12'
+allprojects {
+    group 'fr.gamity'
+
+    repositories {
+        mavenCentral()
+    }
+
+    compileJava {
+        options.encoding = "UTF-8"
+        sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
+    }
+}
+
+
+version '3.10.0'
 
 repositories {
-    mavenCentral()
     maven {
         url = 'https://jitpack.io'
         name = 'JitPack'
@@ -20,38 +40,33 @@ repositories {
     }
 }
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(8)
-    }
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-}
-
-tasks.withType(JavaCompile) {
-    options.encoding = "UTF-8"
-}
-
 dependencies {
     implementation 'org.jetbrains:annotations:24.1.0'
     implementation 'com.google.code.gson:gson:2.11.0'
+
     implementation 'javax.xml.bind:jaxb-api:2.4.0-b180830.0359'
+
     implementation 'club.minnced:java-discord-rpc:2.0.1'
+
     implementation 'fr.litarvan:openauth:1+'
     implementation 'de.jensd:fontawesomefx:8.9'
+
     implementation 'fr.flowarg:flowupdater:1+'
     implementation 'fr.flowarg:openlauncherlib:3.2.10'
+
     implementation 'com.github.goxr3plus:FX-BorderlessScene:4+'
     implementation 'com.github.oshi:oshi-core:5+'
     implementation 'com.squareup.okhttp3:okhttp:3.14.6'
     implementation 'org.json:json:20171018'
     implementation 'fr.flowarg:azuljavadownloader:1.0.1'
+
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
     implementation 'com.fasterxml.jackson.core:jackson-core:2.12.3'
     implementation 'com.fasterxml.jackson.core:jackson-annotations:2.12.3'
+
     implementation 'ch.qos.logback:logback-classic:1.2.11'
 }
 
 application {
-    mainClass.set('fr.gamity.launcher.thomas260913.Main')
+    getMainClass().set('fr.gamity.launcher.thomas260913.Main')
 }

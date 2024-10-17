@@ -1,7 +1,7 @@
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'io.github.fvarrui.javapackager.plugin'
 
-version '2.7'
+version '2.9'
 
 dependencies {
     implementation 'fr.flowarg:openlauncherlib:3+'
@@ -10,27 +10,31 @@ dependencies {
 }
 
 task packageMyApp(type: io.github.fvarrui.javapackager.gradle.PackageTask, dependsOn: build) {
-    mainClass = 'fr.gamity.bootstrap.Main'
+    mainClass = 'fr.gamity.installer.Main'
     bundleJre = true
     generateInstaller = true
     platform = io.github.fvarrui.javapackager.model.Platform.windows
-    administratorRequired = false
     jrePath = file('../java')
-    appName = displayName = 'Gamity Launcher'
-    organizationName = 'gamity pvp'
     winConfig {
-        internalName = productName = 'Gamity Launcher'
+        companyName = 'Gamity PvP'
+        fileVersion = '0.2.9'
+        productVersion = '0.2.9'
+        fileDescription = 'installateur du launcher de gamity pvp'
+        copyright = 'Gamity PvP'
+        setupMode = 'askTheUser'
+        internalName = 'Gamity Launcher'
+        productName = 'Gamity Launcher'
         generateSetup = true
         companyName = 'Gamity'
-        productVersion = project.version
         language = 'FRENCH'
         icoFile = file('../logo.ico')
         setupLanguages.put('French', 'compiler:Languages\\French.isl')
+        disableFinishedPage = false
     }
 }
 
 jar {
     manifest {
-        attributes 'Main-Class': 'fr.gamity.bootstrap.Main', 'SplashScreen-Image': 'splash.png'
+        attributes 'Main-Class': 'fr.gamity.installer.Main', 'SplashScreen-Image': 'splash.png'
     }
 }

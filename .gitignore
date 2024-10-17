@@ -2,5 +2,6 @@ build
 .gradle
 java
 .idea
-GamityBootstrap/build
+GamityUpdater/build
+GamityInstaller/build
 gradle

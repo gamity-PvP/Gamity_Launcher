@@ -1,7 +1,7 @@
 build
 .gradle
-java
 .idea
 GamityUpdater/build
 GamityInstaller/build
 gradle
+/java/

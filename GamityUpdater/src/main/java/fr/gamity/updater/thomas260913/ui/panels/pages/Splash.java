@@ -302,7 +302,7 @@ public class Splash extends Panel {
                             stepLabel.setText("downloading new launcher");
                             setProgress(3.0, 6.0);
                         });
-                        Files.copy(new URL(datas.URL).openStream(), this.launcherPath);
+                        Files.copy(new URL(datas.URL).openStream(), this.launcherPath,StandardCopyOption.REPLACE_EXISTING);
                         Thread.sleep(500);
                     }else{
                         Updater.getInstance().getLogger().info("is up to date");

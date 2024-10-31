@@ -39,7 +39,7 @@ import java.util.UUID;
 import java.io.*;
 
 public class Launcher extends Application {
-    private static final String version = "bêta v3.10.0";
+    private static final String version = "bêta v3.10.1";
     public static DiscordRichPresence presence = new DiscordRichPresence();
     public static DiscordRPC lib = DiscordRPC.INSTANCE;
     private static Launcher instance;

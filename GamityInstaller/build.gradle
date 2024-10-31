@@ -1,11 +1,15 @@
-apply plugin: 'com.github.johnrengelman.shadow'
+plugins {
+    id 'idea'
+    id 'java-library'
+    id 'application'
+}
 apply plugin: 'io.github.fvarrui.javapackager.plugin'
 
-version '2.9'
+version '3.1.1'
 
 dependencies {
     implementation 'fr.flowarg:openlauncherlib:3+'
-    implementation 'fr.flowarg:azuljavadownloader:1.0.1'
+    implementation 'fr.flowarg:azuljavadownloader:1.0.2'
     implementation 'fr.flowarg:flowmultitools:1.4.0'
 }
 
@@ -17,8 +21,8 @@ task packageMyApp(type: io.github.fvarrui.javapackager.gradle.PackageTask, depen
     jrePath = file('../java')
     winConfig {
         companyName = 'Gamity PvP'
-        fileVersion = '0.2.9'
-        productVersion = '0.2.9'
+        fileVersion = '3.1.1'
+        productVersion = '3.1.1'
         fileDescription = 'installateur du launcher de gamity pvp'
         copyright = 'Gamity PvP'
         setupMode = 'askTheUser'

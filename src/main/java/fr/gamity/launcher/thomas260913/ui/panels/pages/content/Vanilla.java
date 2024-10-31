@@ -1,5 +1,4 @@
 package fr.gamity.launcher.thomas260913.ui.panels.pages.content;
-import fr.gamity.launcher.thomas260913.JavasDownloader;
 import fr.gamity.launcher.thomas260913.Launcher;
 import fr.gamity.launcher.thomas260913.UncaughtExceptionHandler;
 import fr.gamity.launcher.thomas260913.ui.PanelManager;
@@ -8,6 +7,7 @@ import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import fr.flowarg.flowupdater.download.DownloadList;
 import fr.flowarg.flowupdater.download.IProgressCallback;
 import fr.flowarg.flowupdater.download.Step;
+import fr.gamity.launcher.thomas260913.utils.JavaInstaller;
 import fr.theshark34.openlauncherlib.util.Saver;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -19,6 +19,7 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.util.Objects;
@@ -242,7 +243,13 @@ public class Vanilla extends ContentPanel {
             build.setUncaughtExceptionHandler(new UncaughtExceptionHandler());
             build.start();
             Thread javas = new Thread(()->{
-                new JavasDownloader(config.mcinfo.mc.java);
+                JavaInstaller javaInstaller = new JavaInstaller(Launcher.getInstance().getLauncherDir().resolve("java"));
+                try {
+                    javaInstaller.installJava(config.mcinfo.mc.java);
+                } catch (IOException e) {
+                    Launcher.getInstance().getLogger().printStackTrace(e);
+                    Launcher.getInstance().showErrorDialog(e);
+                }
                 javaDownload.set(true);
             });
             javas.setUncaughtExceptionHandler(new UncaughtExceptionHandler());

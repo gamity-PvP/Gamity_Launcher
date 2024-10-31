@@ -1,4 +1,4 @@
-package fr.gamity.updater.thomas260913.utils;
+package fr.gamity.installer.utils;
 
 import fr.flowarg.azuljavadownloader.*;
 

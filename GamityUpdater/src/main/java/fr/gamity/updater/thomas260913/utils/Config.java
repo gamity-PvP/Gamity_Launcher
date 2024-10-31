@@ -1,4 +1,4 @@
-package fr.gamity.launcher.thomas260913.utils;
+package fr.gamity.updater.thomas260913.utils;
 
 public class Config {
     public String sha1;

@@ -28,7 +28,7 @@ allprojects {
 }
 
 
-version '3.10.0'
+version '3.10.1'
 
 repositories {
     maven {
@@ -58,7 +58,7 @@ dependencies {
     implementation 'com.github.oshi:oshi-core:5+'
     implementation 'com.squareup.okhttp3:okhttp:3.14.6'
     implementation 'org.json:json:20171018'
-    implementation 'fr.flowarg:azuljavadownloader:1.0.1'
+    implementation 'fr.flowarg:azuljavadownloader:1.0.2'
 
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
     implementation 'com.fasterxml.jackson.core:jackson-core:2.12.3'

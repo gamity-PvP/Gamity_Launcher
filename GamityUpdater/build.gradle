@@ -32,7 +32,7 @@ repositories {
     mavenCentral()
 }
 
-version '0.1'
+version '0.3'
 
 repositories {
     maven {
@@ -58,7 +58,7 @@ dependencies {
     implementation 'com.github.oshi:oshi-core:5+'
     implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.3'
     implementation 'org.json:json:20231013'
-    implementation 'fr.flowarg:azuljavadownloader:1.0.1'
+    implementation 'fr.flowarg:azuljavadownloader:1.0.2'
 
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
     implementation 'com.fasterxml.jackson.core:jackson-core:2.12.3'
@@ -66,5 +66,5 @@ dependencies {
 }
 
 application {
-    getMainClass().set('fr.gamity.launcher.thomas260913.Main')
+    getMainClass().set('fr.gamity.updater.thomas260913.Main')
 }

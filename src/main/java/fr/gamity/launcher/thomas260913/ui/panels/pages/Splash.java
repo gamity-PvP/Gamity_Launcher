@@ -39,6 +39,7 @@ import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 public class Splash extends Panel {
@@ -357,7 +358,7 @@ public class Splash extends Panel {
                             Files.createDirectory(this.updaterPath.getParent());
                         }
                         Launcher.getInstance().getLogger().info("downloading new updater");
-                        downloadFile(datas.URL, this.updaterPath.toAbsolutePath().toString());
+                        Files.copy(new URL(datas.URL).openStream(), this.updaterPath, StandardCopyOption.REPLACE_EXISTING);
                     }else{
                         Launcher.getInstance().getLogger().info("updater is up to date");
                     }
@@ -454,18 +455,6 @@ public class Splash extends Panel {
         progressBar2.setProgress(current / max);
     }
 
-    public static void downloadFile(String fileURL, String savePath) throws IOException {
-        URL url = new URL(fileURL);
-        URLConnection urlConnection = url.openConnection();
-        try (InputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
-             FileOutputStream fileOutputStream = new FileOutputStream(savePath)) {
 
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-            while ((bytesRead = inputStream.read(buffer, 0, 1024)) != -1) {
-                fileOutputStream.write(buffer, 0, bytesRead);
-            }
-        }
-    }
 
 }

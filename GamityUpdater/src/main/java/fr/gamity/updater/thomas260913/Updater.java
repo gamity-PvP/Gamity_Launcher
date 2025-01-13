@@ -28,16 +28,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class Updater extends Application {
-    private static final String version = "alpha v0.1";
+    private static final String version = "1.0";
     private static Updater instance;
     private final ILogger logger;
     private final Path launcherDir = GameDirGenerator.createGameDir("gamity", true);
     private final Saver saver;
     private Stage stage;
     private PanelManager panelManager;
-    private Path java21;
-    private Path java17;
-    private Path java8;
 
     public Updater() {
         instance = this;

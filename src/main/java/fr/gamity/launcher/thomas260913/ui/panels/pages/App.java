@@ -181,7 +181,7 @@ public class App extends Panel {
         sidemenu.getChildren().addAll(homeBtn, settingsBtn, clientBtn);
 
 
-        if (Launcher.getInstance().getAuthInfos() != null) {
+        if (Launcher.getInstance().getMCAccount() != null) {
             // Pseudo + avatar
             GridPane userPane = new GridPane();
             setCanTakeAllWidth(userPane);
@@ -190,7 +190,7 @@ public class App extends Panel {
             userPane.getStyleClass().add("user-pane");
             setBottom(userPane);
 
-            String avatarUrl = "https://minotar.net/avatar/" + Launcher.getInstance().getAuthInfos().getUuid() + ".png";
+            String avatarUrl = "https://minotar.net/avatar/" + Launcher.getInstance().getMCAccount().getAuthInfos().getUuid() + ".png";
             ImageView avatarView = new ImageView();
             Image avatarImg = new Image(avatarUrl);
             avatarView.setImage(avatarImg);
@@ -202,7 +202,7 @@ public class App extends Panel {
             avatarView.setTranslateX(15d);
             userPane.getChildren().add(avatarView);
 
-            Label usernameLabel = new Label(Launcher.getInstance().getAuthInfos().getUsername());
+            Label usernameLabel = new Label(Launcher.getInstance().getMCAccount().getAuthInfos().getUsername());
             usernameLabel.setFont(Font.font("Consolas", FontWeight.BOLD, FontPosture.REGULAR, 25f));
             setCanTakeAllSize(usernameLabel);
             setCenterV(usernameLabel);
@@ -231,8 +231,8 @@ public class App extends Panel {
                 saver.remove("offline-username" + saver.get("selectAccount"));
                 saver.remove("msAccessToken" + saver.get("selectAccount"));
                 saver.remove("msRefreshToken" + saver.get("selectAccount"));
-                Launcher.getInstance().rmAuthInfos();
-                if (Launcher.getInstance().getAuthInfosSize() > 0) {
+                Launcher.getInstance().rmMCAccount();
+                if (Launcher.getInstance().getMCAccountSize() > 0) {
                     this.panelManager.showPanel(new SelectAccount());
                 } else {
                     this.panelManager.showPanel(new Login());

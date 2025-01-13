@@ -11,6 +11,7 @@ import fr.flowarg.azuljavadownloader.AzulJavaType;
 import fr.flowarg.azuljavadownloader.RequestedJavaInfo;
 import fr.gamity.launcher.thomas260913.ui.panels.pages.content.Parser;
 import fr.gamity.launcher.thomas260913.utils.Config;
+import fr.gamity.launcher.thomas260913.utils.MCAccount;
 import fr.litarvan.openauth.microsoft.MicrosoftAuthResult;
 import fr.litarvan.openauth.microsoft.MicrosoftAuthenticationException;
 import fr.litarvan.openauth.microsoft.MicrosoftAuthenticator;
@@ -183,7 +184,7 @@ public class Splash extends Panel {
             }
             Platform.runLater(()->{
                 if (Launcher.getInstance().isUserAlreadyLoggedIn()) {
-                    logger.info("Hello " + Launcher.getInstance().getAuthInfos(Integer.parseInt(saver.get("selectAccount"))).getUsername());
+                    logger.info("Hello " + Launcher.getInstance().getMCAccount(Integer.parseInt(saver.get("selectAccount"))).getAuthInfos().getUsername());
                     this.panelManager.showPanel(new App());
                 } else {
                     this.panelManager.showPanel(new Login());
@@ -397,13 +398,13 @@ public class Splash extends Panel {
                                 saver.set("msAccessToken" + i, response.getAccessToken());
                                 saver.set("msRefreshToken" + i, response.getRefreshToken());
                                 saver.save();
-                                Launcher.getInstance().addAuthInfos(new AuthInfos(
+                                Launcher.getInstance().addMCAccount(new MCAccount(new AuthInfos(
                                         response.getProfile().getName(),
                                         response.getAccessToken(),
                                         response.getProfile().getId(),
                                         response.getXuid(),
                                         response.getClientId()
-                                ), i);
+                                ),false), i);
                             } catch (MicrosoftAuthenticationException e) {
                                 saver.remove("msAccessToken" + i);
                                 saver.remove("msRefreshToken" + i);
@@ -425,10 +426,10 @@ public class Splash extends Panel {
                             Launcher.getInstance().getLogger().printStackTrace(ex);
                         }
                         Thread.sleep(2000);
-                        Launcher.getInstance().getLogger().info("account " + Launcher.getInstance().getAuthInfos(i).getUsername() + " load");
+                        Launcher.getInstance().getLogger().info("account " + Launcher.getInstance().getMCAccount(i).getAuthInfos().getUsername() + " load");
                     } else if (saver.get("offline-username" + i) != null) {
-                        Launcher.getInstance().addAuthInfos(new AuthInfos(saver.get("offline-username" + i), UUID.randomUUID().toString(), UUID.randomUUID().toString()),i);
-                        Launcher.getInstance().getLogger().info("account " + Launcher.getInstance().getAuthInfos(i).getUsername() + " load");
+                        Launcher.getInstance().addMCAccount(new MCAccount(new AuthInfos(saver.get("offline-username" + i), UUID.randomUUID().toString(), UUID.randomUUID().toString()),true),i);
+                        Launcher.getInstance().getLogger().info("account " + Launcher.getInstance().getMCAccount(i).getAuthInfos().getUsername() + " load");
                     }
                     Thread.sleep(50);
                 } catch (InterruptedException ignored) {}

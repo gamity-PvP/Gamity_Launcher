@@ -225,8 +225,8 @@ public class Settings extends ContentPanel {
 
         ComboBox<String> comboBoxAccount = new ComboBox<>();
         comboBoxAccount.getStyleClass().add("ram-selector");
-        for(int j = 0; j < Launcher.getInstance().getAuthInfosSize(); j+=1) {
-                comboBoxAccount.getItems().add(j + ". " + Launcher.getInstance().getAuthInfos(j).getUsername());
+        for(int j = 0; j < Launcher.getInstance().getMCAccountSize(); j+=1) {
+                comboBoxAccount.getItems().add(j + ". " + Launcher.getInstance().getMCAccount(j).getAuthInfos().getUsername());
         }
         if(comboBoxAccount.getItems().size() < Launcher.getInstance().getMaxAccount()){
             comboBoxAccount.getItems().add(comboBoxAccount.getItems().size() + ". Se connecter à votre compte");

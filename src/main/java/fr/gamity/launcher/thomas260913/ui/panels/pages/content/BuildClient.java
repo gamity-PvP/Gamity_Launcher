@@ -222,9 +222,12 @@ public class BuildClient {
         try {
             NoFramework noFramework = new NoFramework(
                     gameDir,
-                    Launcher.getInstance().getAuthInfos(),
+                    Launcher.getInstance().getMCAccount().getAuthInfos(),
                     GameFolder.FLOW_UPDATER
             );
+            if(Launcher.getInstance().getMCAccount().isCrack()){
+                noFramework.getAdditionalVmArgs().add("DauthServer=0.0.0.0");
+            }
             noFramework.setServerName(config.name);
             JavaUtil.setJavaCommand(null);
             switch (config.mcinfo.mc.java) {
@@ -256,11 +259,7 @@ public class BuildClient {
                 case "neoforge":
                     noFramework.getAdditionalVmArgs().add(ram);
                     if (config.mcinfo.autoconnect) {
-                        if(Integer.parseInt(config.mcinfo.mc.version.split("\\.")[1]) > 20 || (Integer.parseInt(config.mcinfo.mc.version.split("\\.")[1]) == 20 && !Objects.equals(config.mcinfo.mc.version, "1.20.1"))) {
-                            noFramework.getAdditionalArgs().addAll(Arrays.asList("--quickPlayMultiplayer", config.mcinfo.server.ip + ":" + (!Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565")));
-                        }else{
-                            noFramework.getAdditionalArgs().addAll(Arrays.asList("--server", config.mcinfo.server.ip, "--port", !Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565"));
-                        }
+                        noFramework.getAdditionalArgs().addAll(Arrays.asList("--quickPlayMultiplayer", config.mcinfo.server.ip + ":" + (!Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565")));
                     }
                     noFramework.launch(config.mcinfo.mc.version, config.mcinfo.modLoader.version, NoFramework.ModLoader.NEO_FORGE);
                     break;
@@ -293,11 +292,7 @@ public class BuildClient {
                         case "oldforge":
                             noFramework.getAdditionalVmArgs().add(ram);
                             if (config.mcinfo.autoconnect) {
-                                if(Integer.parseInt(config.mcinfo.mc.version.split("\\.")[1]) > 20 || (Integer.parseInt(config.mcinfo.mc.version.split("\\.")[1]) == 20 && !Objects.equals(config.mcinfo.mc.version, "1.20.1"))) {
-                                    noFramework.getAdditionalArgs().addAll(Arrays.asList("--quickPlayMultiplayer", config.mcinfo.server.ip + ":" + (!Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565")));
-                                }else{
                                     noFramework.getAdditionalArgs().addAll(Arrays.asList("--server", config.mcinfo.server.ip, "--port", !Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565"));
-                                }
                             }
                             NoFramework.ModLoader.OLD_FORGE.setJsonFileNameProvider((version, modLoaderVersion) -> version + "-Forge" + modLoaderVersion + "-" + version + ".json");
                             noFramework.launch(config.mcinfo.mc.version, config.mcinfo.modLoader.version.split("-")[1], NoFramework.ModLoader.OLD_FORGE);
@@ -305,11 +300,7 @@ public class BuildClient {
                         case "very_oldforge":
                             noFramework.getAdditionalVmArgs().add(ram);
                             if (config.mcinfo.autoconnect) {
-                                if(Integer.parseInt(config.mcinfo.mc.version.split("\\.")[1]) > 20 || (Integer.parseInt(config.mcinfo.mc.version.split("\\.")[1]) == 20 && !Objects.equals(config.mcinfo.mc.version, "1.20.1"))) {
-                                    noFramework.getAdditionalArgs().addAll(Arrays.asList("--quickPlayMultiplayer", config.mcinfo.server.ip + ":" + (!Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565")));
-                                }else{
                                     noFramework.getAdditionalArgs().addAll(Arrays.asList("--server", config.mcinfo.server.ip, "--port", !Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565"));
-                                }
                             }
                             NoFramework.ModLoader.VERY_OLD_FORGE.setJsonFileNameProvider((version, modLoaderVersion) -> version + "-Forge" + modLoaderVersion + "-" + version + ".json");
                             noFramework.launch(config.mcinfo.mc.version, config.mcinfo.modLoader.version.split("-")[1], NoFramework.ModLoader.VERY_OLD_FORGE);

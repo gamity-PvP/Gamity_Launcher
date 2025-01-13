@@ -1,3 +1,7 @@
+import io.github.fvarrui.javapackager.gradle.PackageTask
+import io.github.fvarrui.javapackager.model.LinuxConfig
+import io.github.fvarrui.javapackager.model.WindowsConfig
+
 plugins {
     id 'idea'
     id 'java-library'
@@ -5,7 +9,7 @@ plugins {
 }
 apply plugin: 'io.github.fvarrui.javapackager.plugin'
 
-version '3.1.1'
+version '4.0.0'
 
 dependencies {
     implementation 'fr.flowarg:openlauncherlib:3+'
@@ -13,16 +17,18 @@ dependencies {
     implementation 'fr.flowarg:flowmultitools:1.4.0'
 }
 
-task packageMyApp(type: io.github.fvarrui.javapackager.gradle.PackageTask, dependsOn: build) {
+tasks.register('packageMyAppWin64', PackageTask) {
+    dependsOn build
+    displayName = "Gamity Launcher"
     mainClass = 'fr.gamity.installer.Main'
     bundleJre = true
     generateInstaller = true
     platform = io.github.fvarrui.javapackager.model.Platform.windows
-    jrePath = file('../java')
-    winConfig {
+    jrePath = file('../java/win64')
+    winConfig(({
         companyName = 'Gamity PvP'
-        fileVersion = '3.1.1'
-        productVersion = '3.1.1'
+        fileVersion = '4.0.0'
+        productVersion = '4.0.0'
         fileDescription = 'installateur du launcher de gamity pvp'
         copyright = 'Gamity PvP'
         setupMode = 'askTheUser'
@@ -34,9 +40,23 @@ task packageMyApp(type: io.github.fvarrui.javapackager.gradle.PackageTask, depen
         icoFile = file('../logo.ico')
         setupLanguages.put('French', 'compiler:Languages\\French.isl')
         disableFinishedPage = false
-    }
+    } as Closure<WindowsConfig>))
 }
-
+tasks.register('packageMyAppLinux64', PackageTask) {
+    dependsOn build
+    displayName = "Gamity Launcher"
+    mainClass = 'fr.gamity.installer.Main'
+    bundleJre = true
+    generateInstaller = true
+    platform = io.github.fvarrui.javapackager.model.Platform.linux
+    jrePath = file('../java/linux64')
+    linuxConfig(({
+        generateDeb = true
+        generateRpm = false
+        generateAppImage = true
+        pngFile = file('../GamityInstaller.png')
+    } as Closure<LinuxConfig>))
+}
 jar {
     manifest {
         attributes 'Main-Class': 'fr.gamity.installer.Main', 'SplashScreen-Image': 'splash.png'

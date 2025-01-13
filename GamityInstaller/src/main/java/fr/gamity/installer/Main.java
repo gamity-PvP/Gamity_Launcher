@@ -9,9 +9,8 @@ import java.nio.file.*;
 
 
 public class Main implements Runnable {
-    private final Path updater = Paths.get(Platform.isOnWindows() ? System.getenv("APPDATA") : (Platform.isOnMac() ? System.getProperty("user.home") + "/Library/Application Support/" : System.getProperty("user.home")), ".gamity/updater/updater.jar");
-
     private final Path launcherDir = GameDirGenerator.createGameDir("gamity", true);
+    private final Path updater = launcherDir.resolve("updater").resolve("updater.jar");
     private final String updaterURL = "https://gamity-pvp.fr/apis/launcher/updater.jar";
 
     public static void main(String[] args) {
@@ -26,11 +25,20 @@ public class Main implements Runnable {
                 if (Files.notExists(this.updater.getParent()))
                     Files.createDirectories(this.updater.getParent());
                 Files.copy(new URL(this.updaterURL).openStream(), this.updater, StandardCopyOption.REPLACE_EXISTING);
-
             }
             System.out.println("download java 8 fx Jre");
             ProcessBuilder processBuilder = new ProcessBuilder();
-            String javas = javaInstaller.installJava("8").resolve("bin").resolve("java.exe").toAbsolutePath().toString();
+            String javas;
+            if(Platform.getCurrentPlatform() == Platform.EnumOS.WINDOWS) {
+                javas = javaInstaller.installJava("8").resolve("bin").resolve("java.exe").toAbsolutePath().toString();
+            }else if(Platform.getCurrentPlatform() == Platform.EnumOS.LINUX){
+                javas = javaInstaller.installJava("8").resolve("bin").resolve("java").toAbsolutePath().toString();;
+            }else{
+                javas = "";
+                Exception err = new IllegalStateException("unsupported os : " + Platform.getCurrentPlatform().name());
+                err.printStackTrace();
+                System.exit(5);
+            }
             processBuilder.command(javas, "-jar", this.updater.toAbsolutePath().toString());
             processBuilder.start();
         }catch (Exception e) {

@@ -9,6 +9,7 @@ import fr.gamity.launcher.thomas260913.ui.PanelManager;
 import fr.gamity.launcher.thomas260913.ui.panels.pages.Splash;
 import fr.gamity.launcher.thomas260913.ui.panels.pages.content.Parser.OptifineParser.OptifineJson;
 import fr.gamity.launcher.thomas260913.ui.panels.pages.content.VersionList;
+import fr.gamity.launcher.thomas260913.utils.MCAccount;
 import fr.litarvan.openauth.microsoft.MicrosoftAuthResult;
 import fr.litarvan.openauth.microsoft.MicrosoftAuthenticationException;
 import fr.litarvan.openauth.microsoft.MicrosoftAuthenticator;
@@ -39,7 +40,7 @@ import java.util.UUID;
 import java.io.*;
 
 public class Launcher extends Application {
-    private static final String version = "bêta v3.10.2";
+    private static final String version = "v4.0.0";
     public static DiscordRichPresence presence = new DiscordRichPresence();
     public static DiscordRPC lib = DiscordRPC.INSTANCE;
     private static Launcher instance;
@@ -48,7 +49,7 @@ public class Launcher extends Application {
     private final Path ConfigDir = GameDirGenerator.createGameDir("gamity", true).resolve("versions").resolve("config");
     private final Path ClientDir = GameDirGenerator.createGameDir("gamity", true).resolve("versions").resolve("clients");
     private final Saver saver;
-    private final List<AuthInfos> authInfos = new ArrayList<>();
+    private final List<MCAccount> mcAccountsList = new ArrayList<>();
     private final Integer maxAccount;
     private final StringBuilder logBuffer = new StringBuilder();
     private Stage stage;
@@ -255,13 +256,13 @@ public class Launcher extends Application {
                 saver.set("msAccessToken" + saver.get("selectAccount"), response.getAccessToken());
                 saver.set("msRefreshToken" + saver.get("selectAccount"), response.getRefreshToken());
                 saver.save();
-                this.setAuthInfos(new AuthInfos(
+                this.setMCAccount(new MCAccount(new AuthInfos(
                         response.getProfile().getName(),
                         response.getAccessToken(),
                         response.getProfile().getId(),
                         response.getXuid(),
                         response.getClientId()
-                ));
+                ),false));
                 return true;
             } catch (MicrosoftAuthenticationException e) {
                 saver.remove("msAccessToken" + saver.get("selectAccount"));
@@ -269,30 +270,30 @@ public class Launcher extends Application {
                 saver.save();
             }
         } else if (saver.get("offline-username" + saver.get("selectAccount")) != null) {
-            this.authInfos.set(Integer.parseInt(saver.get("selectAccount")), new AuthInfos(saver.get("offline-username" + saver.get("selectAccount")), UUID.randomUUID().toString(), UUID.randomUUID().toString()));
+            this.mcAccountsList.set(Integer.parseInt(saver.get("selectAccount")), new MCAccount(new AuthInfos(saver.get("offline-username" + saver.get("selectAccount")), UUID.randomUUID().toString(), UUID.randomUUID().toString()),true));
             return true;
         }
 
         return false;
     }
 
-    public AuthInfos getAuthInfos() {
-        return authInfos.get(Integer.parseInt(saver.get("selectAccount")));
+    public MCAccount getMCAccount() {
+        return mcAccountsList.get(Integer.parseInt(saver.get("selectAccount")));
     }
 
-    public void setAuthInfos(AuthInfos authInfos) {
-        this.authInfos.set(Integer.parseInt(saver.get("selectAccount")), authInfos);
+    public void setMCAccount(MCAccount mcAccount) {
+        this.mcAccountsList.set(Integer.parseInt(saver.get("selectAccount")), mcAccount);
     }
 
-    public int getAuthInfosSize() {
-        return authInfos.size();
+    public int getMCAccountSize() {
+        return mcAccountsList.size();
     }
 
-    public AuthInfos getAuthInfos(int id) {
-        return authInfos.get(id);
+    public MCAccount getMCAccount(int id) {
+        return mcAccountsList.get(id);
     }
 
-    public void rmAuthInfos() {
+    public void rmMCAccount() {
         for (int i = Integer.parseInt(saver.get("selectAccount")); i < Integer.parseInt(saver.get("maxAccount")); i++) {
             if (saver.get("msRefreshToken" + i) != null && saver.get("msAccessToken" + i) != null) {
                 saver.set("msAccessToken" + (i - 1), saver.get("msAccessToken" + i));
@@ -304,15 +305,15 @@ public class Launcher extends Application {
                 saver.remove("offline-username" + i);
             }
         }
-        this.authInfos.remove(Integer.parseInt(saver.get("selectAccount")));
+        this.mcAccountsList.remove(Integer.parseInt(saver.get("selectAccount")));
     }
 
-    public void addAuthInfos(AuthInfos authInfos) {
-        this.authInfos.add(authInfos);
+    public void addMCAccount(MCAccount mcAccount) {
+        this.mcAccountsList.add(mcAccount);
     }
 
-    public void addAuthInfos(AuthInfos authInfos, int id) {
-        this.authInfos.add(id, authInfos);
+    public void addMCAccount(MCAccount mcAccount, int id) {
+        this.mcAccountsList.add(id, mcAccount);
     }
 
     public int getMaxAccount() {

@@ -3,6 +3,7 @@ package fr.gamity.launcher.thomas260913.ui.panels.pages;
 import fr.gamity.launcher.thomas260913.Launcher;
 import fr.gamity.launcher.thomas260913.ui.PanelManager;
 import fr.gamity.launcher.thomas260913.ui.panel.Panel;
+import fr.gamity.launcher.thomas260913.utils.MCAccount;
 import fr.litarvan.openauth.microsoft.MicrosoftAuthenticator;
 import fr.theshark34.openlauncherlib.minecraft.AuthInfos;
 import fr.theshark34.openlauncherlib.util.Saver;
@@ -193,7 +194,7 @@ public class Login extends Panel {
             );
             saver.set("offline-username" + saver.get("selectAccount"), infos.getUsername());
             saver.save();
-            Launcher.getInstance().addAuthInfos(infos);
+            Launcher.getInstance().addMCAccount(new MCAccount(infos,true));
 
             this.logger.info("Hello " + infos.getUsername());
 
@@ -216,11 +217,11 @@ public class Login extends Panel {
             saver.set("msAccessToken" + saver.get("selectAccount"), response.getAccessToken());
             saver.set("msRefreshToken" + saver.get("selectAccount"), response.getRefreshToken());
             saver.save();
-            Launcher.getInstance().addAuthInfos(new AuthInfos(
+            Launcher.getInstance().addMCAccount(new MCAccount(new AuthInfos(
                     response.getProfile().getName(),
                     response.getAccessToken(),
                     response.getProfile().getId()
-            ));
+            ),false));
             this.logger.info("Hello " + response.getProfile().getName());
 
             Platform.runLater(() -> {

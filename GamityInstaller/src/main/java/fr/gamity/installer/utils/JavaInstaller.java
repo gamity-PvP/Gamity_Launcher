@@ -1,25 +1,59 @@
 package fr.gamity.installer.utils;
-
 import fr.flowarg.azuljavadownloader.*;
+import fr.flowarg.flowcompat.Platform;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Objects;
 
 public class JavaInstaller {
-    private Path javaDir;
+    private final Path javaDir;
+    private AzulJavaOS os;
+    private AzulJavaArch arch;
     public JavaInstaller(Path javaDir){
+        switch(Platform.getCurrentPlatform()){
+            case LINUX:
+                this.os = AzulJavaOS.LINUX;
+                break;
+            case WINDOWS:
+                this.os = AzulJavaOS.WINDOWS;
+                break;
+            default:
+                Exception err = new IllegalStateException("unsupported os : " + Platform.getCurrentPlatform().name());
+                err.printStackTrace();
+                System.exit(5);
+
+        }
+        switch(Platform.getArch()){
+            case "64":
+                arch = AzulJavaArch.X64;
+                break;
+            case "32":
+                arch = AzulJavaArch.X86;
+                break;
+            default:
+                Exception err = new IllegalStateException("unsupported architecture : " + Platform.getArch());
+                err.printStackTrace();
+                System.exit(5);
+        }
         this.javaDir = javaDir;
     }
     public Path installJava(String version) throws IOException {
+        Path javaPath;
+        final AzulJavaDownloader downloader = new AzulJavaDownloader(System.out::println);
+        final AzulJavaBuildInfo buildInfo;
         if(Objects.equals(version, "8")){
-            final AzulJavaDownloader downloader = new AzulJavaDownloader(System.out::println);
-            final AzulJavaBuildInfo buildInfoWindows = downloader.getBuildInfo(new RequestedJavaInfo("8", AzulJavaType.JRE, AzulJavaOS.WINDOWS, AzulJavaArch.X64).setJavaFxBundled(true));
-            return downloader.downloadAndInstall(buildInfoWindows, javaDir);
+            buildInfo = downloader.getBuildInfo(new RequestedJavaInfo("8", AzulJavaType.JRE, os, arch).setJavaFxBundled(true));
         }else{
-            final AzulJavaDownloader downloader = new AzulJavaDownloader(System.out::println);
-            final AzulJavaBuildInfo buildInfoWindows = downloader.getBuildInfo(new RequestedJavaInfo(version, AzulJavaType.JRE, AzulJavaOS.WINDOWS, AzulJavaArch.X64).setJavaFxBundled(false));
-            return downloader.downloadAndInstall(buildInfoWindows, javaDir);
+            buildInfo = downloader.getBuildInfo(new RequestedJavaInfo(version, AzulJavaType.JRE, os, arch).setJavaFxBundled(false));
         }
+        javaPath = downloader.downloadAndInstall(buildInfo, javaDir);
+        if(Platform.isOnLinux()){
+            ProcessBuilder processBuilder = new ProcessBuilder();
+            processBuilder.command("chmod","+x",javaPath.resolve("bin").resolve("java").toAbsolutePath().toString());
+            processBuilder.redirectErrorStream(true);
+            processBuilder.start();
+        }
+        return javaPath;
     }
 }

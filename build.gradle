@@ -28,7 +28,7 @@ allprojects {
 }
 
 
-version '3.10.2'
+version '4.0.1'
 
 repositories {
     maven {

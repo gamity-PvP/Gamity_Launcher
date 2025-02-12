@@ -40,7 +40,7 @@ import java.util.UUID;
 import java.io.*;
 
 public class Launcher extends Application {
-    private static final String version = "v4.0.0";
+    private static final String version = "v4.0.1";
     public static DiscordRichPresence presence = new DiscordRichPresence();
     public static DiscordRPC lib = DiscordRPC.INSTANCE;
     private static Launcher instance;
@@ -134,42 +134,44 @@ public class Launcher extends Application {
     }
 
     public void showErrorDialog(Exception e, Stage ownerStage) {
-        Stage dialogStage = new Stage();
-        dialogStage.initModality(Modality.WINDOW_MODAL);
-        dialogStage.initOwner(ownerStage);
-        dialogStage.setTitle("Error");
+        Platform.runLater(()-> {
+            Stage dialogStage = new Stage();
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(ownerStage);
+            dialogStage.setTitle("Error");
 
-        VBox vbox = new VBox();
-        vbox.setPadding(new Insets(10));
-        vbox.setSpacing(10);
+            VBox vbox = new VBox();
+            vbox.setPadding(new Insets(10));
+            vbox.setSpacing(10);
 
-        TextArea textArea = new TextArea();
-        textArea.setEditable(false);
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        e.printStackTrace(pw);
-        textArea.setText(sw.toString());
+            TextArea textArea = new TextArea();
+            textArea.setEditable(false);
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            textArea.setText(sw.toString());
 
-        VBox.setVgrow(textArea, Priority.ALWAYS);
+            VBox.setVgrow(textArea, Priority.ALWAYS);
 
-        Button copyButton = new Button("Copy to Clipboard");
-        copyButton.setOnAction(event -> {
-            Clipboard clipboard = Clipboard.getSystemClipboard();
-            ClipboardContent content = new ClipboardContent();
-            content.putString(textArea.getText());
-            clipboard.setContent(content);
+            Button copyButton = new Button("Copy to Clipboard");
+            copyButton.setOnAction(event -> {
+                Clipboard clipboard = Clipboard.getSystemClipboard();
+                ClipboardContent content = new ClipboardContent();
+                content.putString(textArea.getText());
+                clipboard.setContent(content);
+            });
+
+            HBox hbox = new HBox(copyButton);
+            hbox.setSpacing(10);
+            hbox.setPadding(new Insets(10));
+
+            vbox.getChildren().addAll(textArea, hbox);
+
+            Scene scene = new Scene(vbox, 600, 400);
+            dialogStage.setScene(scene);
+            dialogStage.getIcons().add(new Image("images/icon.png"));
+            dialogStage.show();
         });
-
-        HBox hbox = new HBox(copyButton);
-        hbox.setSpacing(10);
-        hbox.setPadding(new Insets(10));
-
-        vbox.getChildren().addAll(textArea, hbox);
-
-        Scene scene = new Scene(vbox, 600, 400);
-        dialogStage.setScene(scene);
-        dialogStage.getIcons().add(new Image("images/icon.png"));
-        dialogStage.show();
     }
 
     public void showErrorDialog(Exception e) {

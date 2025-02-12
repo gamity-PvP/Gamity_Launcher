@@ -9,8 +9,10 @@ import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import javafx.geometry.HPos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,8 +22,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
 
 public class JsonClient extends ContentPanel {
     private Vanilla createVanillaPanel(){
@@ -86,6 +86,9 @@ public class JsonClient extends ContentPanel {
 
 
         // Navigation
+
+        VBox inputVBox = new VBox();
+
         vanillaBtn = new Button("vanilla");
         vanillaBtn.getStyleClass().add("sidemenu-nav-btn");
         MaterialDesignIconView icon1 = new MaterialDesignIconView(MaterialDesignIcon.SERVER);
@@ -93,18 +96,13 @@ public class JsonClient extends ContentPanel {
         vanillaBtn.setGraphic(icon1);
         setCanTakeAllSize(vanillaBtn);
         setTop(vanillaBtn);
-        vanillaBtn.setTranslateY(90d);
         vanillaBtn.setOnMouseClicked(e -> setPage(createVanillaPanel(), vanillaBtn));
 
-        sidemenu.getChildren().addAll(vanillaBtn);
+        inputVBox.getChildren().addAll(vanillaBtn);
 
         List<Path> jsonFile = readJsonFilesFromFolder(Launcher.getInstance().getConfigDir());
 
-        AtomicInteger index = new AtomicInteger(0);
-        int buttonHeight = 40;
-        int spacing = 10;
         jsonFile.forEach(path ->{
-            int i = index.getAndIncrement();
             try{
                 Config.CustomServer config = new Parser.JsonConfigParser().parseJsonPath(path);
                 Button panelBtn = new Button(config.name);
@@ -114,11 +112,8 @@ public class JsonClient extends ContentPanel {
                 panelBtn.setGraphic(icon2);
                 setCanTakeAllSize(panelBtn);
                 setTop(panelBtn);
-                double translateY1 = i * (buttonHeight + spacing);
-                double translateY2 = translateY1 + 140d;
-                panelBtn.setTranslateY(translateY2);
                 panelBtn.setOnMouseClicked(e -> setPage(new CreateClientPanel(config, true), panelBtn));
-                sidemenu.getChildren().add(panelBtn);
+                inputVBox.getChildren().add(panelBtn);
             }catch(Exception ex) {
                 Button panelBtn = new Button("corrupted config");
                 panelBtn.getStyleClass().add("sidemenu-nav-btn");
@@ -127,17 +122,13 @@ public class JsonClient extends ContentPanel {
                 panelBtn.setGraphic(icon2);
                 setCanTakeAllSize(panelBtn);
                 setTop(panelBtn);
-                double translateY1 = i * (buttonHeight + spacing);
-                double translateY2 = translateY1 + 140d;
-                panelBtn.setTranslateY(translateY2);
                 panelBtn.setOnMouseClicked(e -> setPage(new ConfigErrorPanel(path,readFileToString(path.toAbsolutePath().toString()),ex), panelBtn));
-                sidemenu.getChildren().add(panelBtn);
+                inputVBox.getChildren().add(panelBtn);
                 Launcher.getInstance().getLogger().printStackTrace(ex);
                 Launcher.getInstance().showErrorDialog(ex,this.panelManager.getStage());
             }
         });
 
-        int i = index.getAndIncrement();
         ConfigBtn = new Button("Créer une config");
         ConfigBtn.getStyleClass().add("sidemenu-nav-btn");
         FontAwesomeIconView icon3 = new FontAwesomeIconView(FontAwesomeIcon.FILE_CODE_ALT);
@@ -145,12 +136,15 @@ public class JsonClient extends ContentPanel {
         ConfigBtn.setGraphic(icon3);
         setCanTakeAllSize(ConfigBtn);
         setTop(ConfigBtn);
-        double translateY1 = i * (buttonHeight + spacing);
-        double translateY2 = translateY1 + 140d;
-        ConfigBtn.setTranslateY(translateY2);
         ConfigBtn.setOnMouseClicked(e -> setPage(new CreateConfig(), ConfigBtn));
-        sidemenu.getChildren().add(ConfigBtn);
+        inputVBox.getChildren().add(ConfigBtn);
 
+        ScrollPane scrollPane = new ScrollPane(inputVBox);
+        scrollPane.setFitToWidth(true);
+        setCanTakeAllSize(scrollPane);
+        scrollPane.getStyleClass().add("scrollPane");
+
+        sidemenu.getChildren().addAll(scrollPane);
     }
 
     @Override

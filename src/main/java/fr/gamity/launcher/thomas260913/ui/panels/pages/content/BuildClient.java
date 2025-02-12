@@ -226,7 +226,7 @@ public class BuildClient {
                     GameFolder.FLOW_UPDATER
             );
             if(Launcher.getInstance().getMCAccount().isCrack()){
-                noFramework.getAdditionalVmArgs().add("DauthServer=0.0.0.0");
+                noFramework.getAdditionalVmArgs().add("-DauthServer=0.0.0.0");
             }
             noFramework.setServerName(config.name);
             JavaUtil.setJavaCommand(null);

@@ -53,7 +53,7 @@ tasks.register('packageMyAppLinux64', PackageTask) {
     linuxConfig(({
         generateDeb = true
         generateRpm = false
-        generateAppImage = true
+        generateAppImage = false
         pngFile = file('../GamityInstaller.png')
     } as Closure<LinuxConfig>))
 }

@@ -429,7 +429,7 @@ public class CreateConfig extends ContentPanel {
         ScrollPane scrollPane = new ScrollPane(inputVBox);
         scrollPane.setFitToWidth(true);
         setCanTakeAllSize(scrollPane);
-        scrollPane.getStyleClass().add("scrollPane");
+        scrollPane.getStyleClass().add("scrollPane-config");
 
         scrollPane.setPrefSize(400, 600);
         // Save Button
@@ -497,7 +497,7 @@ public class CreateConfig extends ContentPanel {
         setCanTakeAllSize(label);
         setTop(label);
         label.setTextAlignment(TextAlignment.LEFT);
-        Button btn = new Button("json creator");;
+        Button btn = new Button("json creator");
         btn.getStyleClass().add("save-btn");
         setCanTakeAllSize(btn);
         btn.setTranslateY(-5);
@@ -521,9 +521,7 @@ public class CreateConfig extends ContentPanel {
             }
         });
         btn.setDisable(field.isDisable() && !btn.isDisable());
-        mcTypeComboBox.valueProperty().addListener((e,old,newValue)-> {
-            btn.setDisable(!Objects.equals(newValue, "forge"));
-        });
+        mcTypeComboBox.valueProperty().addListener((e,old,newValue)-> btn.setDisable(!Objects.equals(newValue, "forge")));
         field.setMaxWidth(200);
         field.getStyleClass().add("config-field");
         field.setMinWidth(200);

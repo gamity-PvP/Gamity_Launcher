@@ -187,7 +187,7 @@ public class Splash extends Panel {
                     });
                 }else{
                     try {
-                        getThread().wait(100);
+                        Thread.sleep(100);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }

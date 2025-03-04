@@ -40,7 +40,7 @@ import java.util.UUID;
 import java.io.*;
 
 public class Launcher extends Application {
-    private static final String version = "v4.0.2";
+    private static final String version = "v4.0.3";
     public static DiscordRichPresence presence = new DiscordRichPresence();
     public static DiscordRPC lib = DiscordRPC.INSTANCE;
     private static Launcher instance;

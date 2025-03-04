@@ -32,7 +32,7 @@ repositories {
     mavenCentral()
 }
 
-version '1.0'
+version '1.1'
 
 repositories {
     maven {
@@ -60,8 +60,8 @@ dependencies {
     implementation 'org.json:json:20231013'
     implementation 'fr.flowarg:azuljavadownloader:1.0.2'
 
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.12.3'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.4.2'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.13.1'
     implementation 'com.fasterxml.jackson.core:jackson-annotations:2.12.3'
 }
 

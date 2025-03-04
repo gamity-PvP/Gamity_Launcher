@@ -1,6 +1,8 @@
 package fr.gamity.launcher.thomas260913.ui.panels.pages.content;
 
 import fr.gamity.launcher.thomas260913.Launcher;
+import fr.gamity.launcher.thomas260913.game.Config;
+import fr.gamity.launcher.thomas260913.game.Parser;
 import fr.gamity.launcher.thomas260913.ui.PanelManager;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;

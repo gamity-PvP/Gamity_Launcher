@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import fr.gamity.launcher.thomas260913.Launcher;
+import fr.gamity.launcher.thomas260913.game.Config;
 import fr.gamity.launcher.thomas260913.ui.PanelManager;
 import fr.gamity.launcher.thomas260913.ui.panels.pages.App;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;

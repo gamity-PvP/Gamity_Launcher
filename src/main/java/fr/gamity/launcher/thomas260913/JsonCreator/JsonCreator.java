@@ -7,7 +7,7 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import fr.gamity.launcher.thomas260913.Launcher;
 import fr.gamity.launcher.thomas260913.ui.panels.pages.App;
-import fr.gamity.launcher.thomas260913.ui.panels.pages.content.Parser;
+import fr.gamity.launcher.thomas260913.game.Parser;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;

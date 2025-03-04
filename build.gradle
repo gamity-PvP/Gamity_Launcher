@@ -28,7 +28,7 @@ allprojects {
 }
 
 
-version '4.0.1'
+version '4.0.2'
 
 repositories {
     maven {
@@ -56,15 +56,15 @@ dependencies {
 
     implementation 'com.github.goxr3plus:FX-BorderlessScene:4+'
     implementation 'com.github.oshi:oshi-core:5+'
-    implementation 'com.squareup.okhttp3:okhttp:3.14.6'
-    implementation 'org.json:json:20171018'
+    implementation 'com.squareup.okhttp3:okhttp:4.9.2'
+    implementation 'org.json:json:20231013'
     implementation 'fr.flowarg:azuljavadownloader:1.0.2'
 
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.12.3'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.4.2'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.13.1'
     implementation 'com.fasterxml.jackson.core:jackson-annotations:2.12.3'
 
-    implementation 'ch.qos.logback:logback-classic:1.2.11'
+    implementation 'ch.qos.logback:logback-classic:1.4.12'
 }
 
 application {

@@ -2,6 +2,7 @@ package fr.gamity.launcher.thomas260913.ui.panels.pages;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.gamity.launcher.thomas260913.Launcher;
+import fr.gamity.launcher.thomas260913.game.Config;
 import fr.gamity.launcher.thomas260913.ui.PanelManager;
 import fr.gamity.launcher.thomas260913.ui.panel.Panel;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;

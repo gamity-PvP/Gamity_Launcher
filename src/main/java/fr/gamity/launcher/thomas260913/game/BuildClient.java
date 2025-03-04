@@ -1,4 +1,4 @@
-package fr.gamity.launcher.thomas260913.ui.panels.pages.content;
+package fr.gamity.launcher.thomas260913.game;
 
 import fr.flowarg.flowupdater.download.json.*;
 import fr.flowarg.flowupdater.versions.fabric.FabricVersion;

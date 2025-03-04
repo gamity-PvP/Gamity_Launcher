@@ -1,4 +1,4 @@
-package fr.gamity.launcher.thomas260913.ui.panels.pages.content;
+package fr.gamity.launcher.thomas260913.game;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

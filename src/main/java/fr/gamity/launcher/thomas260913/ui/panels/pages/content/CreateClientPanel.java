@@ -2,6 +2,8 @@ package fr.gamity.launcher.thomas260913.ui.panels.pages.content;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.gamity.launcher.thomas260913.Launcher;
 import fr.gamity.launcher.thomas260913.UncaughtExceptionHandler;
+import fr.gamity.launcher.thomas260913.game.BuildClient;
+import fr.gamity.launcher.thomas260913.game.Config;
 import fr.gamity.launcher.thomas260913.ui.PanelManager;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;

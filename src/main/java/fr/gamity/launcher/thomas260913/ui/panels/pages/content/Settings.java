@@ -3,6 +3,8 @@ package fr.gamity.launcher.thomas260913.ui.panels.pages.content;
 import fr.gamity.launcher.thomas260913.Launcher;
 import fr.gamity.launcher.thomas260913.MultiOutputStream;
 import fr.gamity.launcher.thomas260913.TextAreaOutputStream;
+import fr.gamity.launcher.thomas260913.game.Config;
+import fr.gamity.launcher.thomas260913.game.Parser;
 import fr.gamity.launcher.thomas260913.ui.PanelManager;
 import fr.gamity.launcher.thomas260913.ui.panels.pages.App;
 import fr.gamity.launcher.thomas260913.ui.panels.pages.Login;

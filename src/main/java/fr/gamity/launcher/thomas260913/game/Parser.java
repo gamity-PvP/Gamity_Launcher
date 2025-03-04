@@ -1,4 +1,4 @@
-package fr.gamity.launcher.thomas260913.ui.panels.pages.content;
+package fr.gamity.launcher.thomas260913.game;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

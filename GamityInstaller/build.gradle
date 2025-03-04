@@ -1,7 +1,14 @@
 import io.github.fvarrui.javapackager.gradle.PackageTask
 import io.github.fvarrui.javapackager.model.LinuxConfig
 import io.github.fvarrui.javapackager.model.WindowsConfig
-
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'io.github.fvarrui:javapackager:1.7.2'
+    }
+}
 plugins {
     id 'idea'
     id 'java-library'
@@ -9,12 +16,12 @@ plugins {
 }
 apply plugin: 'io.github.fvarrui.javapackager.plugin'
 
-version '4.0.0'
+version '4.0.1'
 
 dependencies {
     implementation 'fr.flowarg:openlauncherlib:3+'
     implementation 'fr.flowarg:azuljavadownloader:1.0.2'
-    implementation 'fr.flowarg:flowmultitools:1.4.0'
+    implementation 'fr.flowarg:flowmultitools:1.4.4'
 }
 
 tasks.register('packageMyAppWin64', PackageTask) {

@@ -5,7 +5,7 @@ import fr.gamity.launcher.thomas260913.Launcher;
 import fr.gamity.launcher.thomas260913.UncaughtExceptionHandler;
 import fr.gamity.launcher.thomas260913.ui.PanelManager;
 import fr.gamity.launcher.thomas260913.ui.panel.Panel;
-import fr.gamity.launcher.thomas260913.ui.panels.pages.content.Parser;
+import fr.gamity.launcher.thomas260913.game.Parser;
 import fr.gamity.launcher.thomas260913.utils.Config;
 import fr.gamity.launcher.thomas260913.utils.MCAccount;
 import fr.litarvan.openauth.microsoft.MicrosoftAuthResult;
@@ -26,16 +26,11 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.util.Duration;
+import org.jetbrains.annotations.NotNull;
 
-import java.io.BufferedInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
-import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
@@ -54,7 +49,7 @@ public class Splash extends Panel {
     ImageView point3 = new ImageView(new Image("images/point.png"));
     ImageView trou_noir = new ImageView(new Image("images/trou_noir.png"));
     boolean trou_noir_visible = false;
-    boolean javafinish = false;
+    boolean datafinish = false;
     boolean loginfinish = false;
     ImageView trou_noir2 = new ImageView(new Image("images/trou_noir.png"));
     final double pointY = 98.0;
@@ -168,30 +163,39 @@ public class Splash extends Panel {
         setTop(stepLabel2);
         setCanTakeAllSize(stepLabel2);
 
-        boxPane.getChildren().addAll(trou_noir,trou_noir2,alu, copper, chromium, gamity, platium,title,point1,point2,point3,progressBar1,stepLabel1,progressBar2,stepLabel2);
+        boxPane.getChildren().addAll(trou_noir, trou_noir2, alu, copper, chromium, gamity, platium, title, point1, point2, point3, progressBar1, stepLabel1, progressBar2, stepLabel2);
 
-        downloadJava();
+        loadData();
         loadAccount();
-        Thread thread = new Thread(()->{
-            while(!loginfinish || !javafinish){
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException ignored) {}
-            }
-            Platform.runLater(()->{
-                if (Launcher.getInstance().isUserAlreadyLoggedIn()) {
-                    logger.info("Hello " + Launcher.getInstance().getMCAccount(Integer.parseInt(saver.get("selectAccount"))).getAuthInfos().getUsername());
-                    this.panelManager.showPanel(new App());
-                } else {
-                    this.panelManager.showPanel(new Login());
-                }
-            });
-        });
-        thread.setUncaughtExceptionHandler((thread2, throwable) -> {
-            Launcher.getInstance().showErrorDialog(new Exception("An error occurred on thread-" + thread2.getName(),throwable), this.panelManager.getStage());
-            Launcher.getInstance().getLogger().printStackTrace(new Exception("An error occurred on thread " + thread2.getName(),throwable));
-        });
+        Thread thread = getThread();
         thread.start();
+    }
+
+    private @NotNull Thread getThread() {
+        Thread thread = new Thread(() -> {
+            boolean finish = false;
+            while (!finish) {
+                if(loginfinish && datafinish){
+                    finish = true;
+                    Platform.runLater(() -> {
+                        if (Launcher.getInstance().isUserAlreadyLoggedIn()) {
+                            logger.info("Hello " + Launcher.getInstance().getMCAccount(Integer.parseInt(saver.get("selectAccount"))).getAuthInfos().getUsername());
+                            this.panelManager.showPanel(new App());
+                        } else {
+                            this.panelManager.showPanel(new Login());
+                        }
+                    });
+                }else{
+                    try {
+                        getThread().wait(100);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        });
+        thread.setUncaughtExceptionHandler(new UncaughtExceptionHandler());
+        return thread;
     }
 
     private void setupImageView(ImageView imageView) {
@@ -202,6 +206,7 @@ public class Splash extends Panel {
         setCanTakeAllSize(imageView);
         imageView.setVisible(false);
     }
+
     @Override
     public void onShow() {
         Timeline chargement = new Timeline();
@@ -212,21 +217,8 @@ public class Splash extends Panel {
         double centerX = 0;
         double centerY = 0;
 
-        for(int i = 0; i < chframes; i++){
-            final int frame = i;
-            KeyFrame keyFrame = new KeyFrame(Duration.millis((2000.0 / chframes) * i), event -> {
-                if(frame < 60){
-                    point1.setTranslateY(pointY - ((frame/60.0)*15.0));
-                }else if(frame < 120){
-                    point1.setTranslateY((pointY - 15) + (((frame-60)/60.0)*15.0));
-                    point2.setTranslateY(pointY - (((frame-60)/60.0)*15.0));
-                }else if(frame < 180){
-                    point2.setTranslateY((pointY - 15) + (((frame-120)/60.0)*15.0));
-                    point3.setTranslateY(pointY - (((frame-120)/60.0)*15.0));
-                }else {
-                    point3.setTranslateY((pointY - 15) + (((frame-180)/60.0)*15.0));
-                }
-            });
+        for (int i = 0; i < chframes; i++) {
+            KeyFrame keyFrame = getKeyFrame(i, chframes);
 
             chargement.getKeyFrames().add(keyFrame);
         }
@@ -245,28 +237,28 @@ public class Splash extends Panel {
         for (int i = 0; i < frames; i++) {
             final int frame = i;
             KeyFrame keyFrame = new KeyFrame(Duration.millis((6000.0 / frames) * i), event -> {
-                if(frame < 124){
+                if (frame < 124) {
                     trou_noir2.setVisible(true);
                     trou_noir2.setFitHeight(frame);
-                }else{
+                } else {
                     int frame2 = frame - 124;
-                    if(frame2 >= 180 && frame2 < 304) {
-                        trou_noir2.setFitHeight(304-frame2);
-                    }else if (frame2 >=304){
+                    if (frame2 >= 180 && frame2 < 304) {
+                        trou_noir2.setFitHeight(304 - frame2);
+                    } else if (frame2 >= 304) {
                         trou_noir2.setVisible(false);
                     }
                     trou_noir.setVisible(trou_noir_visible);
-                    if(trou_noir_visible && (frame2 >= 300 && frame2 <= 362)){
-                        trou_noir.setFitHeight((frame2 - 300)*2);
+                    if (trou_noir_visible && (frame2 >= 300 && frame2 <= 362)) {
+                        trou_noir.setFitHeight((frame2 - 300) * 2);
                     }
                     double angle = Math.toRadians(frame2);
                     double currentRadius = radius - (frame2 / 1.8);
                     double x = centerX + currentRadius * Math.cos(angle);
                     double y = centerY + currentRadius * Math.sin(angle);
-                    if(frame2 < 180){
+                    if (frame2 < 180) {
                         alu.setVisible(true);
                     }
-                    updatePosition(alu, x, y,frame2);
+                    updatePosition(alu, x, y, frame2);
 
                     updatePositionWithDelay(copper, frame2, 45);
                     updatePositionWithDelay(chromium, frame2, 90);
@@ -274,12 +266,10 @@ public class Splash extends Panel {
                     updatePositionWithDelay(platium, frame2, 180);
                 }
             });
-            if(frame == frames - 1){
-                for(int j=124; j > 0; j--){
+            if (frame == frames - 1) {
+                for (int j = 124; j > 0; j--) {
                     final int frame2 = j;
-                    KeyFrame keyFrame2 = new KeyFrame(Duration.millis(((6000.0 / frames) * i)+((1000.0 / 124.0)*(124-j))), event ->{
-                        trou_noir.setFitHeight(frame2);
-                    });
+                    KeyFrame keyFrame2 = new KeyFrame(Duration.millis(((6000.0 / frames) * i) + ((1000.0 / 124.0) * (124 - j))), event -> trou_noir.setFitHeight(frame2));
                     timeline.getKeyFrames().add(keyFrame2);
                 }
             }
@@ -292,14 +282,31 @@ public class Splash extends Panel {
         chargement.play();
     }
 
+    private @NotNull KeyFrame getKeyFrame(int i, int chframes) {
+        final int frame = i;
+        return new KeyFrame(Duration.millis((2000.0 / chframes) * i), event -> {
+            if (frame < 60) {
+                point1.setTranslateY(pointY - ((frame / 60.0) * 15.0));
+            } else if (frame < 120) {
+                point1.setTranslateY((pointY - 15) + (((frame - 60) / 60.0) * 15.0));
+                point2.setTranslateY(pointY - (((frame - 60) / 60.0) * 15.0));
+            } else if (frame < 180) {
+                point2.setTranslateY((pointY - 15) + (((frame - 120) / 60.0) * 15.0));
+                point3.setTranslateY(pointY - (((frame - 120) / 60.0) * 15.0));
+            } else {
+                point3.setTranslateY((pointY - 15) + (((frame - 180) / 60.0) * 15.0));
+            }
+        });
+    }
 
-    private void updatePosition(ImageView imageView, double x, double y,int frame) {
+
+    private void updatePosition(ImageView imageView, double x, double y, int frame) {
         imageView.setTranslateX(x);
         imageView.setTranslateY(y);
-        if(frame == 300) {
+        if (frame == 300) {
             trou_noir_visible = true;
         }
-        if(x == -15.076410598336468 && y == -9.4207869197014) {
+        if (x == -15.076410598336468 && y == -9.4207869197014) {
             imageView.setVisible(false);
         }
     }
@@ -310,14 +317,15 @@ public class Splash extends Panel {
             double currentRadius = 200.0 - ((frame - delay) / 1.8);
             double x = currentRadius * Math.cos(angle);
             double y = currentRadius * Math.sin(angle);
-            updatePosition(imageView, x, y,frame);
-            if(frame < 360){
+            updatePosition(imageView, x, y, frame);
+            if (frame < 360) {
                 imageView.setVisible(true);
             }
         }
     }
-    public void downloadJava(){
-        Thread thread = new Thread(()->{
+
+    public void loadData() {
+        Thread thread = new Thread(() -> {
             try {
                 Launcher.getInstance().getLogger().info("fetching version info");
                 Platform.runLater(() -> {
@@ -335,7 +343,7 @@ public class Splash extends Panel {
                     stepLabel1.setText("fetching optifine info");
                     setProgress1(1.0, 3.0);
                 });
-                Launcher.getInstance().setOptifineList(new Parser.OptifineParser().OptifineRequest("all","all",false));
+                Launcher.getInstance().setOptifineList(new Parser.OptifineParser().OptifineRequest("all", "all", false));
                 Platform.runLater(() -> {
                     stepLabel1.setText("finish optifine version");
                     setProgress1(2.0, 3.0);
@@ -346,9 +354,9 @@ public class Splash extends Panel {
                     stepLabel1.setText("finishing loading");
                     setProgress1(3.0, 3.0);
                 });
-                try{
+                try {
                     Config datas = fr.gamity.launcher.thomas260913.utils.Parser.appInfo.parseJsonURL("https://gamity-pvp.fr/apis/launcher/info/updater/json");
-                    if(Files.notExists(this.updaterPath) || !FileUtils.getSHA1(this.updaterPath).equalsIgnoreCase(datas.sha1)) {
+                    if (Files.notExists(this.updaterPath) || !FileUtils.getSHA1(this.updaterPath).equalsIgnoreCase(datas.sha1)) {
                         Launcher.getInstance().getLogger().info("update for updater found");
                         if (Files.notExists(this.updaterPath.getParent())) {
                             Launcher.getInstance().getLogger().info("creating directory for updater");
@@ -356,35 +364,36 @@ public class Splash extends Panel {
                         }
                         Launcher.getInstance().getLogger().info("downloading new updater");
                         Files.copy(new URL(datas.URL).openStream(), this.updaterPath, StandardCopyOption.REPLACE_EXISTING);
-                    }else{
+                    } else {
                         Launcher.getInstance().getLogger().info("updater is up to date");
                     }
-                }catch(Exception ex){
+                } catch (Exception ex) {
                     Launcher.getInstance().getLogger().printStackTrace(ex);
                 }
                 Platform.runLater(() -> {
                     stepLabel1.setText("finish loading");
                     setProgress1(3.0, 3.0);
                 });
-                javafinish = true;
-            }catch(Exception ex){
-                Launcher.getInstance().showErrorDialog(ex,this.panelManager.getStage());
+                datafinish = true;
+            } catch (Exception ex) {
+                Launcher.getInstance().showErrorDialog(ex, this.panelManager.getStage());
                 Launcher.getInstance().getLogger().printStackTrace(ex);
             }
         });
         thread.setUncaughtExceptionHandler(new UncaughtExceptionHandler());
         thread.start();
     }
-    public void loadAccount(){
-        Thread loadAccount = new Thread(()->{
+
+    public void loadAccount() {
+        Thread loadAccount = new Thread(() -> {
             Launcher.getInstance().getLogger().info("Starting load accounts ...");
-            for(int i = 0;i < Launcher.getInstance().getMaxAccount();i++){
+            for (int i = 0; i < Launcher.getInstance().getMaxAccount(); i++) {
                 int finalI = i;
-                Platform.runLater(()-> {
+                Platform.runLater(() -> {
                     stepLabel2.setText("load Accounts ...");
-                    setProgress2(finalI,Launcher.getInstance().getMaxAccount());
+                    setProgress2(finalI, Launcher.getInstance().getMaxAccount());
                 });
-                try{
+                try {
                     if (saver.get("msAccessToken" + i) != null && saver.get("msRefreshToken" + i) != null) {
                         try {
                             try {
@@ -400,11 +409,11 @@ public class Splash extends Panel {
                                         response.getProfile().getId(),
                                         response.getXuid(),
                                         response.getClientId()
-                                ),false), i);
+                                ), false), i);
                             } catch (MicrosoftAuthenticationException e) {
                                 saver.remove("msAccessToken" + i);
                                 saver.remove("msRefreshToken" + i);
-                                for(int j = i;j<Launcher.getInstance().getMaxAccount();j++){
+                                for (int j = i; j < Launcher.getInstance().getMaxAccount(); j++) {
                                     if (saver.get("msRefreshToken" + j) != null && saver.get("msAccessToken" + j) != null) {
                                         saver.set("msAccessToken" + (j - 1), saver.get("msAccessToken" + j));
                                         saver.set("msRefreshToken" + (j - 1), saver.get("msRefreshToken" + j));
@@ -417,18 +426,19 @@ public class Splash extends Panel {
                                 }
                                 saver.save();
                             }
-                        }catch(Exception ex){
-                            Launcher.getInstance().showErrorDialog(ex,this.panelManager.getStage());
+                        } catch (Exception ex) {
+                            Launcher.getInstance().showErrorDialog(ex, this.panelManager.getStage());
                             Launcher.getInstance().getLogger().printStackTrace(ex);
                         }
                         Thread.sleep(2000);
                         Launcher.getInstance().getLogger().info("account " + Launcher.getInstance().getMCAccount(i).getAuthInfos().getUsername() + " load");
                     } else if (saver.get("offline-username" + i) != null) {
-                        Launcher.getInstance().addMCAccount(new MCAccount(new AuthInfos(saver.get("offline-username" + i), UUID.randomUUID().toString(), UUID.randomUUID().toString()),true),i);
+                        Launcher.getInstance().addMCAccount(new MCAccount(new AuthInfos(saver.get("offline-username" + i), UUID.randomUUID().toString(), UUID.randomUUID().toString()), true), i);
                         Launcher.getInstance().getLogger().info("account " + Launcher.getInstance().getMCAccount(i).getAuthInfos().getUsername() + " load");
                     }
                     Thread.sleep(50);
-                } catch (InterruptedException ignored) {}
+                } catch (InterruptedException ignored) {
+                }
             }
             try {
                 Platform.runLater(() -> {
@@ -436,8 +446,8 @@ public class Splash extends Panel {
                     setProgress2(Launcher.getInstance().getMaxAccount(), Launcher.getInstance().getMaxAccount());
                 });
                 Launcher.getInstance().getLogger().info("finish load accounts");
-            }catch(Exception ex){
-                Launcher.getInstance().showErrorDialog(ex,this.panelManager.getStage());
+            } catch (Exception ex) {
+                Launcher.getInstance().showErrorDialog(ex, this.panelManager.getStage());
                 Launcher.getInstance().getLogger().printStackTrace(ex);
             }
             loginfinish = true;
@@ -445,13 +455,12 @@ public class Splash extends Panel {
         loadAccount.setUncaughtExceptionHandler(new UncaughtExceptionHandler());
         loadAccount.start();
     }
+
     public void setProgress1(double current, double max) {
         progressBar1.setProgress(current / max);
     }
+
     public void setProgress2(double current, double max) {
         progressBar2.setProgress(current / max);
     }
-
-
-
 }

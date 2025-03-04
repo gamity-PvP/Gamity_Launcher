@@ -28,7 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class Updater extends Application {
-    private static final String version = "1.0";
+    private static final String version = "1.1";
     private static Updater instance;
     private final ILogger logger;
     private final Path launcherDir = GameDirGenerator.createGameDir("gamity", true);

@@ -7,8 +7,8 @@ import fr.flowarg.flowlogger.ILogger;
 import fr.flowarg.flowlogger.Logger;
 import fr.gamity.launcher.thomas260913.ui.PanelManager;
 import fr.gamity.launcher.thomas260913.ui.panels.pages.Splash;
-import fr.gamity.launcher.thomas260913.ui.panels.pages.content.Parser.OptifineParser.OptifineJson;
-import fr.gamity.launcher.thomas260913.ui.panels.pages.content.VersionList;
+import fr.gamity.launcher.thomas260913.game.Parser.OptifineParser.OptifineJson;
+import fr.gamity.launcher.thomas260913.game.VersionList;
 import fr.gamity.launcher.thomas260913.utils.MCAccount;
 import fr.litarvan.openauth.microsoft.MicrosoftAuthResult;
 import fr.litarvan.openauth.microsoft.MicrosoftAuthenticationException;
@@ -40,7 +40,7 @@ import java.util.UUID;
 import java.io.*;
 
 public class Launcher extends Application {
-    private static final String version = "v4.0.1";
+    private static final String version = "v4.0.2";
     public static DiscordRichPresence presence = new DiscordRichPresence();
     public static DiscordRPC lib = DiscordRPC.INSTANCE;
     private static Launcher instance;

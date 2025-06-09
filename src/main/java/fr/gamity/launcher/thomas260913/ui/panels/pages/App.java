@@ -50,7 +50,7 @@ public class App extends Panel {
         super.init(panelManager);
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            serverList = objectMapper.readValue(new URL("https://gamity-pvp.fr/apis/launcher/servers/list.json"), Config.ServerList.class);
+            serverList = objectMapper.readValue(new URL(saver.get("weblink") + "/apis/launcher/servers/list.json"), Config.ServerList.class);
         } catch (IOException e) {
             e.printStackTrace();
         }

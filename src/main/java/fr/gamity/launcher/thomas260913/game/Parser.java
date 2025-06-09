@@ -21,14 +21,14 @@ public class Parser {
         public Mod OptifineRequestMod(String version) throws Exception {
             ObjectMapper objectMapper = new ObjectMapper();
             if (version.contains("OptiFine")) {
-                OptifineJson optifine = objectMapper.readValue(new URL("https://gamity-pvp.fr/apis/optifine/list.json"), OptifineJson.class);
+                OptifineJson optifine = objectMapper.readValue(new URL(Launcher.getInstance().getSaver().get("weblink") + "/apis/optifine/list.json"), OptifineJson.class);
                 if (!optifine.optifine.isEmpty()) {
                     Stream<OptifineJson.OptifineList> filter = optifine.optifine.stream().filter(o -> Objects.equals(o.optifine.version, version));
                     OptifineJson.OptifineList.Optifine.DownloadInfos modinfo = filter.collect(Collectors.toList()).get(0).optifine.downloadInfo;
                     return new Mod(modinfo.name, modinfo.downloadURL, modinfo.sha1, modinfo.size);
                 }
             } else {
-                OptifineJson optifine = objectMapper.readValue(new URL("https://gamity-pvp.fr/apis/optifine/list.json?mc=" + version + "&latest=true"), OptifineJson.class);
+                OptifineJson optifine = objectMapper.readValue(new URL(Launcher.getInstance().getSaver().get("weblink") + "/apis/optifine/list.json?mc=" + version + "&latest=true"), OptifineJson.class);
                 if (!optifine.optifine.isEmpty()) {
                     OptifineJson.OptifineList.Optifine.DownloadInfos modinfo = optifine.optifine.get(0).optifine.downloadInfo;
                     return new Mod(modinfo.name, modinfo.downloadURL, modinfo.sha1, modinfo.size);
@@ -39,7 +39,7 @@ public class Parser {
 
         public List<OptifineJson.OptifineList> OptifineRequest(String type, String version, boolean latest) throws Exception {
             ObjectMapper objectMapper = new ObjectMapper();
-            OptifineJson optifine = objectMapper.readValue(new URL("https://gamity-pvp.fr/apis/optifine/list.json?latest=" + latest + "&mc=" + version + "&type=" + type), OptifineJson.class);
+            OptifineJson optifine = objectMapper.readValue(new URL(Launcher.getInstance().getSaver().get("weblink") + "/apis/optifine/list.json?latest=" + latest + "&mc=" + version + "&type=" + type), OptifineJson.class);
             return optifine.optifine;
         }
 

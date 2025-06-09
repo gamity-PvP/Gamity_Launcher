@@ -355,7 +355,7 @@ public class Splash extends Panel {
                     setProgress1(3.0, 3.0);
                 });
                 try {
-                    Config datas = fr.gamity.launcher.thomas260913.utils.Parser.appInfo.parseJsonURL("https://gamity-pvp.fr/apis/launcher/info/updater/json");
+                    Config datas = fr.gamity.launcher.thomas260913.utils.Parser.appInfo.parseJsonURL(saver.get("weblink") + "/apis/launcher/info/updater/json");
                     if (Files.notExists(this.updaterPath) || !FileUtils.getSHA1(this.updaterPath).equalsIgnoreCase(datas.sha1)) {
                         Launcher.getInstance().getLogger().info("update for updater found");
                         if (Files.notExists(this.updaterPath.getParent())) {

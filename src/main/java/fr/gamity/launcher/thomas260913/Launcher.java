@@ -40,7 +40,7 @@ import java.util.UUID;
 import java.io.*;
 
 public class Launcher extends Application {
-    private static final String version = "v4.0.4";
+    private static final String version = "v4.0.5";
     public static DiscordRichPresence presence = new DiscordRichPresence();
     public static DiscordRPC lib = DiscordRPC.INSTANCE;
     private static Launcher instance;
@@ -104,6 +104,7 @@ public class Launcher extends Application {
         }
         saver = new Saver(this.launcherDir.resolve("config.properties"));
         saver.load();
+
         if (saver.get("maxAccount") != null) {
             maxAccount = Math.min(Integer.parseInt(saver.get("maxAccount")), 20);
         } else {
@@ -111,6 +112,10 @@ public class Launcher extends Application {
         }
         if (saver.get("selectAccount") == null) {
             saver.set("selectAccount", String.valueOf(0));
+            saver.save();
+        }
+        if (saver.get("weblink") == null) {
+            saver.set("weblink", "https://gamity-pvp.fr");
             saver.save();
         }
     }

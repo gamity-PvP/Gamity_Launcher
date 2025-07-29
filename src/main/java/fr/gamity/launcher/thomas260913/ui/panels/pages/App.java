@@ -30,7 +30,7 @@ public class App extends Panel {
     GridPane navContent = new GridPane();
     Node activeLink = null;
     ContentPanel currentPage = null;
-    Button homeBtn, settingsBtn, clientBtn;
+    public Button homeBtn, settingsBtn, clientBtn;
     Saver saver = Launcher.getInstance().getSaver();
     public static String iconSize = "16px";
     private Config.ServerList serverList;

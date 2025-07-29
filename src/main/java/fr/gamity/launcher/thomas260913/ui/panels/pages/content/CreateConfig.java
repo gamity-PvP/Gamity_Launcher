@@ -8,11 +8,13 @@ import fr.gamity.launcher.thomas260913.game.Config;
 import fr.gamity.launcher.thomas260913.game.Parser;
 import fr.gamity.launcher.thomas260913.game.VersionList;
 import fr.gamity.launcher.thomas260913.ui.PanelManager;
+import fr.gamity.launcher.thomas260913.ui.panel.Panel;
 import fr.gamity.launcher.thomas260913.ui.panels.pages.App;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -618,6 +620,13 @@ public class CreateConfig extends ContentPanel {
                 ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
                 writer.writeValue(destinationPath.toFile(), config);
                 Launcher.getInstance().showAlert(Alert.AlertType.INFORMATION, "Sauvegarde", "Configuration sauvegardée avec succès !");
+                Platform.runLater(() -> {
+                    App app = new App();
+                    panelManager.showPanel(app);
+                    JsonClient jsonClient = new JsonClient();
+                    app.setPage(jsonClient, app.clientBtn);
+                    jsonClient.setPage(new CreateConfig(), jsonClient.ConfigBtn);
+                });
             }else{
                 Launcher.getInstance().showAlert(Alert.AlertType.WARNING, "Sauvegarde", "La configuration " + config.name + " exist déjà\nveuiller changer le nom ou supprimer l'ancienne puis réessayer");
             }

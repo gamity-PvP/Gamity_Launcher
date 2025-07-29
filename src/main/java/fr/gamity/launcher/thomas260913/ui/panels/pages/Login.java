@@ -224,9 +224,7 @@ public class Login extends Panel {
             ),false));
             this.logger.info("Hello " + response.getProfile().getName());
 
-            Platform.runLater(() -> {
-                    panelManager.showPanel(new App());
-            });
+            Platform.runLater(() -> panelManager.showPanel(new App()));
         });
     }
 }

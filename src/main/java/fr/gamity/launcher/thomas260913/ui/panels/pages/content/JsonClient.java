@@ -39,7 +39,7 @@ public class JsonClient extends ContentPanel {
     Node activeLink = null;
     static ContentPanel currentPage = null;
 
-    Button vanillaBtn,ConfigBtn;
+    public Button vanillaBtn,ConfigBtn;
 
     @Override
     public String getName() {

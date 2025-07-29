@@ -1,7 +1,0 @@
-build
-.gradle
-.idea
-GamityUpdater/build
-GamityInstaller/build
-gradle
-/java/

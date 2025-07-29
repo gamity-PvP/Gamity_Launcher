@@ -209,7 +209,7 @@ public class CreateClientPanel extends ContentPanel {
             AtomicBoolean buildDownload = new AtomicBoolean(false);
             AtomicBoolean javaDownload = new AtomicBoolean(false);
             Thread build = new Thread(()->{
-                client = new BuildClient(config,Launcher.getInstance().getClientDir().resolve(config.name),callback,Boolean.parseBoolean(saver.get("optifine")));
+                client = new BuildClient(config, Launcher.getInstance().getClientDir().resolve(config.name), callback, Boolean.parseBoolean(saver.get("optifine")));
                 buildDownload.set(true);
             });
             build.setUncaughtExceptionHandler(new UncaughtExceptionHandler());

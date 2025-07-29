@@ -171,6 +171,7 @@ public class Vanilla extends ContentPanel {
                     break;
             }
             config.mcinfo.mc.java = versionList.versions.stream().filter(java-> Objects.equals(java.id, config.mcinfo.mc.version)).collect(Collectors.toList()).get(0).getJavaVersion();
+            config.mcinfo.noBuild = false;
             this.play();
         });
         boxPane.getChildren().addAll(playBtn,version,versionType);

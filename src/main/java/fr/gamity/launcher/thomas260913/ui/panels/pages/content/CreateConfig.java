@@ -147,72 +147,92 @@ public class CreateConfig extends ContentPanel {
                         mcVersionCombobox.setDisable(false);
                     }else{
                         mcVersionCombobox.setDisable(true);
-                        mcVersionCombobox.setValue(getVanillaVersionFromForge(config.mcinfo.modLoader.version));
+                        mcVersionCombobox.setValue(config.mcinfo.mc.version);
                         forgeVersionField.setDisable(false);
-                        forgeVersionField.setText(config.mcinfo.modLoader.version);
-                        forgeModsCurseField.setDisable(false);
-                        if(config.mcinfo.modLoader.mods.curseForge != null) {
-                            if (config.mcinfo.modLoader.mods.curseForge.json != null) {
-                                forgeModsCurseField.setText(config.mcinfo.modLoader.mods.curseForge.json);
+                        if(!config.mcinfo.noBuild){
+                            forgeVersionField.setText(config.mcinfo.modLoader.version);
+                            forgeModsCurseField.setDisable(false);
+                            if(config.mcinfo.modLoader.mods.curseForge != null) {
+                                if (config.mcinfo.modLoader.mods.curseForge.json != null) {
+                                    forgeModsCurseField.setText(config.mcinfo.modLoader.mods.curseForge.json);
+                                } else {
+                                    forgeModsCurseField.setText("");
+                                }
                             } else {
                                 forgeModsCurseField.setText("");
                             }
-                        } else {
-                            forgeModsCurseField.setText("");
-                        }
-                        if(config.mcinfo.modLoader.mods.custom != null) {
-                            if (config.mcinfo.modLoader.mods.custom.json != null) {
-                                forgeModsCustomField.setText(config.mcinfo.modLoader.mods.custom.json);
+                            if(config.mcinfo.modLoader.mods.custom != null) {
+                                if (config.mcinfo.modLoader.mods.custom.json != null) {
+                                    forgeModsCustomField.setText(config.mcinfo.modLoader.mods.custom.json);
+                                } else {
+                                    forgeModsCustomField.setText("");
+                                }
                             } else {
                                 forgeModsCustomField.setText("");
                             }
-                        } else {
-                            forgeModsCustomField.setText("");
-                        }
-                        forgeModsCustomField.setDisable(false);
-                        forgeModsModrinthField.setDisable(false);
-                        forgeModPackModrinthField.setDisable(false);
-                        forgeModPackCurseField.setDisable(false);
-                        if(config.mcinfo.modLoader.mods.modrinth != null) {
-                            if (config.mcinfo.modLoader.mods.modrinth.json != null) {
-                                forgeModsModrinthField.setText(config.mcinfo.modLoader.mods.modrinth.json);
+                            forgeModsCustomField.setDisable(false);
+                            forgeModsModrinthField.setDisable(false);
+                            forgeModPackModrinthField.setDisable(false);
+                            forgeModPackCurseField.setDisable(false);
+                            if(config.mcinfo.modLoader.mods.modrinth != null) {
+                                if (config.mcinfo.modLoader.mods.modrinth.json != null) {
+                                    forgeModsModrinthField.setText(config.mcinfo.modLoader.mods.modrinth.json);
+                                } else {
+                                    forgeModsModrinthField.setText("");
+                                }
                             } else {
                                 forgeModsModrinthField.setText("");
                             }
-                        } else {
-                            forgeModsModrinthField.setText("");
-                        }
-                        if(config.mcinfo.modLoader.mods.modrinthModpack != null) {
-                            if (config.mcinfo.modLoader.mods.modrinthModpack.json != null) {
-                                forgeModPackModrinthField.setText(config.mcinfo.modLoader.mods.modrinthModpack.json);
+                            if(config.mcinfo.modLoader.mods.modrinthModpack != null) {
+                                if (config.mcinfo.modLoader.mods.modrinthModpack.json != null) {
+                                    forgeModPackModrinthField.setText(config.mcinfo.modLoader.mods.modrinthModpack.json);
+                                } else {
+                                    forgeModPackModrinthField.setText("");
+                                }
                             } else {
                                 forgeModPackModrinthField.setText("");
                             }
-                        } else {
-                            forgeModPackModrinthField.setText("");
-                        }
-                        if(config.mcinfo.modLoader.mods.curseForgeModpack != null) {
-                            if (config.mcinfo.modLoader.mods.curseForgeModpack.json != null) {
-                                forgeModPackCurseField.setText(config.mcinfo.modLoader.mods.curseForgeModpack.json);
+                            if(config.mcinfo.modLoader.mods.curseForgeModpack != null) {
+                                if (config.mcinfo.modLoader.mods.curseForgeModpack.json != null) {
+                                    forgeModPackCurseField.setText(config.mcinfo.modLoader.mods.curseForgeModpack.json);
+                                } else {
+                                    forgeModPackCurseField.setText("");
+                                }
                             } else {
                                 forgeModPackCurseField.setText("");
                             }
-                        } else {
-                            forgeModPackCurseField.setText("");
-                        }
-                        optifinechkBox.setDisable(false);
-                        optifinechkBox.setSelected(config.mcinfo.modLoader.allowOptifine);
-                        optifineVersionComboBox.setDisable(!config.mcinfo.modLoader.allowOptifine);
-                        if(config.mcinfo.modLoader.allowOptifine) {
-                            if(config.mcinfo.modLoader.optifine.optifineVersion != null) {
-                                optifineVersionComboBox.setValue(config.mcinfo.modLoader.optifine.optifineVersion);
+                            optifinechkBox.setDisable(false);
+                            optifinechkBox.setSelected(config.mcinfo.modLoader.allowOptifine);
+                            optifineVersionComboBox.setDisable(!config.mcinfo.modLoader.allowOptifine);
+                            if(config.mcinfo.modLoader.allowOptifine) {
+                                if(config.mcinfo.modLoader.optifine.optifineVersion != null) {
+                                    optifineVersionComboBox.setValue(config.mcinfo.modLoader.optifine.optifineVersion);
+                                }else{
+                                    optifineVersionComboBox.setValue("auto");
+                                }
                             }else{
-                                optifineVersionComboBox.setValue("auto");
+                                optifineVersionComboBox.setValue("");
                             }
                         }else{
-                            optifineVersionComboBox.setValue("");
+                            forgeVersionField.setDisable(true);
+                            forgeVersionField.setText("");
+                            forgeModsCurseField.setDisable(true);
+                            forgeModsCurseField.setText("");
+                            forgeModsCustomField.setDisable(true);
+                            forgeModsCustomField.setText("");
+                            forgeModsModrinthField.setDisable(true);
+                            forgeModPackModrinthField.setDisable(true);
+                            forgeModPackCurseField.setDisable(true);
+                            forgeModsModrinthField.setText("");
+                            forgeModPackModrinthField.setText("");
+                            forgeModPackCurseField.setText("");
+                            optifinechkBox.setSelected(false);
+                            optifinechkBox.setDisable(true);
+                            optifineVersionComboBox.setDisable(true);
+                            mcVersionCombobox.setDisable(false);
                         }
                     }
+
                     mcVersionCombobox.setValue(config.mcinfo.mc.version);
                     mcJavaCombobox.setValue(config.mcinfo.mc.java);
                     if(config.mcinfo.mc.extfiles != null) {
@@ -293,7 +313,7 @@ public class CreateConfig extends ContentPanel {
         title.setTranslateY(0d);
         title.setTranslateX(25d);
 
-        mcTypeComboBox.getItems().addAll("vanilla", "forge","snapshot","fabric","neoforge");
+        mcTypeComboBox.getItems().addAll("vanilla", "forge","snapshot","fabric","neoforge","nobuild");
         mcJavaCombobox.getItems().addAll("21", "17", "8");
         mcVersionCombobox.getItems().add("latest");
         try {
@@ -382,9 +402,22 @@ public class CreateConfig extends ContentPanel {
                     mcVersionCombobox.setDisable(false);
                     optifineVersionComboBox.setDisable(true);
                 }else{
-                    optifinechkBox.setDisable(false);
-                    mcVersionCombobox.setDisable(true);
-                    optifineVersionComboBox.setDisable(!optifinechkBox.isSelected());
+                    if(Objects.equals(newValue, "nobuild")){
+                        forgeVersionField.setDisable(true);
+                        forgeModsCurseField.setDisable(true);
+                        forgeModsCustomField.setDisable(true);
+                        forgeModsModrinthField.setDisable(true);
+                        forgeModPackModrinthField.setDisable(true);
+                        forgeModPackCurseField.setDisable(true);
+                        optifinechkBox.setSelected(false);
+                        optifinechkBox.setDisable(true);
+                        optifineVersionComboBox.setDisable(true);
+                        mcVersionCombobox.setDisable(true);
+                    }else {
+                        optifinechkBox.setDisable(false);
+                        mcVersionCombobox.setDisable(true);
+                        optifineVersionComboBox.setDisable(!optifinechkBox.isSelected());
+                    }
                 }
             }
         });
@@ -554,7 +587,9 @@ public class CreateConfig extends ContentPanel {
         }
         config.name = nameField.getText();
         config.mcinfo = new Config.CustomServer.McInfo();
+        config.mcinfo.mc = new Config.CustomServer.McInfo.Mc();
         config.mcinfo.type = mcTypeComboBox.getValue();
+        if(!Objects.equals(config.mcinfo.type, "nobuild")) {
         if(!Objects.equals(config.mcinfo.type, "vanilla") && !Objects.equals(config.mcinfo.type, "snapshot")){
             config.mcinfo.modLoader = new Config.CustomServer.McInfo.ModLoader();
             config.mcinfo.modLoader.version = forgeVersionField.getText();
@@ -587,7 +622,6 @@ public class CreateConfig extends ContentPanel {
                 }
             }
         }
-        config.mcinfo.mc = new Config.CustomServer.McInfo.Mc();
         if(Objects.equals(mcVersionCombobox.getValue(), "latest")){
             switch (mcTypeComboBox.getValue()){
                 case "forge":
@@ -600,6 +634,9 @@ public class CreateConfig extends ContentPanel {
             }
         }else{
             config.mcinfo.mc.version = mcVersionCombobox.getValue();
+        }
+        }else{
+            config.mcinfo.noBuild = true;
         }
         config.mcinfo.mc.java = mcJavaCombobox.getValue();
         if(mcExtFilesCheckBox.isSelected()) {
@@ -649,30 +686,35 @@ public class CreateConfig extends ContentPanel {
         }
         config.name = nameField.getText();
         config.mcinfo = new Config.CustomServer.McInfo();
+        config.mcinfo.mc = new Config.CustomServer.McInfo.Mc();
         config.mcinfo.type = mcTypeComboBox.getValue();
-        if(!Objects.equals(config.mcinfo.type, "vanilla")){
-            config.mcinfo.modLoader = new Config.CustomServer.McInfo.ModLoader();
-            config.mcinfo.modLoader.version = forgeVersionField.getText();
-            config.mcinfo.modLoader.mods = new Config.CustomServer.McInfo.ModLoader.Mods();
-            config.mcinfo.modLoader.mods.curseForge = new Config.CustomServer.McInfo.ModLoader.Mods.CurseForge();
-            config.mcinfo.modLoader.mods.custom = new Config.CustomServer.McInfo.ModLoader.Mods.Custom();
-            if(forgeModsCustomField.getText() != null) {
-                config.mcinfo.modLoader.mods.custom.json = forgeModsCustomField.getText();
-            }
-            if(forgeModsCurseField.getText() != null) {
-                config.mcinfo.modLoader.mods.curseForge.json = forgeModsCurseField.getText();
-            }
-            if(optifinechkBox.isSelected()){
-                config.mcinfo.modLoader.allowOptifine = true;
-                config.mcinfo.modLoader.optifine = new Config.CustomServer.McInfo.ModLoader.Optifine();
-                if(!Objects.equals(optifineVersionComboBox.getValue(), "auto")) {
-                    config.mcinfo.modLoader.optifine.optifineVersion = optifineVersionComboBox.getValue();
+        if(!Objects.equals(config.mcinfo.type, "nobuild")) {
+            if (!Objects.equals(config.mcinfo.type, "vanilla") || !Objects.equals(config.mcinfo.type, "snapshot")) {
+                config.mcinfo.modLoader = new Config.CustomServer.McInfo.ModLoader();
+                config.mcinfo.modLoader.version = forgeVersionField.getText();
+                config.mcinfo.modLoader.mods = new Config.CustomServer.McInfo.ModLoader.Mods();
+                config.mcinfo.modLoader.mods.curseForge = new Config.CustomServer.McInfo.ModLoader.Mods.CurseForge();
+                config.mcinfo.modLoader.mods.custom = new Config.CustomServer.McInfo.ModLoader.Mods.Custom();
+                if (forgeModsCustomField.getText() != null) {
+                    config.mcinfo.modLoader.mods.custom.json = forgeModsCustomField.getText();
+                }
+                if (forgeModsCurseField.getText() != null) {
+                    config.mcinfo.modLoader.mods.curseForge.json = forgeModsCurseField.getText();
+                }
+                if (optifinechkBox.isSelected()) {
+                    config.mcinfo.modLoader.allowOptifine = true;
+                    config.mcinfo.modLoader.optifine = new Config.CustomServer.McInfo.ModLoader.Optifine();
+                    if (!Objects.equals(optifineVersionComboBox.getValue(), "auto")) {
+                        config.mcinfo.modLoader.optifine.optifineVersion = optifineVersionComboBox.getValue();
+                    }
                 }
             }
+        }else{
+            config.mcinfo.type = "vanilla";
+            config.mcinfo.noBuild = true;
         }
-        config.mcinfo.mc = new Config.CustomServer.McInfo.Mc();
-        if(Objects.equals(mcVersionCombobox.getValue(), "latest")){
-            switch (mcTypeComboBox.getValue()){
+        if (Objects.equals(mcVersionCombobox.getValue(), "latest")) {
+            switch (mcTypeComboBox.getValue()) {
                 case "forge":
                 case "vanilla":
                     config.mcinfo.mc.version = versionList.latest.release;
@@ -681,7 +723,7 @@ public class CreateConfig extends ContentPanel {
                     config.mcinfo.mc.version = versionList.latest.snapshot;
                     break;
             }
-        }else{
+        } else {
             config.mcinfo.mc.version = mcVersionCombobox.getValue();
         }
         config.mcinfo.mc.java = mcJavaCombobox.getValue();

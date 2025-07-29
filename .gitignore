@@ -1,7 +1,8 @@
-build
-.gradle
-.idea
-GamityUpdater/build
-GamityInstaller/build
-gradle
-/java/
+/gradlew.bat
+/.gradle/
+/build/
+/gradlew
+/.idea/
+/GamityInstaller/build/
+/GamityUpdater/build/
+/.gradle/

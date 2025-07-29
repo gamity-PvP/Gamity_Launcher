@@ -1,0 +1,16 @@
+.bg-image {
+    -fx-background-image: url("/images/background.png");
+    -fx-background-position: center center;
+    -fx-background-repeat: stretch;
+}
+
+.box-pane {
+    -fx-background-color: #eee;
+    -fx-background-radius: 20px;
+}
+
+.home-title {
+    -fx-background-image: url("/images/baniere.png");
+    -fx-background-position: center center;
+    -fx-background-repeat: stretch;
+}

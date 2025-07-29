@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Main-Class: fr.gamity.installer.Main
+SplashScreen-Image: splash.png
+

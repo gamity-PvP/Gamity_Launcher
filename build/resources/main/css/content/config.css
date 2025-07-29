@@ -1,0 +1,107 @@
+.config-layout {
+    -fx-background-color: rgb(215, 220, 220);
+}
+
+.config-title {
+    -fx-text-fill: rgb(0,0,0);
+}
+
+.content-pane,  {
+    -fx-background-color: transparent;
+}
+
+.config-label {
+    -fx-text-fill: rgb(0,0,0);
+    -fx-font-size: 15px;
+}
+
+.save-btn {
+    -fx-background-radius: 10px;
+    -fx-font-size: 16px;
+    -fx-text-fill: #F5F5F5;
+    -fx-background-color: #85AE51;
+}
+.export-btn {
+    -fx-background-radius: 10px;
+    -fx-font-size: 16px;
+    -fx-text-fill: #F5F5F5;
+    -fx-background-color: #85AE51;
+}
+
+.save-icon {
+    -fx-fill: white;
+}
+
+.save-btn:hover {
+    -fx-background-color: #98BB6D;
+}
+.export-icon {
+    -fx-fill: white;
+}
+
+.export-btn:hover {
+    -fx-background-color: #98BB6D;
+}
+
+.config-field {
+    -fx-background-color: rgb(255, 255, 255);
+    -fx-font-size: 16px;
+    -fx-background-radius: 10px;
+    -fx-prompt-text-fill: rgb(150, 150, 150);
+    -fx-text-full: rgb(20, 20, 20);
+}
+.config-chk {
+    -fx-text-fill: rgb(20, 25, 25);
+    -fx-font-size: 15px;
+}
+.config-chk .box {
+    -fx-border-width: 0;
+    -fx-border-radius: 10px;
+    -fx-background-color: white;
+}
+
+.config-chk:selected .box {
+    -fx-background-color: #85AE51;
+}
+.ram-selector-text {
+    -fx-text-fill: rgb(20, 25, 25);
+    -fx-font-size: 12px;
+}
+
+.combobox {
+    -fx-width: 200px;
+    -fx-height: 25px;
+    -fx-background-color: rgb(200, 200, 200);
+    -fx-text-fill: rgb(20, 25, 25);
+}
+
+.combobox .arrow-button .arrow {
+    -fx-background-color: rgb(20, 25, 25);
+}
+
+.combobox .list-view {
+    -fx-background-color: rgb(200, 200, 200);
+}
+
+.combobox .list-cell:hover {
+    -fx-text-fill: white;
+    -fx-background-color: #98BB6D;
+}
+
+.combobox .track {
+    -fx-background-color: rgb(220, 220, 220);
+}
+
+.combobox .thumb {
+    -fx-background-color: #98BB6D;
+}
+.scrollPane-config .track {
+    -fx-background-color: rgb(220, 220, 220);
+}
+
+.scrollPane-config .thumb {
+    -fx-background-color: #98BB6D;
+}
+.scrollPane-config .list-view {
+    -fx-background-color: rgb(200, 200, 200);
+}

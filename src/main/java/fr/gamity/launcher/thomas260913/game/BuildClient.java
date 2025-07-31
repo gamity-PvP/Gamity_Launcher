@@ -247,6 +247,7 @@ public class BuildClient {
             }
             switch (config.mcinfo.type) {
                 case "vanilla":
+                case "snapshot":
                     noFramework.getAdditionalVmArgs().add(ram);
                     if (config.mcinfo.autoconnect) {
                         if(Integer.parseInt(config.mcinfo.mc.version.split("\\.")[1]) > 20 || (Integer.parseInt(config.mcinfo.mc.version.split("\\.")[1]) == 20 && !Objects.equals(config.mcinfo.mc.version, "1.20.1"))) {
@@ -263,8 +264,7 @@ public class BuildClient {
                     if (config.mcinfo.autoconnect) {
                         noFramework.getAdditionalArgs().addAll(Arrays.asList("--quickPlayMultiplayer", config.mcinfo.server.ip + ":" + (!Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565")));
                     }
-                    NoFramework.ModLoader.NEO_FORGE.setJsonFileNameProvider((version, modLoaderVersion) -> version + ".json");
-                    noFramework.launch(config.mcinfo.mc.version, config.mcinfo.modLoader.version, NoFramework.ModLoader.NEO_FORGE);
+                    noFramework.launch(config.mcinfo.mc.version, config.mcinfo.modLoader.version.split("-")[1], NoFramework.ModLoader.NEO_FORGE);
                     break;
                 case "fabric":
                     noFramework.getAdditionalVmArgs().add(ram);

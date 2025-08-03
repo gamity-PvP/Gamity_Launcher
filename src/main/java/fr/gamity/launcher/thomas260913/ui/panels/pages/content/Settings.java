@@ -19,6 +19,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -244,6 +245,27 @@ public class Settings extends ContentPanel {
             saveLabel.setText("");
         });
 
+        // Account
+        Label jvmLabel = new Label("jvm arguments");
+        jvmLabel.getStyleClass().add("settings-labels");
+        setLeft(jvmLabel);
+        setCanTakeAllSize(jvmLabel);
+        setTop(jvmLabel);
+        jvmLabel.setTextAlignment(TextAlignment.LEFT);
+        jvmLabel.setTranslateX(25d);
+        jvmLabel.setTranslateY(390d);
+
+        TextField jvmArgs = new TextField();
+        jvmArgs.setMaxWidth(300);
+        jvmArgs.getStyleClass().add("config-field");
+        setLeft(jvmArgs);
+        setCanTakeAllSize(jvmArgs);
+        setTop(jvmArgs);
+        jvmArgs.setTranslateX(35d);
+        jvmArgs.setTranslateY(420d);
+        if(saver.get("jvmArgs") != null){
+            jvmArgs.setText(saver.get("jvmArgs"));
+        }
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("choisir une configuration gamity launcher");
@@ -262,7 +284,7 @@ public class Settings extends ContentPanel {
         setCanTakeAllSize(configBtn);
         setTop(configBtn);
         configBtn.setTranslateX(35d);
-        configBtn.setTranslateY(405d);
+        configBtn.setTranslateY(465d);
         configBtn.setOnAction(e -> {
             File selectedFile = fileChooser.showOpenDialog(this.panelManager.getStage());
             if (selectedFile != null) {
@@ -284,7 +306,7 @@ public class Settings extends ContentPanel {
         setCanTakeAllSize(openBtn);
         setTop(openBtn);
         openBtn.setTranslateX(35d);
-        openBtn.setTranslateY(450d);
+        openBtn.setTranslateY(510d);
         openBtn.setOnMouseClicked(e -> openFolder(Launcher.getInstance().getConfigDir()));
 
         Button deleteBtn = new Button("supprimer le dossier de jeux");
@@ -297,7 +319,7 @@ public class Settings extends ContentPanel {
         setCanTakeAllSize(deleteBtn);
         setTop(deleteBtn);
         deleteBtn.setTranslateX(35d);
-        deleteBtn.setTranslateY(495d);
+        deleteBtn.setTranslateY(555d);
         deleteBtn.setOnMouseClicked(e -> {
             int choice = JOptionPane.showConfirmDialog(
                     null,
@@ -328,7 +350,7 @@ public class Settings extends ContentPanel {
         setCanTakeAllSize(consoleBtn);
         setTop(consoleBtn);
         consoleBtn.setTranslateX(35d);
-        consoleBtn.setTranslateY(540d);
+        consoleBtn.setTranslateY(600d);
         consoleBtn.setOnMouseClicked(e -> openConsole());
 
 
@@ -376,6 +398,13 @@ public class Settings extends ContentPanel {
                     panelManager.showPanel(new App());
                 }
             }
+            if(jvmArgs.getText().isEmpty()){
+                if(saver.get("jvmArgs") != null){
+                    saver.remove("jvmArgs");
+                }
+            }else{
+                saver.set("jvmArgs", jvmArgs.getText());
+            }
             saver.set("autoclose", String.valueOf(_close.get()));
             saver.set("wait-launch", String.valueOf(_wait.get()));
             saver.set("optifine", String.valueOf(_optifine.get()));
@@ -383,7 +412,7 @@ public class Settings extends ContentPanel {
             saveLabel.setText("Paramètre(s) enregistré(s)");
             saveLabel.setTextFill(Color.GREEN);
         });
-        contentPane.getChildren().addAll(title,ramLabel,comboBox,autocloseLabel,autoclose,waitLabel,wait,optifineLabel,optifine,accountLabel,comboBoxAccount,configBtn,openBtn,deleteBtn,consoleBtn,saveLabel,saveBtn,version);
+        contentPane.getChildren().addAll(title,ramLabel,comboBox,autocloseLabel,autoclose,waitLabel,wait,optifineLabel,optifine,accountLabel,comboBoxAccount,configBtn,openBtn,deleteBtn,consoleBtn,jvmLabel, jvmArgs,saveLabel,saveBtn,version);
         panelManager.getStage().setMinHeight(680.0);
     }
     private void openFolder(Path path) {

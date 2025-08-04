@@ -82,6 +82,7 @@ public class Config {
             public static class Mc {
                 public String version;
                 public String java;
+                public String jvmArgs;
                 public String extfiles;
             }
             public static class Server {

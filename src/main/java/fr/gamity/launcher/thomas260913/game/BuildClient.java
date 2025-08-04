@@ -15,12 +15,14 @@ import fr.flowarg.flowupdater.versions.VanillaVersion;
 import fr.flowarg.openlauncherlib.NoFramework;
 import fr.theshark34.openlauncherlib.JavaUtil;
 import fr.theshark34.openlauncherlib.minecraft.GameFolder;
+import fr.theshark34.openlauncherlib.util.Saver;
 
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.*;
 
 public class BuildClient {
+    private final Saver saver = Launcher.getInstance().getSaver();
     public BuildClient(Config.CustomServer config, Path gameDir, IProgressCallback callback, boolean optifineEnable) {
         if(!config.mcinfo.noBuild){
             try {
@@ -227,6 +229,11 @@ public class BuildClient {
                     Launcher.getInstance().getMCAccount().getAuthInfos(),
                     GameFolder.FLOW_UPDATER
             );
+            if(config.mcinfo.mc.jvmArgs != null && !config.mcinfo.mc.jvmArgs.isEmpty()){
+                noFramework.getAdditionalVmArgs().addAll(Arrays.asList(config.mcinfo.mc.jvmArgs.split("\\s+")));
+            }else if(saver.get("jvmArgs") != null && !saver.get("jvmArgs").isEmpty()){
+                noFramework.getAdditionalVmArgs().addAll(Arrays.asList(saver.get("jvmArgs").split("\\s+")));
+            }
             if(Launcher.getInstance().getMCAccount().isCrack()){
                 noFramework.getAdditionalVmArgs().add("-DauthServer=0.0.0.0");
             }

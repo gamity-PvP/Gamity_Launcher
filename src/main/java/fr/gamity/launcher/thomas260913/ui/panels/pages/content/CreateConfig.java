@@ -50,6 +50,7 @@ public class CreateConfig extends ContentPanel {
     private final TextField forgeModPackCurseField = new TextField();
     private final ComboBox<String> mcVersionCombobox = new ComboBox<>();
     private final ComboBox<String> mcJavaCombobox = new ComboBox<>();
+    private final TextField jvmArgsField = new TextField();
     private final TextField mcExtFilesField = new TextField();
     private final CheckBox autoconnectCheckBox = new CheckBox();
     private final CheckBox mcExtFilesCheckBox = new CheckBox();
@@ -117,12 +118,14 @@ public class CreateConfig extends ContentPanel {
                 mcExtFilesField.setText("");
                 mcVersionCombobox.setValue("latest");
                 mcTypeComboBox.setValue("vanilla");
+                jvmArgsField.setText("");
                 mcJavaCombobox.setValue("21");
             }else{
                 try {
                     Config.CustomServer config = new Parser.JsonConfigParser().parseJsonPath(Launcher.getInstance().getConfigDir().resolve(configComboBox.getValue() + ".json"));
 
                     nameField.setText(config.name);
+                    jvmArgsField.setText(config.mcinfo.mc.jvmArgs);
                     if(config.mcinfo.type.contains("forge")){
                         mcTypeComboBox.setValue("forge");
                     }else{
@@ -589,6 +592,7 @@ public class CreateConfig extends ContentPanel {
         config.mcinfo = new Config.CustomServer.McInfo();
         config.mcinfo.mc = new Config.CustomServer.McInfo.Mc();
         config.mcinfo.type = mcTypeComboBox.getValue();
+        config.mcinfo.mc.jvmArgs = jvmArgsField.getText().isEmpty() ? null : jvmArgsField.getText();
         if(!Objects.equals(config.mcinfo.type, "nobuild")) {
         if(!Objects.equals(config.mcinfo.type, "vanilla") && !Objects.equals(config.mcinfo.type, "snapshot")){
             config.mcinfo.modLoader = new Config.CustomServer.McInfo.ModLoader();
@@ -687,6 +691,7 @@ public class CreateConfig extends ContentPanel {
         config.name = nameField.getText();
         config.mcinfo = new Config.CustomServer.McInfo();
         config.mcinfo.mc = new Config.CustomServer.McInfo.Mc();
+        config.mcinfo.mc.jvmArgs = jvmArgsField.getText().isEmpty() ? null : jvmArgsField.getText();
         config.mcinfo.type = mcTypeComboBox.getValue();
         if(!Objects.equals(config.mcinfo.type, "nobuild")) {
             if (!Objects.equals(config.mcinfo.type, "vanilla") || !Objects.equals(config.mcinfo.type, "snapshot")) {

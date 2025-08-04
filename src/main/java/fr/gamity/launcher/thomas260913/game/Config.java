@@ -39,7 +39,6 @@ public class Config {
         public String name;
         public McInfo mcinfo;
         public static class McInfo {
-            public boolean noBuild;
             public String type;
             public ModLoader modLoader;
             public Mc mc;

@@ -26,19 +26,16 @@ import java.util.Objects;
 public class JsonCreator {
     Stage ownerStage;
     TextField field;
-    String json;
 
-    public JsonCreator(Stage ownerStage, TextField field, String json) {
+    public JsonCreator(Stage ownerStage, TextField field) {
         this.ownerStage = ownerStage;
         this.field = field;
-        if (!Objects.equals(json, "")) {
-            this.json = json;
-        } else {
-            this.json = "{}";
-        }
     }
 
-    public void showModrinthModsJsonCreator() {
+    public void showModrinthModsJsonCreator(String json) {
+        if (Objects.equals(json, "")) {
+            json = "{}";
+        }
         VBox vbox = new VBox(10);
         vbox.setAlignment(Pos.CENTER);
         Scene scene = new Scene(vbox, 300, 200);
@@ -217,8 +214,8 @@ public class JsonCreator {
         saveBtn.setOnMouseClicked(e -> {
             try {
                 ObjectMapper mapper = new ObjectMapper();
-                String json = mapper.writeValueAsString(modrinthList);
-                field.setText(json);
+                String output = mapper.writeValueAsString(modrinthList);
+                field.setText(output);
             } catch (JsonProcessingException ex) {
                 Launcher.getInstance().getLogger().printStackTrace(ex);
                 Launcher.getInstance().showErrorDialog(ex, ownerStage);
@@ -232,7 +229,10 @@ public class JsonCreator {
         newStage.show();
     }
 
-    public void showModrinthModPackJsonCreator() {
+    public void showModrinthModPackJsonCreator(String json) {
+        if (Objects.equals(json, "")) {
+            json = "{}";
+        }
         VBox vbox = new VBox(10);
         vbox.setAlignment(Pos.CENTER);
         Scene scene = new Scene(vbox, 300, 200);
@@ -312,8 +312,8 @@ public class JsonCreator {
             }
             try {
                 ObjectMapper mapper = new ObjectMapper();
-                String json = mapper.writeValueAsString(modPack);
-                field.setText(json);
+                String output = mapper.writeValueAsString(modPack);
+                field.setText(output);
             } catch (JsonProcessingException ex) {
                 Launcher.getInstance().getLogger().printStackTrace(ex);
                 Launcher.getInstance().showErrorDialog(ex, ownerStage);
@@ -328,7 +328,10 @@ public class JsonCreator {
 
     }
 
-    public void showCurseModsJsonCreator() {
+    public void showCurseModsJsonCreator(String json) {
+        if (Objects.equals(json, "")) {
+            json = "{}";
+        }
         VBox vbox = new VBox(10);
         vbox.setAlignment(Pos.CENTER);
         Scene scene = new Scene(vbox, 300, 200);
@@ -478,8 +481,8 @@ public class JsonCreator {
         saveBtn.setOnMouseClicked(e -> {
             try {
                 ObjectMapper mapper = new ObjectMapper();
-                String json = mapper.writeValueAsString(curseList);
-                field.setText(json);
+                String output = mapper.writeValueAsString(curseList);
+                field.setText(output);
             } catch (JsonProcessingException ex) {
                 Launcher.getInstance().getLogger().printStackTrace(ex);
                 Launcher.getInstance().showErrorDialog(ex, ownerStage);
@@ -493,7 +496,10 @@ public class JsonCreator {
         newStage.show();
     }
 
-    public void showCurseModPackJsonCreator() {
+    public void showCurseModPackJsonCreator(String json) {
+        if (Objects.equals(json, "")) {
+            json = "{}";
+        }
         VBox vbox = new VBox(10);
         vbox.setAlignment(Pos.CENTER);
         Scene scene = new Scene(vbox, 300, 200);
@@ -567,8 +573,8 @@ public class JsonCreator {
             }
             try {
                 ObjectMapper mapper = new ObjectMapper();
-                String json = mapper.writeValueAsString(modPack);
-                field.setText(json);
+                String output = mapper.writeValueAsString(modPack);
+                field.setText(output);
             } catch (JsonProcessingException ex) {
                 Launcher.getInstance().getLogger().printStackTrace(ex);
                 Launcher.getInstance().showErrorDialog(ex, ownerStage);
@@ -583,7 +589,10 @@ public class JsonCreator {
 
     }
 
-    public void showCustomModsJsonCreator() {
+    public void showCustomModsJsonCreator(String json) {
+        if (Objects.equals(json, "")) {
+            json = "{}";
+        }
         VBox vbox = new VBox(10);
         vbox.setAlignment(Pos.CENTER);
         Scene scene = new Scene(vbox);
@@ -753,8 +762,8 @@ public class JsonCreator {
         saveBtn.setOnMouseClicked(e -> {
             try {
                 ObjectMapper mapper = new ObjectMapper();
-                String json = mapper.writeValueAsString(modsList);
-                field.setText(json);
+                String output = mapper.writeValueAsString(modsList);
+                field.setText(output);
             } catch (JsonProcessingException ex) {
                 Launcher.getInstance().getLogger().printStackTrace(ex);
                 Launcher.getInstance().showErrorDialog(ex, ownerStage);

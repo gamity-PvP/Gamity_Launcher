@@ -124,7 +124,11 @@ public class CreateConfig extends ContentPanel {
                     Config.CustomServer config = new Parser.JsonConfigParser().parseJsonPath(Launcher.getInstance().getConfigDir().resolve(configComboBox.getValue() + ".json"));
 
                     nameField.setText(config.name);
-                    jvmArgsField.setText(config.mcinfo.mc.jvmArgs);
+                    if (config.mcinfo.mc.jvmArgs != null) {
+                        jvmArgsField.setText(config.mcinfo.mc.jvmArgs);
+                    } else {
+                        jvmArgsField.setText("");
+                    }
                     if(config.mcinfo.type.contains("forge") && !config.mcinfo.type.contains("neoforge")){
                         mcTypeComboBox.setValue("forge");
                     }else{
@@ -497,7 +501,7 @@ public class CreateConfig extends ContentPanel {
         return hbox;
     }
     private HBox addInput(String name, TextField field, String jsonCreatorType){
-        JsonCreator jsonCreator = new JsonCreator(this.panelManager.getStage(),field,field.getText());
+        JsonCreator jsonCreator = new JsonCreator(this.panelManager.getStage(),field);
         Label label = new Label(name);
         label.getStyleClass().add("config-label");
         label.setMinWidth(300);
@@ -512,24 +516,24 @@ public class CreateConfig extends ContentPanel {
         btn.setOnMouseClicked((e)->{
             switch(jsonCreatorType.toLowerCase()){
                 case "curseforgemods":
-                    jsonCreator.showCurseModsJsonCreator();
+                    jsonCreator.showCurseModsJsonCreator(field.getText());
                     break;
                 case "curseforgemodpack":
-                    jsonCreator.showCurseModPackJsonCreator();
+                    jsonCreator.showCurseModPackJsonCreator(field.getText());
                     break;
                 case "custommods":
-                    jsonCreator.showCustomModsJsonCreator();
+                    jsonCreator.showCustomModsJsonCreator(field.getText());
                     break;
                 case "modrinthmods":
-                    jsonCreator.showModrinthModsJsonCreator();
+                    jsonCreator.showModrinthModsJsonCreator(field.getText());
                     break;
                 case "modrinthmodpack":
-                    jsonCreator.showModrinthModPackJsonCreator();
+                    jsonCreator.showModrinthModPackJsonCreator(field.getText());
                     break;
             }
         });
         btn.setDisable(field.isDisable() && !btn.isDisable());
-        mcTypeComboBox.valueProperty().addListener((e,old,newValue)-> btn.setDisable(!Objects.equals(newValue, "forge")));
+        mcTypeComboBox.valueProperty().addListener((e,old,newValue)-> btn.setDisable(!Objects.equals(newValue, "forge")&&!Objects.equals(newValue, "neoforge")));
         field.setMaxWidth(200);
         field.getStyleClass().add("config-field");
         field.setMinWidth(200);
@@ -559,7 +563,7 @@ public class CreateConfig extends ContentPanel {
         config.mcinfo = new Config.CustomServer.McInfo();
         config.mcinfo.type = mcTypeComboBox.getValue();
         config.mcinfo.mc = new Config.CustomServer.McInfo.Mc();
-        config.mcinfo.mc.jvmArgs = jvmArgsField.getText().isEmpty() ? null : jvmArgsField.getText();
+        config.mcinfo.mc.jvmArgs = jvmArgsField.getText() == null ? null : jvmArgsField.getText().isEmpty() ? null : jvmArgsField.getText();
         if(!Objects.equals(config.mcinfo.type, "vanilla") && !Objects.equals(config.mcinfo.type, "snapshot")){
             config.mcinfo.modLoader = new Config.CustomServer.McInfo.ModLoader();
             config.mcinfo.modLoader.version = forgeVersionField.getText();

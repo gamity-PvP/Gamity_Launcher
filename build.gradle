@@ -50,7 +50,7 @@ dependencies {
     implementation 'fr.litarvan:openauth:1+'
     implementation 'de.jensd:fontawesomefx:8.9'
 
-    implementation 'fr.flowarg:flowupdater:1.9.4'
+    implementation 'fr.flowarg:flowupdater:1+'
     implementation 'fr.flowarg:openlauncherlib:3.2.10'
 
     implementation 'com.github.goxr3plus:FX-BorderlessScene:4.4.0'

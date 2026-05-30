@@ -16,9 +16,13 @@ import fr.flowarg.openlauncherlib.NoFramework;
 import fr.theshark34.openlauncherlib.JavaUtil;
 import fr.theshark34.openlauncherlib.minecraft.GameFolder;
 
+import javax.swing.*;
+import java.io.File;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.*;
+
+import static fr.gamity.launcher.thomas260913.ui.panels.pages.App.loginMicrosoft;
 
 public class BuildClient {
     public BuildClient(Config.CustomServer config, Path gameDir, IProgressCallback callback, boolean optifineEnable) {
@@ -220,6 +224,26 @@ public class BuildClient {
     }
     public void startGame(Config.CustomServer config,String ram,Path gameDir) {
         try {
+            if(!Launcher.getInstance().getMCAccount().isAlreadyLogin() && !Launcher.getInstance().getMCAccount().isCrack()){
+                int choice = JOptionPane.showConfirmDialog(
+                        null,
+                        "Vous n'êtes pas connectée à votre compte microsoft.\nVoulez vous vous connecter ?\n(si vous ne vous connectez pas vous n'aurez pas accès à une série de serveur)",
+                        "Authentification",
+                        JOptionPane.YES_NO_OPTION
+                );
+                if (choice == 0) {
+                    loginMicrosoft(()-> launchGame(config,ram,gameDir));
+                }
+            }else{
+                launchGame(config,ram,gameDir);
+            }
+        }catch(Exception e){
+            Launcher.getInstance().showErrorDialog(e);
+            Launcher.getInstance().getLogger().printStackTrace(e);
+        }
+    }
+    private void launchGame(Config.CustomServer config,String ram,Path gameDir){
+        try {
             NoFramework noFramework = new NoFramework(
                     gameDir,
                     Launcher.getInstance().getMCAccount().getAuthInfos(),
@@ -230,19 +254,7 @@ public class BuildClient {
             }
             noFramework.setServerName(config.name);
             JavaUtil.setJavaCommand(null);
-            switch (config.mcinfo.mc.java) {
-                case "21":
-                    System.setProperty("java.home", Launcher.getInstance().getJava21().toAbsolutePath().toString());
-                    break;
-                case "17":
-                    System.setProperty("java.home", Launcher.getInstance().getJava17().toAbsolutePath().toString());
-                    break;
-                case "8":
-                    System.setProperty("java.home", Launcher.getInstance().getJava8().toAbsolutePath().toString());
-                    break;
-                default:
-                    throw new NoSuchElementException("java " + config.mcinfo.mc.java + " is unknow for this launcher\nplease contact admin to add if you have to get this version of java");
-            }
+            System.setProperty("java.home", Launcher.getInstance().getJavaManager().getJava(config.mcinfo.mc.java).toAbsolutePath().toString());
             switch (config.mcinfo.type) {
                 case "vanilla":
                     noFramework.getAdditionalVmArgs().add(ram);
@@ -292,7 +304,7 @@ public class BuildClient {
                         case "oldforge":
                             noFramework.getAdditionalVmArgs().add(ram);
                             if (config.mcinfo.autoconnect) {
-                                    noFramework.getAdditionalArgs().addAll(Arrays.asList("--server", config.mcinfo.server.ip, "--port", !Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565"));
+                                noFramework.getAdditionalArgs().addAll(Arrays.asList("--server", config.mcinfo.server.ip, "--port", !Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565"));
                             }
                             NoFramework.ModLoader.OLD_FORGE.setJsonFileNameProvider((version, modLoaderVersion) -> version + "-Forge" + modLoaderVersion + "-" + version + ".json");
                             noFramework.launch(config.mcinfo.mc.version, config.mcinfo.modLoader.version.split("-")[1], NoFramework.ModLoader.OLD_FORGE);
@@ -300,7 +312,7 @@ public class BuildClient {
                         case "very_oldforge":
                             noFramework.getAdditionalVmArgs().add(ram);
                             if (config.mcinfo.autoconnect) {
-                                    noFramework.getAdditionalArgs().addAll(Arrays.asList("--server", config.mcinfo.server.ip, "--port", !Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565"));
+                                noFramework.getAdditionalArgs().addAll(Arrays.asList("--server", config.mcinfo.server.ip, "--port", !Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565"));
                             }
                             NoFramework.ModLoader.VERY_OLD_FORGE.setJsonFileNameProvider((version, modLoaderVersion) -> version + "-Forge" + modLoaderVersion + "-" + version + ".json");
                             noFramework.launch(config.mcinfo.mc.version, config.mcinfo.modLoader.version.split("-")[1], NoFramework.ModLoader.VERY_OLD_FORGE);

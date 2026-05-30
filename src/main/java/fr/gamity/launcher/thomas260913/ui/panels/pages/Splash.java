@@ -36,6 +36,7 @@ import java.util.UUID;
 
 public class Splash extends Panel {
     Path updaterPath = Launcher.getInstance().getLauncherDir().resolve("updater").resolve("updater.jar");
+    Saver accountSaver = Launcher.getInstance().getAccountSaver();
     Saver saver = Launcher.getInstance().getSaver();
     GridPane background = new GridPane();
     GridPane boxPane = new GridPane();
@@ -179,7 +180,7 @@ public class Splash extends Panel {
                     finish = true;
                     Platform.runLater(() -> {
                         if (Launcher.getInstance().isUserAlreadyLoggedIn()) {
-                            logger.info("Hello " + Launcher.getInstance().getMCAccount(Integer.parseInt(saver.get("selectAccount"))).getAuthInfos().getUsername());
+                            logger.info("Hello " + Launcher.getInstance().getMCAccount(Integer.parseInt(accountSaver.get("selectAccount"))).getAuthInfos().getUsername());
                             this.panelManager.showPanel(new App());
                         } else {
                             this.panelManager.showPanel(new Login());
@@ -394,46 +395,20 @@ public class Splash extends Panel {
                     setProgress2(finalI, Launcher.getInstance().getMaxAccount());
                 });
                 try {
-                    if (saver.get("msAccessToken" + i) != null && saver.get("msRefreshToken" + i) != null) {
+                    if (accountSaver.get("msAccessToken" + i) != null && accountSaver.get("msRefreshToken" + i) != null) {
                         try {
-                            try {
-                                MicrosoftAuthenticator authenticator = new MicrosoftAuthenticator();
-                                MicrosoftAuthResult response = authenticator.loginWithRefreshToken(saver.get("msRefreshToken" + i));
-
-                                saver.set("msAccessToken" + i, response.getAccessToken());
-                                saver.set("msRefreshToken" + i, response.getRefreshToken());
-                                saver.save();
-                                Launcher.getInstance().addMCAccount(new MCAccount(new AuthInfos(
-                                        response.getProfile().getName(),
-                                        response.getAccessToken(),
-                                        response.getProfile().getId(),
-                                        response.getXuid(),
-                                        response.getClientId()
-                                ), false), i);
-                            } catch (MicrosoftAuthenticationException e) {
-                                saver.remove("msAccessToken" + i);
-                                saver.remove("msRefreshToken" + i);
-                                for (int j = i; j < Launcher.getInstance().getMaxAccount(); j++) {
-                                    if (saver.get("msRefreshToken" + j) != null && saver.get("msAccessToken" + j) != null) {
-                                        saver.set("msAccessToken" + (j - 1), saver.get("msAccessToken" + j));
-                                        saver.set("msRefreshToken" + (j - 1), saver.get("msRefreshToken" + j));
-                                        saver.remove("msRefreshToken" + j);
-                                        saver.remove("msAccessToken" + j);
-                                    } else if (saver.get("offline-username" + j) != null) {
-                                        saver.set("offline-username" + (j - 1), saver.get("offline-username" + j));
-                                        saver.remove("offline-username" + j);
-                                    }
-                                }
-                                saver.save();
+                            if(accountSaver.get("offline-username" + i) == null){
+                                Launcher.getInstance().rmMCAccount(i);
+                            }else{
+                                Launcher.getInstance().addMCAccount(new MCAccount(new AuthInfos(accountSaver.get("offline-username" + i), UUID.randomUUID().toString(), UUID.randomUUID().toString()),false,false),i);
                             }
                         } catch (Exception ex) {
                             Launcher.getInstance().showErrorDialog(ex, this.panelManager.getStage());
                             Launcher.getInstance().getLogger().printStackTrace(ex);
                         }
-                        Thread.sleep(2000);
                         Launcher.getInstance().getLogger().info("account " + Launcher.getInstance().getMCAccount(i).getAuthInfos().getUsername() + " load");
-                    } else if (saver.get("offline-username" + i) != null) {
-                        Launcher.getInstance().addMCAccount(new MCAccount(new AuthInfos(saver.get("offline-username" + i), UUID.randomUUID().toString(), UUID.randomUUID().toString()), true), i);
+                    } else if (accountSaver.get("offline-username" + i) != null) {
+                        Launcher.getInstance().addMCAccount(new MCAccount(new AuthInfos(accountSaver.get("offline-username" + i), UUID.randomUUID().toString(), UUID.randomUUID().toString()), true, true), i);
                         Launcher.getInstance().getLogger().info("account " + Launcher.getInstance().getMCAccount(i).getAuthInfos().getUsername() + " load");
                     }
                     Thread.sleep(50);

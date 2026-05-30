@@ -11,7 +11,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.text.TextAlignment;
 
 public class SelectAccount extends Panel {
-    Saver saver = Launcher.getInstance().getSaver();
+    Saver accountSaver = Launcher.getInstance().getAccountSaver();
     GridPane background = new GridPane();
     GridPane boxPane = new GridPane();
 
@@ -79,8 +79,8 @@ public class SelectAccount extends Panel {
         comboBoxAccount.valueProperty().addListener((e, old, newValue) -> {
             String[] Account = newValue.split("\\.");
             int _selectAccount = Integer.parseInt(Account[0]);
-            saver.set("selectAccount", String.valueOf(_selectAccount));
-            saver.save();
+            accountSaver.set("selectAccount", String.valueOf(_selectAccount));
+            accountSaver.save();
             if(Account[1].equals(" Se connecter à votre compte")){
                 panelManager.showPanel(new Login());
             }else{

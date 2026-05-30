@@ -1,5 +1,9 @@
 package fr.gamity.launcher.thomas260913.ui.panels.pages.content;
 
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
+import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import fr.gamity.launcher.thomas260913.Launcher;
 import fr.gamity.launcher.thomas260913.MultiOutputStream;
 import fr.gamity.launcher.thomas260913.TextAreaOutputStream;
@@ -8,10 +12,6 @@ import fr.gamity.launcher.thomas260913.game.Parser;
 import fr.gamity.launcher.thomas260913.ui.PanelManager;
 import fr.gamity.launcher.thomas260913.ui.panels.pages.App;
 import fr.gamity.launcher.thomas260913.ui.panels.pages.Login;
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
-import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import fr.theshark34.openlauncherlib.util.Saver;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -29,19 +29,22 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import oshi.SystemInfo;
 import oshi.hardware.GlobalMemory;
 
-
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.io.IOException;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -49,12 +52,23 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class Settings extends ContentPanel {
     public static TextArea consoleArea;
     private final Saver saver = Launcher.getInstance().getSaver();
+    private final Saver accountSaver = Launcher.getInstance().getAccountSaver();
 
     AtomicBoolean _close = new AtomicBoolean(Boolean.parseBoolean(saver.get("autoclose")));
     AtomicBoolean _wait = new AtomicBoolean(Boolean.parseBoolean(saver.get("wait-launch")));
     AtomicBoolean _optifine = new AtomicBoolean(Boolean.parseBoolean(saver.get("optifine")));
 
     GridPane contentPane = new GridPane();
+
+    private static void deleteDirectory(File directoryToBeDeleted) {
+        File[] allContents = directoryToBeDeleted.listFiles();
+        if (allContents != null) {
+            for (File file : allContents) {
+                deleteDirectory(file);
+            }
+        }
+        directoryToBeDeleted.delete();
+    }
 
     @Override
     public String getName() {
@@ -63,7 +77,6 @@ public class Settings extends ContentPanel {
 
     @Override
     public String getStylesheetPath() {
-        //return null;
         return "css/content/settings.css";
     }
 
@@ -109,8 +122,8 @@ public class Settings extends ContentPanel {
 
         ComboBox<String> comboBox = new ComboBox<>();
         comboBox.getStyleClass().add("ram-selector");
-        for(int i = 512; i <= Math.ceil(memory.getTotal() / Math.pow(1024, 2)); i+=512) {
-            comboBox.getItems().add(i/1024.0+" Go");
+        for (int i = 512; i <= Math.ceil(memory.getTotal() / Math.pow(1024, 2)); i += 512) {
+            comboBox.getItems().add(i / 1024.0 + " Go");
         }
 
         int val = 1024;
@@ -125,7 +138,7 @@ public class Settings extends ContentPanel {
             saver.save();
         }
 
-        if (comboBox.getItems().contains(val/1024.0+" Go")) {
+        if (comboBox.getItems().contains(val / 1024.0 + " Go")) {
             comboBox.setValue(val / 1024.0 + " Go");
         } else {
             comboBox.setValue("1.0 Go");
@@ -228,10 +241,10 @@ public class Settings extends ContentPanel {
 
         ComboBox<String> comboBoxAccount = new ComboBox<>();
         comboBoxAccount.getStyleClass().add("ram-selector");
-        for(int j = 0; j < Launcher.getInstance().getMCAccountSize(); j+=1) {
-                comboBoxAccount.getItems().add(j + ". " + Launcher.getInstance().getMCAccount(j).getAuthInfos().getUsername());
+        for (int j = 0; j < Launcher.getInstance().getMCAccountSize(); j += 1) {
+            comboBoxAccount.getItems().add(j + ". " + Launcher.getInstance().getMCAccount(j).getAuthInfos().getUsername());
         }
-        if(comboBoxAccount.getItems().size() < Launcher.getInstance().getMaxAccount()){
+        if (comboBoxAccount.getItems().size() < Launcher.getInstance().getMaxAccount()) {
             comboBoxAccount.getItems().add(comboBoxAccount.getItems().size() + ". Se connecter à votre compte");
         }
 
@@ -263,7 +276,7 @@ public class Settings extends ContentPanel {
         setTop(jvmArgs);
         jvmArgs.setTranslateX(35d);
         jvmArgs.setTranslateY(420d);
-        if(saver.get("jvmArgs") != null){
+        if (saver.get("jvmArgs") != null) {
             jvmArgs.setText(saver.get("jvmArgs"));
         }
 
@@ -289,10 +302,10 @@ public class Settings extends ContentPanel {
             File selectedFile = fileChooser.showOpenDialog(this.panelManager.getStage());
             if (selectedFile != null) {
                 boolean success = copyFileToConfig(selectedFile);
-                if(success){
-                    Launcher.getInstance().showAlert(Alert.AlertType.INFORMATION,"importation de la config","copie de la config vers le dossier des configs réussi avec succès");
-                }else{
-                    Launcher.getInstance().showAlert(Alert.AlertType.ERROR,"importation de la config","le fichier existe déjà");
+                if (success) {
+                    Launcher.getInstance().showAlert(Alert.AlertType.INFORMATION, "importation de la config", "copie de la config vers le dossier des configs réussi avec succès");
+                } else {
+                    Launcher.getInstance().showAlert(Alert.AlertType.ERROR, "importation de la config", "le fichier existe déjà");
                 }
             }
         });
@@ -328,14 +341,14 @@ public class Settings extends ContentPanel {
                     JOptionPane.YES_NO_CANCEL_OPTION
             );
             if (choice == 0) {
-                new Thread(()-> {
+                new Thread(() -> {
                     try {
                         deleteDirectory(new File(Launcher.getInstance().getClientDir().toUri()));
-                    }catch (Exception ex){
+                    } catch (Exception ex) {
                         Launcher.getInstance().getLogger().printStackTrace(ex);
-                        Launcher.getInstance().showErrorDialog(ex,this.panelManager.getStage());
+                        Launcher.getInstance().showErrorDialog(ex, this.panelManager.getStage());
                     }
-                },"deleteFile").start();
+                }, "deleteFile").start();
             }
             deleteBtn.setDisable(false);
         });
@@ -353,6 +366,46 @@ public class Settings extends ContentPanel {
         consoleBtn.setTranslateY(600d);
         consoleBtn.setOnMouseClicked(e -> openConsole());
 
+        Label pathLabel = new Label("Chemin des configs");
+        pathLabel.getStyleClass().add("settings-labels");
+        setLeft(pathLabel);
+        setTop(pathLabel);
+        pathLabel.setTranslateX(25);
+        pathLabel.setTranslateY(650);
+
+        TextField pathField = new TextField();
+        pathField.setMaxWidth(300);
+        pathField.getStyleClass().add("config-field");
+
+        pathField.setText(saver.get("filesPath"));
+
+        setLeft(pathField);
+        setTop(pathField);
+        pathField.setTranslateX(35);
+        pathField.setTranslateY(680);
+
+        Button browseBtn = new Button("Parcourir");
+        browseBtn.getStyleClass().add("save-btn");
+
+        setLeft(browseBtn);
+        setTop(browseBtn);
+        browseBtn.setTranslateX(350);
+        browseBtn.setTranslateY(680);
+
+        browseBtn.setOnAction(e -> {
+            DirectoryChooser chooser = new DirectoryChooser();
+            chooser.setTitle("Choisir le dossier de configs");
+
+            File initialDir = new File(pathField.getText());
+            if (initialDir.exists()) {
+                chooser.setInitialDirectory(initialDir);
+            }
+
+            File selected = chooser.showDialog(panelManager.getStage());
+            if (selected != null) {
+                pathField.setText(selected.toPath().toString());
+            }
+        });
 
         // Save Button Title
 
@@ -388,42 +441,46 @@ public class Settings extends ContentPanel {
         saveBtn.setOnMouseClicked(e -> {
             double _val = Double.parseDouble(comboBox.getValue().replace(" Go", ""));
             _val *= 1024;
-            if(!Objects.equals(comboBoxAccount.getValue(), "Séléctionner votre compte")) {
+            if (!Objects.equals(comboBoxAccount.getValue(), "Séléctionner votre compte")) {
                 String[] Account = comboBoxAccount.getValue().split("\\. ");
                 int _selectAccount = Integer.parseInt(Account[0]);
-                saver.set("selectAccount", String.valueOf(_selectAccount));
+                accountSaver.set("selectAccount", String.valueOf(_selectAccount));
                 if (Account[1].equals("Se connecter à votre compte")) {
                     panelManager.showPanel(new Login());
                 } else {
                     panelManager.showPanel(new App());
                 }
             }
-            if(jvmArgs.getText().isEmpty()){
-                if(saver.get("jvmArgs") != null){
+            if (jvmArgs.getText().isEmpty()) {
+                if (saver.get("jvmArgs") != null) {
                     saver.remove("jvmArgs");
                 }
-            }else{
+            } else {
                 saver.set("jvmArgs", jvmArgs.getText());
             }
             saver.set("autoclose", String.valueOf(_close.get()));
+            saver.set("oldFilesPath", saver.get("filesPath"));
+            saver.set("filesPath", Paths.get(pathField.getText()).resolve("gamity").toAbsolutePath().toString());
             saver.set("wait-launch", String.valueOf(_wait.get()));
             saver.set("optifine", String.valueOf(_optifine.get()));
             saver.set("maxRam", String.valueOf((int) _val));
             saveLabel.setText("Paramètre(s) enregistré(s)");
             saveLabel.setTextFill(Color.GREEN);
         });
-        contentPane.getChildren().addAll(title,ramLabel,comboBox,autocloseLabel,autoclose,waitLabel,wait,optifineLabel,optifine,accountLabel,comboBoxAccount,configBtn,openBtn,deleteBtn,consoleBtn,jvmLabel, jvmArgs,saveLabel,saveBtn,version);
+        contentPane.getChildren().addAll(title, ramLabel, comboBox, autocloseLabel, autoclose, waitLabel, wait, optifineLabel, optifine, accountLabel, comboBoxAccount, configBtn, openBtn, deleteBtn, consoleBtn, jvmLabel, jvmArgs, pathLabel, pathField, browseBtn, saveLabel, saveBtn, version);
         panelManager.getStage().setMinHeight(680.0);
     }
+
     private void openFolder(Path path) {
         File configFolder = new File(path.toUri());
-            try {
-                Desktop.getDesktop().open(configFolder);
-            } catch (IOException ex) {
-                Launcher.getInstance().getLogger().printStackTrace(ex);
-                Launcher.getInstance().showErrorDialog(ex,this.panelManager.getStage());
-            }
+        try {
+            Desktop.getDesktop().open(configFolder);
+        } catch (IOException ex) {
+            Launcher.getInstance().getLogger().printStackTrace(ex);
+            Launcher.getInstance().showErrorDialog(ex, this.panelManager.getStage());
+        }
     }
+
     private boolean copyFileToConfig(File fileToCopy) {
         Path destinationPath = null;
         try {
@@ -431,7 +488,7 @@ public class Settings extends ContentPanel {
             Parser.JsonConfigParser parser = new Parser.JsonConfigParser();
             Config.CustomServer config = parser.parseJsonPath(sourcePath);
             destinationPath = Launcher.getInstance().getConfigDir().resolve(config.name + ".json");
-            if(Files.exists(destinationPath)){
+            if (Files.exists(destinationPath)) {
                 return false;
             }
             Files.copy(sourcePath, destinationPath);
@@ -440,20 +497,11 @@ public class Settings extends ContentPanel {
             assert destinationPath != null;
             Launcher.getInstance().getLogger().err("Failed to copy file to: " + destinationPath);
             Launcher.getInstance().getLogger().printStackTrace(e);
-            Launcher.getInstance().showErrorDialog(e,this.panelManager.getStage());
+            Launcher.getInstance().showErrorDialog(e, this.panelManager.getStage());
         }
         return true;
     }
 
-    private static void deleteDirectory(File directoryToBeDeleted) {
-        File[] allContents = directoryToBeDeleted.listFiles();
-        if (allContents != null) {
-            for (File file : allContents) {
-                deleteDirectory(file);
-            }
-        }
-        directoryToBeDeleted.delete();
-    }
     private void openConsole() {
         if (consoleArea == null) {
             consoleArea = new TextArea();

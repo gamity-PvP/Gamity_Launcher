@@ -13,6 +13,7 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
+import fr.gamity.launcher.thomas260913.utils.JavaInstaller;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
@@ -300,8 +301,14 @@ public class CreateConfig extends ContentPanel {
         title.setTranslateX(25d);
 
         mcTypeComboBox.getItems().addAll("vanilla", "forge","snapshot","fabric","neoforge");
-        mcJavaCombobox.getItems().addAll("21", "17", "8");
         mcVersionCombobox.getItems().add("latest");
+        try {
+            mcJavaCombobox.getItems().addAll(Launcher.getInstance().getJavaManager().getAvailableVersions());
+        }catch(Exception e){
+            Launcher.getInstance().getLogger().printStackTrace(e);
+            Launcher.getInstance().showErrorDialog(e,this.panelManager.getStage());
+            mcJavaCombobox.getItems().addAll("8", "11", "17", "21", "25");
+        }
         try {
             versionList.versions = Launcher.getInstance().getVersionList().versions.stream().filter(version1 -> Objects.equals(version1.type, "release")).collect(Collectors.toList());
             versionList.versions.forEach(version1->mcVersionCombobox.getItems().add(version1.id));

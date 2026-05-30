@@ -246,9 +246,8 @@ public class Vanilla extends ContentPanel {
             build.setUncaughtExceptionHandler(new UncaughtExceptionHandler());
             build.start();
             Thread javas = new Thread(()->{
-                JavaInstaller javaInstaller = new JavaInstaller(Launcher.getInstance().getLauncherDir().resolve("java"));
                 try {
-                    javaInstaller.installJava(config.mcinfo.mc.java);
+                    Launcher.getInstance().getJavaManager().getJava(config.mcinfo.mc.java);
                 } catch (IOException e) {
                     Launcher.getInstance().getLogger().printStackTrace(e);
                     Launcher.getInstance().showErrorDialog(e);

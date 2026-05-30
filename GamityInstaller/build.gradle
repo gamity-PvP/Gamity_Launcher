@@ -16,7 +16,7 @@ plugins {
 }
 apply plugin: 'io.github.fvarrui.javapackager.plugin'
 
-version '4.0.1'
+version '4.2.0'
 
 dependencies {
     implementation 'fr.flowarg:openlauncherlib:3+'
@@ -34,8 +34,8 @@ tasks.register('packageMyAppWin64', PackageTask) {
     jrePath = file('../java/win64')
     winConfig(({
         companyName = 'Gamity PvP'
-        fileVersion = '4.0.0'
-        productVersion = '4.0.0'
+        fileVersion = '4.2.0'
+        productVersion = '4.2.0'
         fileDescription = 'installateur du launcher de gamity pvp'
         copyright = 'Gamity PvP'
         setupMode = 'askTheUser'

@@ -25,7 +25,7 @@ import java.util.UUID;
 public class Login extends Panel {
     GridPane loginCard = new GridPane();
 
-    Saver saver = Launcher.getInstance().getSaver();
+    Saver accountSaver = Launcher.getInstance().getAccountSaver();
 
     TextField userField = new TextField();
     Label userErrorLabel = new Label();
@@ -192,9 +192,9 @@ public class Login extends Panel {
                     UUID.randomUUID().toString(),
                     UUID.randomUUID().toString()
             );
-            saver.set("offline-username" + saver.get("selectAccount"), infos.getUsername());
-            saver.save();
-            Launcher.getInstance().addMCAccount(new MCAccount(infos,true));
+            accountSaver.set("offline-username" + accountSaver.get("selectAccount"), infos.getUsername());
+            accountSaver.save();
+            Launcher.getInstance().addMCAccount(new MCAccount(infos,true,true));
 
             this.logger.info("Hello " + infos.getUsername());
 
@@ -214,14 +214,15 @@ public class Login extends Panel {
                 return;
             }
 
-            saver.set("msAccessToken" + saver.get("selectAccount"), response.getAccessToken());
-            saver.set("msRefreshToken" + saver.get("selectAccount"), response.getRefreshToken());
-            saver.save();
+            accountSaver.set("msAccessToken" + accountSaver.get("selectAccount"), response.getAccessToken());
+            accountSaver.set("msRefreshToken" + accountSaver.get("selectAccount"), response.getRefreshToken());
+            accountSaver.set("offline-username" + accountSaver.get("selectAccount"), response.getProfile().getName());
+            accountSaver.save();
             Launcher.getInstance().addMCAccount(new MCAccount(new AuthInfos(
                     response.getProfile().getName(),
                     response.getAccessToken(),
                     response.getProfile().getId()
-            ),false));
+            ),false,true));
             this.logger.info("Hello " + response.getProfile().getName());
 
             Platform.runLater(() -> panelManager.showPanel(new App()));

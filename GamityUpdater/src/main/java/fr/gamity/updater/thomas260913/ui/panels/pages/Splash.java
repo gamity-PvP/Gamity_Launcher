@@ -9,6 +9,7 @@ import fr.gamity.updater.thomas260913.utils.Config;
 import fr.gamity.updater.thomas260913.utils.JavaInstaller;
 import fr.gamity.updater.thomas260913.utils.Parser;
 import fr.theshark34.openlauncherlib.JavaUtil;
+import fr.theshark34.openlauncherlib.util.Saver;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -34,6 +35,7 @@ import static fr.flowarg.flowzipper.ZipUtils.unzip;
 
 public class Splash extends Panel {
     private final Path launcherPath = Updater.getInstance().getLauncherDir().resolve("launcher.jar");
+    Saver saver = Updater.getInstance().getSaver();
     GridPane background = new GridPane();
     GridPane boxPane = new GridPane();
     ImageView alu = new ImageView(new Image("images/blocks/aluminium.png"));
@@ -280,7 +282,7 @@ public class Splash extends Panel {
                     setProgress(0.0, 6.0);
                 });
                 try{
-                    Config datas = Parser.appInfo.parseJsonURL("https://gamity-pvp.fr/apis/launcher/info/launcher/json");
+                    Config datas = Parser.appInfo.parseJsonURL(saver.get("weblink") + "/apis/launcher/info/launcher/json");
                     if(Files.notExists(this.launcherPath) || !FileUtils.getSHA1(this.launcherPath).equalsIgnoreCase(datas.sha1)) {
                         Updater.getInstance().getLogger().info("update found");
                         Platform.runLater(() -> {

@@ -8,9 +8,16 @@ import fr.gamity.launcher.thomas260913.ui.panel.Panel;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import fr.gamity.launcher.thomas260913.ui.panels.pages.content.*;
+import fr.gamity.launcher.thomas260913.utils.MCAccount;
+import fr.litarvan.openauth.microsoft.MicrosoftAuthResult;
+import fr.litarvan.openauth.microsoft.MicrosoftAuthenticationException;
+import fr.litarvan.openauth.microsoft.MicrosoftAuthenticator;
+import fr.theshark34.openlauncherlib.minecraft.AuthInfos;
 import fr.theshark34.openlauncherlib.util.Saver;
+import javafx.application.Platform;
 import javafx.geometry.HPos;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -32,6 +39,7 @@ public class App extends Panel {
     ContentPanel currentPage = null;
     public Button homeBtn, settingsBtn, clientBtn;
     Saver saver = Launcher.getInstance().getSaver();
+    Saver accountSaver = Launcher.getInstance().getAccountSaver();
     public static String iconSize = "16px";
     private Config.ServerList serverList;
 
@@ -181,6 +189,28 @@ public class App extends Panel {
 
         sidemenu.getChildren().addAll(homeBtn, settingsBtn, clientBtn);
 
+        if(!Launcher.getInstance().getMCAccount().isAlreadyLogin() && !Launcher.getInstance().getMCAccount().isCrack()){
+            try {
+                MicrosoftAuthenticator authenticator = new MicrosoftAuthenticator();
+                MicrosoftAuthResult response = authenticator.loginWithRefreshToken(accountSaver.get("msRefreshToken" + accountSaver.get("selectAccount")));
+
+                accountSaver.set("msAccessToken" + accountSaver.get("selectAccount"), response.getAccessToken());
+                accountSaver.set("msRefreshToken" + accountSaver.get("selectAccount"), response.getRefreshToken());
+                accountSaver.set("offline-username" + accountSaver.get("selectAccount"), response.getProfile().getName());
+                accountSaver.save();
+                Launcher.getInstance().setMCAccount(new MCAccount(new AuthInfos(
+                        response.getProfile().getName(),
+                        response.getAccessToken(),
+                        response.getProfile().getId()
+                ),false,true));
+                this.logger.info("Hello " + response.getProfile().getName());
+
+                Platform.runLater(() -> panelManager.showPanel(new App()));
+
+            } catch (Exception e) {
+                loginMicrosoft(()-> Platform.runLater(() -> panelManager.showPanel(new App())));
+            }
+        }
 
         if (Launcher.getInstance().getMCAccount() != null) {
             // Pseudo + avatar
@@ -229,16 +259,13 @@ public class App extends Panel {
                 if(JsonClient.getLaunching()){
                     return;
                 }
-                saver.remove("offline-username" + saver.get("selectAccount"));
-                saver.remove("msAccessToken" + saver.get("selectAccount"));
-                saver.remove("msRefreshToken" + saver.get("selectAccount"));
                 Launcher.getInstance().rmMCAccount();
                 if (Launcher.getInstance().getMCAccountSize() > 0) {
                     this.panelManager.showPanel(new SelectAccount());
                 } else {
                     this.panelManager.showPanel(new Login());
                 }
-                saver.save();
+                accountSaver.save();
 
             });
             userPane.getChildren().add(logoutBtn);
@@ -282,5 +309,26 @@ public class App extends Panel {
             panel.init(this.panelManager);
             panel.onShow();
         }
+    }
+    public static void loginMicrosoft(Runnable cb){
+        MicrosoftAuthenticator authenticator = new MicrosoftAuthenticator();
+        authenticator.loginWithAsyncWebview().whenComplete((response, error) -> {
+            if (error != null) {
+                Launcher.getInstance().getLogger().err(error.toString());
+                loginMicrosoft(cb);
+            }
+
+            Launcher.getInstance().getAccountSaver().set("msAccessToken" + Launcher.getInstance().getAccountSaver().get("selectAccount"), response.getAccessToken());
+            Launcher.getInstance().getAccountSaver().set("msRefreshToken" + Launcher.getInstance().getAccountSaver().get("selectAccount"), response.getRefreshToken());
+            Launcher.getInstance().getAccountSaver().set("offline-username" + Launcher.getInstance().getAccountSaver().get("selectAccount"), response.getProfile().getName());
+            Launcher.getInstance().getAccountSaver().save();
+            Launcher.getInstance().setMCAccount(new MCAccount(new AuthInfos(
+                    response.getProfile().getName(),
+                    response.getAccessToken(),
+                    response.getProfile().getId()
+            ),false,true));
+            Launcher.getInstance().getLogger().info("Hello " + response.getProfile().getName());
+            cb.run();
+        });
     }
 }

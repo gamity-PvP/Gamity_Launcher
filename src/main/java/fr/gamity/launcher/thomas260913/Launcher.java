@@ -9,11 +9,8 @@ import fr.gamity.launcher.thomas260913.ui.PanelManager;
 import fr.gamity.launcher.thomas260913.ui.panels.pages.Splash;
 import fr.gamity.launcher.thomas260913.game.Parser.OptifineParser.OptifineJson;
 import fr.gamity.launcher.thomas260913.game.VersionList;
+import fr.gamity.launcher.thomas260913.utils.JavaManager;
 import fr.gamity.launcher.thomas260913.utils.MCAccount;
-import fr.litarvan.openauth.microsoft.MicrosoftAuthResult;
-import fr.litarvan.openauth.microsoft.MicrosoftAuthenticationException;
-import fr.litarvan.openauth.microsoft.MicrosoftAuthenticator;
-import fr.theshark34.openlauncherlib.minecraft.AuthInfos;
 import fr.theshark34.openlauncherlib.minecraft.util.GameDirGenerator;
 import fr.theshark34.openlauncherlib.util.Saver;
 import javafx.application.Application;
@@ -32,37 +29,39 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import javax.swing.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
 import java.io.*;
 
 public class Launcher extends Application {
-    private static final String version = "v4.1.3";
+    private static final String version = "v4.3.0";
     public static DiscordRichPresence presence = new DiscordRichPresence();
     public static DiscordRPC lib = DiscordRPC.INSTANCE;
     private static Launcher instance;
     private final ILogger logger;
+    private Path storageFile;
+    private Path ConfigDir;
+    private Path ClientDir;
     private final Path launcherDir = GameDirGenerator.createGameDir("gamity", true);
-    private final Path ConfigDir = GameDirGenerator.createGameDir("gamity", true).resolve("versions").resolve("config");
-    private final Path ClientDir = GameDirGenerator.createGameDir("gamity", true).resolve("versions").resolve("clients");
+    public JavaManager javaManager;
     private final Saver saver;
+    private final Saver accountSaver;
     private final List<MCAccount> mcAccountsList = new ArrayList<>();
     private final Integer maxAccount;
     private final StringBuilder logBuffer = new StringBuilder();
     private Stage stage;
     private PanelManager panelManager;
-    private Path java21;
-    private Path java17;
-    private Path java8;
     private VersionList versionList;
     private List<OptifineJson.OptifineList> optifineList;
 
     public Launcher() {
         instance = this;
-        this.logger = new Logger("[gamity]", this.launcherDir.resolve("gamity.log"));
         MultiOutputStream multiOutStream = new MultiOutputStream();
         multiOutStream.addOutputStream(System.out);
         multiOutStream.addOutputStream(new BufferedOutputStream(logBuffer));
@@ -70,17 +69,56 @@ public class Launcher extends Application {
         PrintStream printStream = new PrintStream(multiOutStream);
         System.setOut(printStream);
         System.setErr(printStream);
-        if (Files.notExists(this.launcherDir)) {
+
+        saver = new Saver(this.launcherDir.resolve("config.properties"));
+        saver.load();
+
+        String filesPath = saver.get("filesPath");
+
+        if (filesPath == null || filesPath.isEmpty()) {
+            JFileChooser chooser = new JFileChooser();
+            chooser.setDialogTitle("Sélectionnez un dossier");
+            chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+            int result = chooser.showOpenDialog(null);
+
+            if (result == JFileChooser.APPROVE_OPTION) {
+                filesPath = chooser.getSelectedFile().getAbsolutePath();
+                if(Paths.get(filesPath) != this.launcherDir){
+                    moveFiles(this.launcherDir,Paths.get(filesPath));
+                }
+
+                // Sauvegarder le chemin pour éviter de redemander plus tard
+                saver.set("filesPath", filesPath);
+                saver.save();
+            } else {
+                // L'utilisateur a annulé
+                System.out.println("Aucun dossier sélectionné");
+                Platform.exit();
+                System.exit(0);
+            }
+        }
+
+        if(!Paths.get(filesPath).toAbsolutePath().toString().equals(this.launcherDir.toAbsolutePath().toString())){
+            storageFile = Paths.get(filesPath).resolve("gamity");
+        }else{
+            storageFile = this.launcherDir.toAbsolutePath();
+        }
+        this.logger = new Logger("[gamity]", storageFile.resolve("gamity.log"));
+        javaManager = new JavaManager(launcherDir.resolve("java"));
+        ConfigDir = storageFile.resolve("versions").resolve("config");
+        ClientDir = storageFile.resolve("versions").resolve("clients");
+        if (Files.notExists(this.storageFile)) {
             try {
-                Files.createDirectory(this.launcherDir);
+                Files.createDirectory(this.storageFile);
             } catch (IOException e) {
                 this.logger.err("Unable to create launcher folder");
                 this.logger.printStackTrace(e);
             }
         }
-        if (Files.notExists(this.launcherDir.resolve("versions"))) {
+        if (Files.notExists(this.storageFile.resolve("versions"))) {
             try {
-                Files.createDirectory(this.launcherDir.resolve("versions"));
+                Files.createDirectory(this.storageFile.resolve("versions"));
             } catch (IOException e) {
                 this.logger.err("Unable to create versions folder");
                 this.logger.printStackTrace(e);
@@ -102,23 +140,24 @@ public class Launcher extends Application {
                 this.logger.printStackTrace(e);
             }
         }
-        saver = new Saver(this.launcherDir.resolve("config.properties"));
-        saver.load();
+        accountSaver = new Saver(storageFile.resolve("accounts.properties"));
+        accountSaver.load();
 
-        if (saver.get("maxAccount") != null) {
-            maxAccount = Math.min(Integer.parseInt(saver.get("maxAccount")), 20);
+        if (accountSaver.get("maxAccount") != null) {
+            maxAccount = Math.min(Integer.parseInt(accountSaver.get("maxAccount")), 20);
         } else {
             maxAccount = 3;
         }
-        if (saver.get("selectAccount") == null) {
-            saver.set("selectAccount", String.valueOf(0));
-            saver.save();
+        if (accountSaver.get("selectAccount") == null) {
+            accountSaver.set("selectAccount", String.valueOf(0));
+            accountSaver.save();
         }
         if (saver.get("weblink") == null) {
             saver.set("weblink", "https://gamity-pvp.fr");
             saver.save();
         }
     }
+
 
     public static Launcher getInstance() {
         return instance;
@@ -255,41 +294,18 @@ public class Launcher extends Application {
     }
 
     public boolean isUserAlreadyLoggedIn() {
-        if (saver.get("msAccessToken" + saver.get("selectAccount")) != null && saver.get("msRefreshToken" + saver.get("selectAccount")) != null) {
-            try {
-                MicrosoftAuthenticator authenticator = new MicrosoftAuthenticator();
-                MicrosoftAuthResult response = authenticator.loginWithRefreshToken(saver.get("msRefreshToken" + saver.get("selectAccount")));
-
-                saver.set("msAccessToken" + saver.get("selectAccount"), response.getAccessToken());
-                saver.set("msRefreshToken" + saver.get("selectAccount"), response.getRefreshToken());
-                saver.save();
-                this.setMCAccount(new MCAccount(new AuthInfos(
-                        response.getProfile().getName(),
-                        response.getAccessToken(),
-                        response.getProfile().getId(),
-                        response.getXuid(),
-                        response.getClientId()
-                ),false));
-                return true;
-            } catch (MicrosoftAuthenticationException e) {
-                saver.remove("msAccessToken" + saver.get("selectAccount"));
-                saver.remove("msRefreshToken" + saver.get("selectAccount"));
-                saver.save();
-            }
-        } else if (saver.get("offline-username" + saver.get("selectAccount")) != null) {
-            this.mcAccountsList.set(Integer.parseInt(saver.get("selectAccount")), new MCAccount(new AuthInfos(saver.get("offline-username" + saver.get("selectAccount")), UUID.randomUUID().toString(), UUID.randomUUID().toString()),true));
-            return true;
-        }
-
-        return false;
+        int index = Integer.parseInt(accountSaver.get("selectAccount"));
+        return index >= 0
+                && index < this.mcAccountsList.size()
+                && this.mcAccountsList.get(index) != null;
     }
 
     public MCAccount getMCAccount() {
-        return mcAccountsList.get(Integer.parseInt(saver.get("selectAccount")));
+        return mcAccountsList.get(Integer.parseInt(accountSaver.get("selectAccount")));
     }
 
     public void setMCAccount(MCAccount mcAccount) {
-        this.mcAccountsList.set(Integer.parseInt(saver.get("selectAccount")), mcAccount);
+        this.mcAccountsList.set(Integer.parseInt(accountSaver.get("selectAccount")), mcAccount);
     }
 
     public int getMCAccountSize() {
@@ -301,18 +317,32 @@ public class Launcher extends Application {
     }
 
     public void rmMCAccount() {
-        for (int i = Integer.parseInt(saver.get("selectAccount")); i < Integer.parseInt(saver.get("maxAccount")); i++) {
-            if (saver.get("msRefreshToken" + i) != null && saver.get("msAccessToken" + i) != null) {
-                saver.set("msAccessToken" + (i - 1), saver.get("msAccessToken" + i));
-                saver.set("msRefreshToken" + (i - 1), saver.get("msRefreshToken" + i));
-                saver.remove("msRefreshToken" + i);
-                saver.remove("msAccessToken" + i);
-            } else if (saver.get("offline-username" + i) != null) {
-                saver.set("offline-username" + (i - 1), saver.get("offline-username" + i));
-                saver.remove("offline-username" + i);
+        for (int i = Integer.parseInt(accountSaver.get("selectAccount")); i < Integer.parseInt(accountSaver.get("maxAccount")); i++) {
+            if (accountSaver.get("msRefreshToken" + i) != null && accountSaver.get("msAccessToken" + i) != null) {
+                accountSaver.set("msAccessToken" + (i - 1), accountSaver.get("msAccessToken" + i));
+                accountSaver.set("msRefreshToken" + (i - 1), accountSaver.get("msRefreshToken" + i));
+                accountSaver.remove("msRefreshToken" + i);
+                accountSaver.remove("msAccessToken" + i);
+            } else if (accountSaver.get("offline-username" + i) != null) {
+                accountSaver.set("offline-username" + (i - 1), accountSaver.get("offline-username" + i));
+                accountSaver.remove("offline-username" + i);
             }
         }
-        this.mcAccountsList.remove(Integer.parseInt(saver.get("selectAccount")));
+        this.mcAccountsList.remove(Integer.parseInt(accountSaver.get("selectAccount")));
+    }
+
+    public void rmMCAccount(int index) {
+        for (int i = index; i < Integer.parseInt(accountSaver.get("maxAccount")); i++) {
+            if (accountSaver.get("msRefreshToken" + i) != null && accountSaver.get("msAccessToken" + i) != null) {
+                accountSaver.set("msAccessToken" + (i - 1), accountSaver.get("msAccessToken" + i));
+                accountSaver.set("msRefreshToken" + (i - 1), accountSaver.get("msRefreshToken" + i));
+                accountSaver.remove("msRefreshToken" + i);
+                accountSaver.remove("msAccessToken" + i);
+            }
+            accountSaver.set("offline-username" + (i - 1), accountSaver.get("offline-username" + i));
+            accountSaver.remove("offline-username" + i);
+        }
+        this.mcAccountsList.remove(Integer.parseInt(accountSaver.get("selectAccount")));
     }
 
     public void addMCAccount(MCAccount mcAccount) {
@@ -335,8 +365,12 @@ public class Launcher extends Application {
         return saver;
     }
 
+    public Saver getAccountSaver() {
+        return accountSaver;
+    }
+
     public Path getLauncherDir() {
-        return launcherDir;
+        return storageFile;
     }
 
     public Path getClientDir() {
@@ -346,30 +380,10 @@ public class Launcher extends Application {
     public Path getConfigDir() {
         return ConfigDir;
     }
-
-    public Path getJava21() {
-        return java21;
+    public JavaManager getJavaManager() {
+        return javaManager;
     }
 
-    public void setJava21(Path path) {
-        java21 = path;
-    }
-
-    public Path getJava17() {
-        return java17;
-    }
-
-    public void setJava17(Path path) {
-        java17 = path;
-    }
-
-    public Path getJava8() {
-        return java8;
-    }
-
-    public void setJava8(Path path) {
-        java8 = path;
-    }
     public void setVersionList(VersionList versionList){
         this.versionList = versionList;
     }
@@ -385,6 +399,47 @@ public class Launcher extends Application {
 
     public StringBuilder getLogBuffer() {
         return logBuffer;
+    }
+
+    public static void moveFiles(Path oldDir, Path newDir) {
+        try {
+            Files.createDirectories(newDir);
+
+            // 1. déplacer tout
+            Files.walk(oldDir)
+                    .forEach(source -> {
+                        try {
+                            if(!source.getFileName().toString().equals("config.properties")) {
+                                Path relative = oldDir.relativize(source);
+                                Path target = newDir.resolve(relative);
+
+                                Files.createDirectories(target.getParent());
+
+                                Files.move(source, target, StandardCopyOption.REPLACE_EXISTING);
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
+
+            // 2. supprimer l’ancien dossier (maintenant vide)
+            Files.walk(oldDir)
+                    .sorted(Comparator.reverseOrder())
+                    .forEach(path -> {
+                        try {
+                            if(!path.getFileName().toString().equals("config.properties")) {
+                                Files.deleteIfExists(path);
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
+
+            System.out.println("Déplacement terminé");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

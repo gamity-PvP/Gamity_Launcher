@@ -5,9 +5,11 @@ import fr.theshark34.openlauncherlib.minecraft.AuthInfos;
 public class MCAccount {
     private final AuthInfos authInfos;
     private final boolean crack;
-    public MCAccount(AuthInfos authInfos, boolean crack){
+    private final boolean alreadyLogin;
+    public MCAccount(AuthInfos authInfos, boolean crack, boolean alreadyLogin){
         this.authInfos = authInfos;
         this.crack = crack;
+        this.alreadyLogin = alreadyLogin;
     }
 
     public AuthInfos getAuthInfos() {
@@ -16,5 +18,9 @@ public class MCAccount {
 
     public boolean isCrack() {
         return crack;
+    }
+
+    public boolean isAlreadyLogin(){
+        return alreadyLogin;
     }
 }

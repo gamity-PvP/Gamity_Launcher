@@ -33,7 +33,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public class Updater extends Application {
-    private static final String version = "1.4";
+    private static final String version = "1.5";
     private static Updater instance;
     private ILogger logger;
     private final Path launcherDir = GameDirGenerator.createGameDir("gamity", true);
@@ -54,6 +54,7 @@ public class Updater extends Application {
             JFileChooser chooser = new JFileChooser();
             chooser.setDialogTitle("Sélectionnez un dossier");
             chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            chooser.setCurrentDirectory(this.launcherDir.toFile());
 
             int result = chooser.showOpenDialog(null);
 

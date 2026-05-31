@@ -79,6 +79,7 @@ public class Launcher extends Application {
             JFileChooser chooser = new JFileChooser();
             chooser.setDialogTitle("Sélectionnez un dossier");
             chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            chooser.setCurrentDirectory(this.launcherDir.toFile());
 
             int result = chooser.showOpenDialog(null);
 

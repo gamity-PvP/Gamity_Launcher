@@ -13,6 +13,7 @@ import fr.gamity.launcher.thomas260913.ui.PanelManager;
 import fr.gamity.launcher.thomas260913.ui.panels.pages.App;
 import fr.gamity.launcher.thomas260913.ui.panels.pages.Login;
 import fr.theshark34.openlauncherlib.util.Saver;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -309,7 +310,7 @@ public class Settings extends ContentPanel {
                 }
             }
         });
-        Button openBtn = new Button("ouvrir le dossier des configs");
+        Button openBtn = new Button("ouvrir le dossier du Launcher");
         openBtn.getStyleClass().add("save-btn");
         MaterialDesignIconView iconView5 = new MaterialDesignIconView(MaterialDesignIcon.FOLDER);
         iconView5.setSize(App.iconSize);
@@ -320,9 +321,9 @@ public class Settings extends ContentPanel {
         setTop(openBtn);
         openBtn.setTranslateX(35d);
         openBtn.setTranslateY(510d);
-        openBtn.setOnMouseClicked(e -> openFolder(Launcher.getInstance().getConfigDir()));
+        openBtn.setOnMouseClicked(e -> openFolder(Launcher.getInstance().getLauncherDir()));
 
-        Button deleteBtn = new Button("supprimer le dossier de jeux");
+        Button deleteBtn = new Button("supprimer le dossier de java");
         deleteBtn.getStyleClass().add("save-btn");
         MaterialDesignIconView iconView4 = new MaterialDesignIconView(MaterialDesignIcon.CLOSE);
         iconView4.setSize(App.iconSize);
@@ -336,14 +337,14 @@ public class Settings extends ContentPanel {
         deleteBtn.setOnMouseClicked(e -> {
             int choice = JOptionPane.showConfirmDialog(
                     null,
-                    "Êtes vous sùr de vouloir supprimer le dossier des jeux ?\nceci contienne toutes vos configs, sauvegarde, screenshot",
+                    "Êtes vous sùr de vouloir supprimer le dossier des javas ?\nceci contienne les javas utilisé pour les différentes version",
                     "Info",
                     JOptionPane.YES_NO_CANCEL_OPTION
             );
             if (choice == 0) {
                 new Thread(() -> {
                     try {
-                        deleteDirectory(new File(Launcher.getInstance().getClientDir().toUri()));
+                        deleteDirectory(new File(Launcher.getInstance().getLauncherDir().resolve("java").toUri()));
                     } catch (Exception ex) {
                         Launcher.getInstance().getLogger().printStackTrace(ex);
                         Launcher.getInstance().showErrorDialog(ex, this.panelManager.getStage());
@@ -395,6 +396,7 @@ public class Settings extends ContentPanel {
         browseBtn.setOnAction(e -> {
             DirectoryChooser chooser = new DirectoryChooser();
             chooser.setTitle("Choisir le dossier de configs");
+            chooser.setInitialDirectory(Paths.get(saver.get("filesPath")).toFile());
 
             File initialDir = new File(pathField.getText());
             if (initialDir.exists()) {
@@ -458,9 +460,22 @@ public class Settings extends ContentPanel {
             } else {
                 saver.set("jvmArgs", jvmArgs.getText());
             }
+            if(!saver.get("filesPath").equals(pathField.getText())){
+                int choice = JOptionPane.showConfirmDialog(
+                        null,
+                        "Vous allez devoir redémarrer le launcher pour effectuer le changement de dossier.\nLe launcher va s'éteindre, vous allez devoir le rallumer manuellement.",
+                        "Info",
+                        JOptionPane.YES_NO_CANCEL_OPTION
+                );
+                if (choice == 0) {
+                    saver.set("oldFilesPath", saver.get("filesPath"));
+                    saver.set("filesPath", Paths.get(pathField.getText()).toAbsolutePath().toString());
+                    Launcher.getInstance().stop();
+                }else{
+                    pathField.setText(saver.get("filesPath"));
+                }
+            }
             saver.set("autoclose", String.valueOf(_close.get()));
-            saver.set("oldFilesPath", saver.get("filesPath"));
-            saver.set("filesPath", Paths.get(pathField.getText()).resolve("gamity").toAbsolutePath().toString());
             saver.set("wait-launch", String.valueOf(_wait.get()));
             saver.set("optifine", String.valueOf(_optifine.get()));
             saver.set("maxRam", String.valueOf((int) _val));

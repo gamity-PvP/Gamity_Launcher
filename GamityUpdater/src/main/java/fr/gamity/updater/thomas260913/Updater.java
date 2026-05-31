@@ -30,9 +30,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Comparator;
+import java.util.List;
 
 public class Updater extends Application {
-    private static final String version = "1.3";
+    private static final String version = "1.4";
     private static Updater instance;
     private ILogger logger;
     private final Path launcherDir = GameDirGenerator.createGameDir("gamity", true);
@@ -40,6 +41,7 @@ public class Updater extends Application {
     private final Saver saver;
     private Stage stage;
     private PanelManager panelManager;
+    private String installerVersion;
 
     public Updater() {
         instance = this;
@@ -148,13 +150,20 @@ public class Updater extends Application {
     @Override
     public void start(Stage stage) {
         try {
+            List<String> parameters = getParameters().getRaw();
+            if(parameters.contains("--installerVersion")){
+                this.installerVersion = parameters.get(parameters.indexOf("--installerVersion")+1);
+            }else{
+                this.installerVersion = null;
+            }
             this.stage = stage;
             Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
             this.logger.info("Starting updater");
-            this.logger.info("Updater verion : " + getUpdaterVersion());
+            this.logger.info("Updater version : " + getUpdaterVersion());
+            this.logger.info("Installer version : " + this.installerVersion);
             this.panelManager = new PanelManager(this, stage);
             this.panelManager.init();
-            panelManager.showPanel(new Splash());
+            panelManager.showPanel(new Splash(this.installerVersion));
         }catch(Exception ex){
             logger.printStackTrace(ex);
             showErrorDialog(ex);

@@ -38,6 +38,7 @@ public class Splash extends Panel {
     Saver saver = Updater.getInstance().getSaver();
     GridPane background = new GridPane();
     GridPane boxPane = new GridPane();
+    String installerVersion;
     ImageView alu = new ImageView(new Image("images/blocks/aluminium.png"));
     ImageView copper = new ImageView(new Image("images/blocks/copper.png"));
     ImageView chromium = new ImageView(new Image("images/blocks/chromium.png"));
@@ -55,6 +56,9 @@ public class Splash extends Panel {
     ProgressBar progressBar = new ProgressBar();
     Label stepLabel = new Label();
 
+    public Splash(String installerVersion){
+        this.installerVersion = installerVersion;
+    }
     @Override
     public String getName() {
         return null;
@@ -334,7 +338,11 @@ public class Splash extends Panel {
                 });
                     ProcessBuilder processBuilder = new ProcessBuilder();
                     final Path java = Paths.get(System.getProperty("java.home")).resolve("bin").resolve("java");
-                    processBuilder.command(java.toAbsolutePath().toString(), "-jar", this.launcherPath.toAbsolutePath().toString());
+                    if(this.installerVersion != null){
+                        processBuilder.command(java.toAbsolutePath().toString(), "-jar", this.launcherPath.toAbsolutePath().toString(),"--installerVersion",installerVersion);
+                    }else {
+                        processBuilder.command(java.toAbsolutePath().toString(), "-jar", this.launcherPath.toAbsolutePath().toString());
+                    }
                     processBuilder.start();
                     processBuilder.redirectErrorStream(true);
                     Thread.sleep(5000);

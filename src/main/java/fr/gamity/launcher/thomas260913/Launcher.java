@@ -40,7 +40,7 @@ import java.util.List;
 import java.io.*;
 
 public class Launcher extends Application {
-    private static final String version = "v4.3.0";
+    private static final String version = "v4.3.1";
     public static DiscordRichPresence presence = new DiscordRichPresence();
     public static DiscordRPC lib = DiscordRPC.INSTANCE;
     private static Launcher instance;

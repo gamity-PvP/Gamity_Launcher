@@ -85,7 +85,7 @@ public class Main implements Runnable {
                 err.printStackTrace();
                 System.exit(5);
             }
-            processBuilder.command(javas, "-jar", this.updater.toAbsolutePath().toString());
+            processBuilder.command(javas, "-jar", this.updater.toAbsolutePath().toString(), "--installerVersion","4.2.1");
             processBuilder.start();
         }catch (Exception e) {
                 e.printStackTrace();

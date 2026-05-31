@@ -23,49 +23,51 @@ dependencies {
     implementation 'fr.flowarg:azuljavadownloader:1.0.2'
     implementation 'fr.flowarg:flowmultitools:1.4.4'
 }
-
-tasks.register('packageMyAppWin64', PackageTask) {
-    dependsOn build
-    displayName = "Gamity Launcher"
-    mainClass = 'fr.gamity.installer.Main'
-    bundleJre = true
-    generateInstaller = true
-    platform = io.github.fvarrui.javapackager.model.Platform.windows
-    jrePath = file('../java/win64')
-    winConfig(({
-        companyName = 'Gamity PvP'
-        fileVersion = '4.2.0'
-        productVersion = '4.2.0'
-        fileDescription = 'installateur du launcher de gamity pvp'
-        copyright = 'Gamity PvP'
-        setupMode = 'askTheUser'
-        internalName = 'Gamity Launcher'
-        productName = 'Gamity Launcher'
-        generateSetup = true
-        companyName = 'Gamity'
-        language = 'FRENCH'
-        icoFile = file('../logo.ico')
-        setupLanguages.put('French', 'compiler:Languages\\French.isl')
-        disableFinishedPage = false
-    } as Closure<WindowsConfig>))
-}
-tasks.register('packageMyAppLinux64', PackageTask) {
-    dependsOn build
-    displayName = "Gamity Launcher"
-    mainClass = 'fr.gamity.installer.Main'
-    bundleJre = true
-    generateInstaller = true
-    platform = io.github.fvarrui.javapackager.model.Platform.linux
-    jrePath = file('../java/linux64')
-    linuxConfig(({
-        generateDeb = true
-        generateRpm = false
-        generateAppImage = false
-        pngFile = file('../GamityInstaller.png')
-    } as Closure<LinuxConfig>))
-}
 jar {
     manifest {
         attributes 'Main-Class': 'fr.gamity.installer.Main', 'SplashScreen-Image': 'splash.png'
     }
+}
+
+def jarFile = tasks.named('jar').get().archiveFile.get().asFile
+
+def issFile = file("$buildDir/installer.iss")
+def outputDir = file("$buildDir/installer")
+
+tasks.register('generateIss') {
+    dependsOn jar
+
+    doLast {
+        outputDir.mkdirs()
+
+        issFile.text = """
+[Setup]
+AppName=Gamity Launcher
+AppVersion=${project.version}
+DefaultDirName={pf}\\Gamity Launcher
+DefaultGroupName=Gamity Launcher
+OutputDir=${outputDir}
+OutputBaseFilename=GamityInstaller
+Compression=lzma
+SolidCompression=yes
+SetupIconFile="../../GamityInstaller.ico"
+
+[Files]
+Source: "${jarFile.absolutePath}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\\..\\java\\win64\\*"; DestDir: "{app}\\jre"; Flags: recursesubdirs ignoreversion
+
+[Icons]
+Name: "{group}\\Gamity Launcher"; Filename: "{app}\\jre\\bin\\javaw.exe"; Parameters: "-jar ${jarFile.name}"
+Name: "{commondesktop}\\Gamity Launcher"; Filename: "{app}\\jre\\bin\\javaw.exe"; Parameters: "-jar ${jarFile.name}"; Tasks: desktopicon
+
+[Tasks]
+Name: "desktopicon"; Description: "Créer un raccourci bureau"; GroupDescription: "Options :"
+"""
+    }
+}
+
+tasks.register('buildInstaller', Exec) {
+    dependsOn 'generateIss'
+
+    commandLine 'iscc', "${buildDir}/installer.iss"
 }

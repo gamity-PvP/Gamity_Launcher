@@ -123,7 +123,7 @@ public class BuildClient {
                     break;
                 case "neoforge":
                     NeoForgeVersion neoforge = new NeoForgeVersionBuilder()
-                            .withNeoForgeVersion(config.mcinfo.modLoader.version.split("-")[1])
+                            .withNeoForgeVersion(config.mcinfo.modLoader.version.split("-",2)[1])
                             .withMods(mods)
                             .withCurseMods(CurseMods)
                             .withModrinthMods(ModrinthMods)
@@ -150,7 +150,7 @@ public class BuildClient {
                     break;
                 case "fabric":
                     FabricVersion fabric = new FabricVersionBuilder()
-                            .withFabricVersion(config.mcinfo.modLoader.version.split("-")[1])
+                            .withFabricVersion(config.mcinfo.modLoader.version.split("-",2)[1])
                             .withMods(mods)
                             .withCurseMods(CurseMods)
                             .withModrinthMods(ModrinthMods)
@@ -273,7 +273,7 @@ public class BuildClient {
                     if (config.mcinfo.autoconnect) {
                         noFramework.getAdditionalArgs().addAll(Arrays.asList("--quickPlayMultiplayer", config.mcinfo.server.ip + ":" + (!Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565")));
                     }
-                    noFramework.launch(config.mcinfo.mc.version, config.mcinfo.modLoader.version.split("-")[1], NoFramework.ModLoader.NEO_FORGE);
+                    noFramework.launch(config.mcinfo.mc.version, config.mcinfo.modLoader.version.split("-",2)[1], NoFramework.ModLoader.NEO_FORGE);
                     break;
                 case "fabric":
                     noFramework.getAdditionalVmArgs().add(ram);
@@ -284,7 +284,7 @@ public class BuildClient {
                             noFramework.getAdditionalArgs().addAll(Arrays.asList("--server", config.mcinfo.server.ip, "--port", !Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565"));
                         }
                     }
-                    noFramework.launch(config.mcinfo.mc.version, config.mcinfo.modLoader.version.split("-")[1], NoFramework.ModLoader.FABRIC);
+                    noFramework.launch(config.mcinfo.mc.version, config.mcinfo.modLoader.version.split("-",2)[1], NoFramework.ModLoader.FABRIC);
                     break;
                 case "forge":
                     String forgeType = getForgeType(config.mcinfo.modLoader.version);
@@ -307,7 +307,7 @@ public class BuildClient {
                                 noFramework.getAdditionalArgs().addAll(Arrays.asList("--server", config.mcinfo.server.ip, "--port", !Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565"));
                             }
                             NoFramework.ModLoader.OLD_FORGE.setJsonFileNameProvider((version, modLoaderVersion) -> version + "-Forge" + modLoaderVersion + "-" + version + ".json");
-                            noFramework.launch(config.mcinfo.mc.version, config.mcinfo.modLoader.version.split("-")[1], NoFramework.ModLoader.OLD_FORGE);
+                            noFramework.launch(config.mcinfo.mc.version, config.mcinfo.modLoader.version.split("-",2)[1], NoFramework.ModLoader.OLD_FORGE);
                             break;
                         case "very_oldforge":
                             noFramework.getAdditionalVmArgs().add(ram);
@@ -315,7 +315,7 @@ public class BuildClient {
                                 noFramework.getAdditionalArgs().addAll(Arrays.asList("--server", config.mcinfo.server.ip, "--port", !Objects.equals(config.mcinfo.server.port, "") ? config.mcinfo.server.port : "25565"));
                             }
                             NoFramework.ModLoader.VERY_OLD_FORGE.setJsonFileNameProvider((version, modLoaderVersion) -> version + "-Forge" + modLoaderVersion + "-" + version + ".json");
-                            noFramework.launch(config.mcinfo.mc.version, config.mcinfo.modLoader.version.split("-")[1], NoFramework.ModLoader.VERY_OLD_FORGE);
+                            noFramework.launch(config.mcinfo.mc.version, config.mcinfo.modLoader.version.split("-",2)[1], NoFramework.ModLoader.VERY_OLD_FORGE);
                             break;
                     }
                     break;

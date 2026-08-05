@@ -76,13 +76,14 @@ public class JavaInstaller {
     }
     public Set<String> getAvailableVersions() throws IOException {
 
+
         String urlStr =
                 "https://api.azul.com/metadata/v1/zulu/packages/?" +
                         "os=" + this.os.name().toLowerCase() +
                         "&arch=" + getArchName(this.arch) +
                         "&java_package_type=" + AzulJavaType.JRE.name().toLowerCase() +
-                        "&archive_type=zip";
-
+                        "&archive_type=zip&latest=true";
+        System.out.println(urlStr);
         URL url = new URL(urlStr);
 
         HttpURLConnection connection =
@@ -128,18 +129,12 @@ public class JavaInstaller {
                 continue;
             }
 
-            JSONObject javaVersion =
-                    obj.getJSONObject("java_version");
-
-            if (!javaVersion.has("major")) {
+            JSONArray javaVersion = obj.getJSONArray("java_version");
+            if(versions.contains(javaVersion.get(0).toString())){
                 continue;
             }
-
-            int major = javaVersion.getInt("major");
-
-            versions.add(String.valueOf(major));
+            versions.add(javaVersion.get(0).toString());
         }
-
         return versions;
     }
 

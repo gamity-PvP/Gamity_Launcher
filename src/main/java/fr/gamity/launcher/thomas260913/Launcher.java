@@ -40,7 +40,7 @@ import java.util.List;
 import java.io.*;
 
 public class Launcher extends Application {
-    private static final String version = "v4.3.1";
+    private static final String version = "v4.3.2";
     public static DiscordRichPresence presence = new DiscordRichPresence();
     public static DiscordRPC lib = DiscordRPC.INSTANCE;
     private static Launcher instance;
@@ -148,6 +148,8 @@ public class Launcher extends Application {
             maxAccount = Math.min(Integer.parseInt(accountSaver.get("maxAccount")), 20);
         } else {
             maxAccount = 3;
+            accountSaver.set("maxAccount","3");
+            accountSaver.save();
         }
         if (accountSaver.get("selectAccount") == null) {
             accountSaver.set("selectAccount", String.valueOf(0));

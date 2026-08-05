@@ -1,7 +1,5 @@
 package fr.gamity.launcher.thomas260913.utils;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
@@ -12,6 +10,7 @@ public class JavaManager {
     private JavaInstaller javaInstaller;
     public JavaManager(Path javaDir){
         this.javaDir = javaDir;
+        this.javaInstaller = new JavaInstaller(javaDir);
     }
     public Path getJava(String version) throws IOException {
         Optional<Java> existing = javas.stream()
@@ -32,7 +31,8 @@ public class JavaManager {
     }
 
     public Set<String> getAvailableVersions() throws IOException {
-        return javaInstaller.getAvailableVersions();
+        Set<String> versions = javaInstaller.getAvailableVersions();
+        return versions;
     }
 
     public static class Java{
